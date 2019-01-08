@@ -1,0 +1,28 @@
+# Mongo DB Configuration file
+# Classification (U)
+# Unclassified until filled.
+
+# All Mongo configuration settings.
+user = "USER"
+passwd = "PASSWORD"
+# Mongo DB host information
+host = "IP_ADDRESS"
+name = "HOSTNAME"
+# Mongo database port (default is 27017)
+port = 27017
+# Mongo configuration settings
+conf_file = None
+# Authentication required:  True|False
+auth = True
+
+# Replica Set Mongo configuration settings.
+# Replica set name.
+#    None means the Mongo database is not part of a replica set.
+repset = "REPLICA_SET_NAME"
+# Replica host listing.
+#    None means the Mongo database is not part of a replica set.
+repset_hosts = "HOST1:PORT, HOST2:PORT, [...]"
+# Database to authentication to.
+#    None means the Mongo database is not part of a replica set.
+db_auth = "AUTHENTICATION_DATABASE"
+
