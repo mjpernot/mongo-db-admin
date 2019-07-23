@@ -140,7 +140,7 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_load.return_value = "RepConfig"
 
-        self.assertFalse(mongo_db_admin.run_program(self.args_array,
+        self.assertFalse(mongo_db_admin.run_program(self.args_array2,
                                                     self.func_dict))
 
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")

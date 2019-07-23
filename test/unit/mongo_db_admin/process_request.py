@@ -83,7 +83,7 @@ class Server(object):
         self.port = 27017
         self.auth = "Auth type"
         self.conf_file = "Config file name"
-        self.db_list = []
+        self.db_list = ["DB1", "DB2"]
 
     def fetch_dbs(self):
 
@@ -197,7 +197,7 @@ class UnitTest(unittest.TestCase):
         self.server = Server()
         self.mongo = Mongo()
         self.func_name = func_name
-        self.db_name = ["Database3", "Database4"]
+        self.db_name = ["DB1"]
         self.tbl_name = ["Table3", "Table4"]
 
     @mock.patch("mongo_db_admin.mongo_class.DB")

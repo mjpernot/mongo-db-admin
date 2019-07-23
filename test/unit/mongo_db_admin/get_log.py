@@ -157,7 +157,7 @@ class UnitTest(unittest.TestCase):
 
         mock_print.return_value = True
 
-        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array,
+        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array3,
                                                 ofile=self.ofile),
                          (False, None))
 
