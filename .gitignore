@@ -1,0 +1,4 @@
+*.pyc
+.coverage
+*.swp
+coverage.xml
