@@ -53,7 +53,7 @@ Breaking Change
 
 ## [1.11.0] - 2017-08-21
 ### Changed
-- Help_Message:  Replace docstring with printing the programs __doc__.
+- Help_Message:  Replace docstring with printing the programs \_\_doc\_\_.
 - Change single quotes to double quotes.
 - Convert program to use local libraries from ./lib directory.
 - Run_Program:  Change REP_SET to Rep_Cfg to be standardized.
@@ -79,8 +79,8 @@ Breaking Change
 
 ### Changed
 - DBCC:  Added named argment 'full' to function call.
-- Process_Request:  Added **kwargs to a number of func_name function calls.  Also added **kwargs to the function argment list.
-- Run_DBCC:  Added **kwargs to the function argment list.  Changed function name to validate_tbl and also added named argument 'scan' to function call.
+- Process_Request:  Added \*\*kwargs to a number of func_name function calls.  Also added \*\*kwargs to the function argment list.
+- Run_DBCC:  Added \*\*kwargs to the function argment list.  Changed function name to validate_tbl and also added named argument 'scan' to function call.
 - main:  Added -f option to opt_con_req_list variable.
 - Help_Message:  Updated documentation.
 
