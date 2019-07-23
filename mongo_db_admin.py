@@ -131,7 +131,6 @@ import mongo_lib.mongo_libs as mongo_libs
 import mongo_lib.mongo_class as mongo_class
 import version
 
-# Version
 __version__ = version.__version__
 
 
@@ -253,8 +252,6 @@ def dbcc(SERVER, args_array, **kwargs):
     Arguments:
         (input) SERVER -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
@@ -320,8 +317,6 @@ def defrag(SERVER, args_array, **kwargs):
     Arguments:
         (input) SERVER -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) err_flag -> True|False - if an error has occurred.
         (output) err_msg -> Error message.
 
@@ -377,8 +372,6 @@ def repair_db(SERVER, args_array, **kwargs):
     Arguments:
         (input) SERVER -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
@@ -447,8 +440,6 @@ def rotate(SERVER, args_array, **kwargs):
     Arguments:
         (input) SERVER -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) err_flag -> True|False - if an error has occurred.
         (output) err_msg -> Error message.
 
