@@ -149,6 +149,7 @@ pip install -r requirements-python-lib.txt --target mongo_lib/lib --trusted-host
 cd {Python_Project}/mongo-db-admin
 test/unit/mongo_db_admin/dbcc.py
 test/unit/mongo_db_admin/defrag.py
+test/unit/mongo_db_admin/get_log.py
 test/unit/mongo_db_admin/help_message.py
 test/unit/mongo_db_admin/process_request.py
 test/unit/mongo_db_admin/repair_db.py

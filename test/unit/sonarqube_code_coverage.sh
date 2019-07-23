@@ -10,6 +10,7 @@ echo ""
 echo "Running unit test modules in conjunction with coverage"
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/dbcc.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/defrag.py
+coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_log.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/help_message.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/process_request.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/repair_db.py
