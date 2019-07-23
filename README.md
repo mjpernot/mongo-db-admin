@@ -156,6 +156,7 @@ test/unit/mongo_db_admin/repair_db.py
 test/unit/mongo_db_admin/rotate.py
 test/unit/mongo_db_admin/run_compact.py
 test/unit/mongo_db_admin/run_dbcc.py
+test/unit/mongo_db_admin/run_program.py
 test/unit/mongo_db_admin/run_repair.py
 test/unit/mongo_db_admin/status.py
 ```
