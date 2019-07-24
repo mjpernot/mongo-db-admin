@@ -263,7 +263,7 @@ def dbcc(SERVER, args_array, **kwargs):
     return False, None
 
 
-def run_compact(DB, db_name, tbl_list=None):
+def run_compact(DB, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_compact
 
