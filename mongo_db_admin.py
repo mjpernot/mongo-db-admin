@@ -123,6 +123,8 @@ from __future__ import print_function
 import sys
 import datetime
 import os
+import getpass
+import socket
 
 # Third party
 import json
@@ -131,6 +133,7 @@ import json
 import lib.arg_parser as arg_parser
 import lib.gen_libs as gen_libs
 import lib.cmds_gen as cmds_gen
+import lib.gen_class as gen_class
 import mongo_lib.mongo_libs as mongo_libs
 import mongo_lib.mongo_class as mongo_class
 import version
@@ -562,6 +565,32 @@ def get_log(server, args_array, **kwargs):
             f_hldr.close()
 
     return False, None
+
+
+def setup_mail(to_line, subj=None, frm_line=None, **kwargs):
+
+    """Function:  setup_mail
+
+    Description:  Initialize a mail instance.  Provide 'from line' if one is
+        not passed.
+
+    Arguments:
+        (input) to_line -> Mail to line.
+        (input) subj -> Mail subject line.
+        (input) frm_line -> Mail from line.
+        (output) Mail instance.
+
+    """
+
+    to_line = list(to_line)
+
+    if isinstance(subj, list):
+        subj = list(subj)
+
+    if not frm_line:
+        frm_line = getpass.getuser() + "@" + socket.gethostname()
+
+    return gen_class.Mail(to_line, subj, frm_line)
 
 
 def run_program(args_array, func_dict, **kwargs):

@@ -37,6 +37,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - run_compact:  Added \*\*kwargs to argument list.
 - run_repair:  Added \*\*kwargs to argument list.
 
+### Added
+- setup_mail:  Initialize a mail instance.
+
 
 ## [2.0.1] - 2018-11-30
 ### Fixed
