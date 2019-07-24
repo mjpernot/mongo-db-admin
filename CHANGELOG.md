@@ -18,6 +18,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - process_request:  Fixed mutable list/dictionary argument issue.
 
 ### Changed
+- main:  Refactored 'if' statement to streamline the checks.
 - run_program:  Updated variables names to standard convention.
 - get_log:  Updated variables names to standard convention.
 - rotate:  Updated variables names to standard convention.
