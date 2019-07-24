@@ -34,7 +34,7 @@ import version
 __version__ = version.__version__
 
 
-def defrag(server, args_array, ofile, db_tbl, class_cfg):
+def defrag(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
 
     """Method:  defrag
 
@@ -103,6 +103,7 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_email -> Test with email option.
         test_cfg -> Test with configuration file.
         test_no_cfg -> Test with no configuration file.
 
@@ -121,7 +122,29 @@ class UnitTest(unittest.TestCase):
         self.server = Server()
         self.args_array = {"-c": True, "-d": True, "-C": True}
         self.args_array2 = {"-c": True, "-d": True, "-C": True, "-m": True}
+        self.args_array3 = {"-c": True, "-d": True, "-C": True, "-m": True,
+                            "-e": "ToEmail", "-s": "SubjectLine"}
         self.func_dict = {"-C": defrag}
+
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_email(self, mock_mongo, mock_conn, mock_load):
+
+        """Function:  test_email
+
+        Description:  Test with email option.
+
+        Arguments:
+
+        """
+
+        mock_mongo.return_value = self.server
+        mock_conn.return_value = True
+        mock_load.return_value = "RepConfig"
+
+        self.assertFalse(mongo_db_admin.run_program(self.args_array3,
+                                                    self.func_dict))
 
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
@@ -130,7 +153,7 @@ class UnitTest(unittest.TestCase):
 
         """Function:  test_cfg
 
-        Description:  Test with no configuration file.
+        Description:  Test with configuration file.
 
         Arguments:
 
