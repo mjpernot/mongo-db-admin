@@ -339,7 +339,7 @@ def defrag(SERVER, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def run_repair(DB, db_name):
+def run_repair(DB, db_name, **kwargs):
 
     """Function:  run_repair
 
