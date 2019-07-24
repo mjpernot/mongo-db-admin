@@ -20,6 +20,7 @@ coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_compact.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_dbcc.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_program.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_repair.py
+coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/setup_mail.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/status.py
 
 echo ""
