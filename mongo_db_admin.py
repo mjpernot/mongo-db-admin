@@ -206,7 +206,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     cmds_gen.disconnect([mongo])
 
 
-def run_dbcc(DB, db_name, tbl_list=None, **kwargs):
+def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_dbcc
 
@@ -214,7 +214,7 @@ def run_dbcc(DB, db_name, tbl_list=None, **kwargs):
         validate command against the list of tables.
 
     Arguments:
-        (input) DB -> Database instance.
+        (input) mongo -> Database instance.
         (input) db_name -> Database name.
         (input) tbl_list -> List of tables.
         (input) **kwargs:
@@ -225,16 +225,16 @@ def run_dbcc(DB, db_name, tbl_list=None, **kwargs):
     if tbl_list is None:
         tbl_list = []
 
-    DB.chg_db(db=db_name)
-    print("DBCC check for %s" % (DB.db_name))
+    mongo.chg_db(db=db_name)
+    print("DBCC check for %s" % (mongo.db_name))
 
     if not tbl_list:
-        tbl_list = DB.get_tbl_list()
+        tbl_list = mongo.get_tbl_list()
 
     for x in tbl_list:
         print("\tChecking table: {0:50}".format(x + "..."), end="")
 
-        data = DB.validate_tbl(x, scan=kwargs.get("full", False))
+        data = mongo.validate_tbl(x, scan=kwargs.get("full", False))
 
         print("\t%s" % (data["valid"]))
 
