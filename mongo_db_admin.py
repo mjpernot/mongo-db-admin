@@ -18,7 +18,7 @@
             [-f] {-M {-j | -i db_name:table_name |
             -m file | -o dir_path/file}} |
             {-G {global | rs | startupWarnings} | {-j | -l | -o dir_path/file}}
-            [-v | -h]
+            [-e ToEmail {ToEmail2 ToEmail3 ...} {-s SubjectLine}] [-v | -h]
 
     Arguments:
         -c file => Server configuration file.  Required arg.
@@ -61,6 +61,10 @@
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.  Default value is: global.  Can
             use the following options:  -j or -l and -o.
+        -e to_email_addresses => Enables emailing capability for an option if
+            the option allows it.  Sends output to one or more email addresses.
+        -s subject_line => Subject line of email.  Optional, will create own
+            subject line if one is not provided.
         -v => Display version of this program.
         -h => Help and usage message.
 
@@ -119,6 +123,8 @@ from __future__ import print_function
 import sys
 import datetime
 import os
+import getpass
+import socket
 
 # Third party
 import json
@@ -127,11 +133,11 @@ import json
 import lib.arg_parser as arg_parser
 import lib.gen_libs as gen_libs
 import lib.cmds_gen as cmds_gen
+import lib.gen_class as gen_class
 import mongo_lib.mongo_libs as mongo_libs
 import mongo_lib.mongo_class as mongo_class
 import version
 
-# Version
 __version__ = version.__version__
 
 
@@ -149,7 +155,7 @@ def help_message():
     print(__doc__)
 
 
-def process_request(SERVER, func_name, db_name=None, tbl_name=None, **kwargs):
+def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     """Function:  process_request
 
@@ -157,7 +163,7 @@ def process_request(SERVER, func_name, db_name=None, tbl_name=None, **kwargs):
         to the function and then calls the "func_name" function.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) func_name -> Name of a function.
         (input) db_name -> Database name or 'all'
         (input) tbl_name -> List of table names.
@@ -169,44 +175,50 @@ def process_request(SERVER, func_name, db_name=None, tbl_name=None, **kwargs):
     if db_name is None:
         db_name = []
 
+    else:
+        db_name = list(db_name)
+
     if tbl_name is None:
         tbl_name = []
 
-    db_list = SERVER.fetch_dbs()
+    else:
+        tbl_name = list(tbl_name)
 
-    DB = mongo_class.DB(SERVER.name, SERVER.user, SERVER.passwd, SERVER.host,
-                        SERVER.port, "test", SERVER.auth, SERVER.conf_file)
-    DB.connect()
+    db_list = server.fetch_dbs()
+    mongo = mongo_class.DB(server.name, server.user, server.passwd,
+                           server.host, server.port, "test", server.auth,
+                           server.conf_file)
+    mongo.connect()
 
     # Process all databases.
     if not db_name:
 
         for x in db_list:
-            func_name(DB, x, **kwargs)
+            func_name(mongo, x, **kwargs)
 
     # Process all tables in a database.
     elif not tbl_name:
 
         # Generator builds list of databases to process.
         for db in (db for db in db_name if db in db_list):
-            func_name(DB, db, **kwargs)
+            func_name(mongo, db, **kwargs)
 
     # Process passed databases and tables.
     else:
         # Generator builds list of databases to process.
         for db in (db for db in db_name if db in db_list):
-            DB.chg_db(db=db)
-            tbl_list = DB.get_tbl_list()
+            mongo.chg_db(db=db)
+            tbl_list = mongo.get_tbl_list()
 
             # Generator builds list of tables.
-            func_name(DB, db,
+            func_name(mongo, db,
                       list((tbl for tbl in tbl_name if tbl in tbl_list)),
                       **kwargs)
 
-    cmds_gen.disconnect([DB])
+    cmds_gen.disconnect([mongo])
 
 
-def run_dbcc(DB, db_name, tbl_list=None, **kwargs):
+def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_dbcc
 
@@ -214,7 +226,7 @@ def run_dbcc(DB, db_name, tbl_list=None, **kwargs):
         validate command against the list of tables.
 
     Arguments:
-        (input) DB -> Database instance.
+        (input) mongo -> Database instance.
         (input) db_name -> Database name.
         (input) tbl_list -> List of tables.
         (input) **kwargs:
@@ -225,24 +237,25 @@ def run_dbcc(DB, db_name, tbl_list=None, **kwargs):
     if tbl_list is None:
         tbl_list = []
 
-    DB.chg_db(db=db_name)
-    print("DBCC check for %s" % (DB.db_name))
+    else:
+        tbl_list = list(tbl_list)
+
+    mongo.chg_db(db=db_name)
+    print("DBCC check for %s" % (mongo.db_name))
 
     if not tbl_list:
-        tbl_list = DB.get_tbl_list()
+        tbl_list = mongo.get_tbl_list()
 
     for x in tbl_list:
         print("\tChecking table: {0:50}".format(x + "..."), end="")
-
-        data = DB.validate_tbl(x, scan=kwargs.get("full", False))
-
+        data = mongo.validate_tbl(x, scan=kwargs.get("full", False))
         print("\t%s" % (data["valid"]))
 
         if data["valid"] is False:
             print("\t\tError: %s" % (data["errors"]))
 
 
-def dbcc(SERVER, args_array, **kwargs):
+def dbcc(server, args_array, **kwargs):
 
     """Function:  dbcc
 
@@ -251,22 +264,21 @@ def dbcc(SERVER, args_array, **kwargs):
         options will determine which databases and tables are done.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
     """
 
-    process_request(SERVER, run_dbcc, args_array["-D"], args_array.get("-t"),
+    args_array = dict(args_array)
+    process_request(server, run_dbcc, args_array["-D"], args_array.get("-t"),
                     full=args_array.get("-f", False))
 
     return False, None
 
 
-def run_compact(DB, db_name, tbl_list=None):
+def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_compact
 
@@ -274,7 +286,7 @@ def run_compact(DB, db_name, tbl_list=None):
         compact command within the class instance against a list of tables.
 
     Arguments:
-        (input) DB -> Database instance.
+        (input) mongo -> Database instance.
         (input) db_name -> Database name.
         (input) tbl_list -> List of tables.
 
@@ -283,33 +295,35 @@ def run_compact(DB, db_name, tbl_list=None):
     if tbl_list is None:
         tbl_list = []
 
-    DB.chg_db(db=db_name)
-    print("Compacting for %s" % (DB.db_name))
+    else:
+        tbl_list = list(tbl_list)
+
+    mongo.chg_db(db=db_name)
+    print("Compacting for %s" % (mongo.db_name))
 
     if not tbl_list:
-        tbl_list = DB.get_tbl_list(False)
+        tbl_list = mongo.get_tbl_list(False)
 
     for x in tbl_list:
         print("\tCompacting: {0:50}".format(x + "..."), end="")
+        coll = mongo_libs.crt_coll_inst(mongo, db_name, x)
+        coll.connect()
 
-        COLL = mongo_libs.crt_coll_inst(DB, db_name, x)
-        COLL.connect()
-
-        if COLL.coll_options().get("capped", False):
+        if coll.coll_options().get("capped", False):
             print("\tCollection capped: not compacted")
 
         else:
 
-            if DB.db_cmd("compact", obj=x)["ok"] == 1:
+            if mongo.db_cmd("compact", obj=x)["ok"] == 1:
                 print("\tDone")
 
             else:
                 print("\tCommand Failed")
 
-        cmds_gen.disconnect([COLL])
+        cmds_gen.disconnect([coll])
 
 
-def defrag(SERVER, args_array, **kwargs):
+def defrag(server, args_array, **kwargs):
 
     """Function:  defrag
 
@@ -318,19 +332,17 @@ def defrag(SERVER, args_array, **kwargs):
         will determine which databases and tables are done.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) err_flag -> True|False - if an error has occurred.
         (output) err_msg -> Error message.
 
     """
 
+    args_array = dict(args_array)
     err_flag = False
     err_msg = None
-
-    data = mongo_class.fetch_ismaster(SERVER)
+    data = mongo_class.fetch_ismaster(server)
 
     # Primary servers not allowed to be defragged.
     if data["ismaster"] and "setName" in data:
@@ -338,13 +350,13 @@ def defrag(SERVER, args_array, **kwargs):
         err_msg = "Error:  Primary in a Replica Set and cannot be defragged."
 
     else:
-        process_request(SERVER, run_compact, args_array["-C"],
+        process_request(server, run_compact, args_array["-C"],
                         args_array.get("-t"))
 
     return err_flag, err_msg
 
 
-def run_repair(DB, db_name):
+def run_repair(mongo, db_name, **kwargs):
 
     """Function:  run_repair
 
@@ -352,22 +364,22 @@ def run_repair(DB, db_name):
         repairDatabase command within the class instance.
 
     Arguments:
-        (input) DB -> Database instance.
+        (input) mongo -> Database instance.
         (input) db_name -> Database name.
 
     """
 
-    DB.chg_db(db=db_name)
+    mongo.chg_db(db=db_name)
     print("Repairing Database: {0:20}".format(db_name + "..."), end="")
 
-    if DB.db_cmd("repairDatabase")["ok"] == 1:
+    if mongo.db_cmd("repairDatabase")["ok"] == 1:
         print("\tDone")
 
     else:
         print("\tCommand Failed")
 
 
-def repair_db(SERVER, args_array, **kwargs):
+def repair_db(server, args_array, **kwargs):
 
     """Function:  repair_db
 
@@ -375,21 +387,20 @@ def repair_db(SERVER, args_array, **kwargs):
         which is determined by -R option from the command line.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
     """
 
-    process_request(SERVER, run_repair, args_array["-R"], None)
+    args_array = dict(args_array)
+    process_request(server, run_repair, args_array["-R"], None)
 
     return False, None
 
 
-def status(SERVER, args_array, **kwargs):
+def status(server, args_array, **kwargs):
 
     """Function:  status
 
@@ -398,34 +409,49 @@ def status(SERVER, args_array, **kwargs):
         is printed and/or insert into the database.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
             db_tbl database:table_name -> Mongo database and table name.
             class_cfg -> Mongo Rep Set server configuration.
+            mail -> Mail instance.
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
     """
 
-    SERVER.upd_srv_stat()
-
-    outdata = {"Application": "Mongo Database",
-               "Server": SERVER.name,
-               "Asof": datetime.datetime.strftime(datetime.datetime.now(),
+    args_array = dict(args_array)
+    server.upd_srv_stat()
+    outdata = {"application": "Mongo Database",
+               "server": server.name,
+               "asOf": datetime.datetime.strftime(datetime.datetime.now(),
                                                   "%Y-%m-%d %H:%M:%S")}
-
-    outdata.update({"Memory": {"Current_Usage": SERVER.cur_mem,
-                               "Max_Usage": SERVER.max_mem,
-                               "Percent_Used": SERVER.prct_mem},
-                    "Uptime": SERVER.days_up,
-                    "Connections": {"Current_Connected": SERVER.cur_conn,
-                                    "Max_Connections": SERVER.max_conn,
-                                    "Percent_Used": SERVER.prct_conn}})
+    outdata.update({"memory": {"currentUsage": server.cur_mem,
+                               "maxUsage": server.max_mem,
+                               "percentUsed": server.prct_mem},
+                    "upTime": server.days_up,
+                    "connections": {"currentConnected": server.cur_conn,
+                                    "maxConnections": server.max_conn,
+                                    "percentUsed": server.prct_conn}})
 
     if "-j" in args_array:
-        mongo_libs.json_prt_ins_2_db(outdata, **kwargs)
+        jdata = json.dumps(outdata, indent=4)
+        mongo_cfg = kwargs.get("class_cfg", None)
+        db_tbl = kwargs.get("db_tbl", None)
+        ofile = kwargs.get("ofile", None)
+        mail = kwargs.get("mail", None)
+
+        if mongo_cfg and db_tbl:
+            db, tbl = db_tbl.split(":")
+            mongo_libs.ins_doc(mongo_cfg, db, tbl, outdata)
+
+        if ofile:
+            gen_libs.write_file(ofile, "w", jdata)
+
+        if mail:
+            mail.add_2_msg(jdata)
+            mail.send_mail()
 
     else:
         if kwargs.get("ofile", None):
@@ -437,7 +463,7 @@ def status(SERVER, args_array, **kwargs):
     return False, None
 
 
-def rotate(SERVER, args_array, **kwargs):
+def rotate(server, args_array, **kwargs):
 
     """Function:  rotate
 
@@ -445,15 +471,14 @@ def rotate(SERVER, args_array, **kwargs):
         directory if requested.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (input) **kwargs:
-            None
         (output) err_flag -> True|False - if an error has occurred.
         (output) err_msg -> Error message.
 
     """
 
+    args_array = dict(args_array)
     err_flag = False
     err_msg = None
 
@@ -465,19 +490,17 @@ def rotate(SERVER, args_array, **kwargs):
 
             # Pull the log and path from Mongodb.
             path_log = \
-                mongo_class.fetch_cmd_line(SERVER)[
+                mongo_class.fetch_cmd_line(server)[
                     "parsed"]["systemLog"]["path"]
             dir_path = os.path.dirname(path_log)
             mdb_log = os.path.basename(path_log)
 
             # Pre list of log files before logRotate.
             pre_logs = gen_libs.dir_file_match(dir_path, mdb_log)
-
-            SERVER.adm_cmd("logRotate")
+            server.adm_cmd("logRotate")
 
             # Post list of log files after logRotate.
             post_logs = gen_libs.dir_file_match(dir_path, mdb_log)
-
             diff_list = gen_libs.is_missing_lists(post_logs, pre_logs)
 
             if len(diff_list) > 1:
@@ -492,12 +515,12 @@ def rotate(SERVER, args_array, **kwargs):
             err_msg = msg
 
     else:
-        SERVER.adm_cmd("logRotate")
+        server.adm_cmd("logRotate")
 
     return err_flag, err_msg
 
 
-def get_log(SERVER, args_array, **kwargs):
+def get_log(server, args_array, **kwargs):
 
     """Function:  get_log
 
@@ -505,7 +528,7 @@ def get_log(SERVER, args_array, **kwargs):
         and send to output.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
@@ -514,8 +537,10 @@ def get_log(SERVER, args_array, **kwargs):
 
     """
 
+    args_array = dict(args_array)
+
     # Get log data from mongodb.
-    data = SERVER.adm_cmd("getLog", arg1=args_array["-G"])
+    data = server.adm_cmd("getLog", arg1=args_array["-G"])
 
     if "-j" in args_array:
         gen_libs.print_data(json.dumps(data, indent=4), **kwargs)
@@ -539,6 +564,32 @@ def get_log(SERVER, args_array, **kwargs):
     return False, None
 
 
+def setup_mail(to_line, subj=None, frm_line=None, **kwargs):
+
+    """Function:  setup_mail
+
+    Description:  Initialize a mail instance.  Provide 'from line' if one is
+        not passed.
+
+    Arguments:
+        (input) to_line -> Mail to line.
+        (input) subj -> Mail subject line.
+        (input) frm_line -> Mail from line.
+        (output) Mail instance.
+
+    """
+
+    to_line = list(to_line)
+
+    if isinstance(subj, list):
+        subj = list(subj)
+
+    if not frm_line:
+        frm_line = getpass.getuser() + "@" + socket.gethostname()
+
+    return gen_class.Mail(to_line, subj, frm_line)
+
+
 def run_program(args_array, func_dict, **kwargs):
 
     """Function:  run_program
@@ -548,33 +599,37 @@ def run_program(args_array, func_dict, **kwargs):
     Arguments:
         (input) args_array -> Dict of command line options and values.
         (input) func_dict -> Dictionary list of functions and options.
-        (input) **kwargs:
-            multi_val -> List of options that may have multiple values.
 
     """
 
-    SERVER = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
+    args_array = dict(args_array)
+    func_dict = dict(func_dict)
+    server = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
                                         mongo_class.Server)
-    SERVER.connect()
-
+    server.connect()
     outfile = args_array.get("-o", None)
     db_tbl = args_array.get("-i", None)
+    repcfg = None
+    mail = None
 
-    Rep_Cfg = None
     if args_array.get("-m", None):
-        Rep_Cfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
+        repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
+
+    if args_array.get("-e", None):
+        mail = setup_mail(args_array.get("-e"),
+                          subj=args_array.get("-s", None))
 
     # Call function(s) - intersection of command line and function dict.
     for x in set(args_array.keys()) & set(func_dict.keys()):
-        err_flag, err_msg = func_dict[x](SERVER, args_array, ofile=outfile,
-                                         db_tbl=db_tbl, class_cfg=Rep_Cfg,
-                                         **kwargs)
+        err_flag, err_msg = func_dict[x](server, args_array, ofile=outfile,
+                                         db_tbl=db_tbl, class_cfg=repcfg,
+                                         mail=mail, **kwargs)
 
         if err_flag:
-            cmds_gen.disconnect([SERVER])
+            cmds_gen.disconnect([server])
             sys.exit(err_msg)
 
-    cmds_gen.disconnect([SERVER])
+    cmds_gen.disconnect([server])
 
 
 def main():
@@ -610,13 +665,14 @@ def main():
     func_dict = {"-C": defrag, "-D": dbcc, "-R": repair_db, "-M": status,
                  "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
-    opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"]}
+    opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"],
+                        "-s": ["-e"]}
     opt_def_dict = {"-C": [], "-D": [], "-R": [], "-G": "global",
                     "-i": "sysmon:mongo_db_status"}
-    opt_multi_list = ["-C", "-D", "-R", "-t"]
+    opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
     opt_req_list = ["-c", "-d"]
     opt_val_list = ["-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o",
-                    "-G", "-n"]
+                    "-G", "-n", "-e", "-s"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
     opt_xor_dict = {"-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
                     "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"],
@@ -626,17 +682,17 @@ def main():
     args_array = arg_parser.arg_parse2(sys.argv, opt_val_list, opt_def_dict,
                                        multi_val=opt_multi_list)
 
-    if not gen_libs.help_func(args_array, __version__, help_message):
-        if not arg_parser.arg_require(args_array, opt_req_list) \
-           and arg_parser.arg_valid_val(args_array, opt_valid_val) \
-           and arg_parser.arg_xor_dict(args_array, opt_xor_dict) \
-           and arg_parser.arg_cond_req_or(args_array, opt_con_req_dict) \
-           and arg_parser.arg_cond_req(args_array, opt_con_req_list) \
-           and not arg_parser.arg_dir_chk_crt(args_array, dir_chk_list) \
-           and not arg_parser.arg_file_chk(args_array, file_chk_list,
-                                           file_crt_list):
+    if not gen_libs.help_func(args_array, __version__, help_message) \
+       and not arg_parser.arg_require(args_array, opt_req_list) \
+       and arg_parser.arg_valid_val(args_array, opt_valid_val) \
+       and arg_parser.arg_xor_dict(args_array, opt_xor_dict) \
+       and arg_parser.arg_cond_req_or(args_array, opt_con_req_dict) \
+       and arg_parser.arg_cond_req(args_array, opt_con_req_list) \
+       and not arg_parser.arg_dir_chk_crt(args_array, dir_chk_list) \
+       and not arg_parser.arg_file_chk(args_array, file_chk_list,
+                                       file_crt_list):
 
-            run_program(args_array, func_dict)
+        run_program(args_array, func_dict)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.1.0] - 2019-07-24
+### Fixed
+- run_program:  Fixed mutable list/dictionary argument issue.
+- get_log:  Fixed mutable list/dictionary argument issue.
+- rotate:  Fixed mutable list/dictionary argument issue.
+- status:  Fixed mutable list/dictionary argument issue.
+- repair_db:  Fixed mutable list/dictionary argument issue.
+- defrag:  Fixed mutable list/dictionary argument issue.
+- run_compact:  Fixed mutable list/dictionary argument issue.
+- dbcc:  Fixed mutable list/dictionary argument issue.
+- run_dbcc:  Fixed mutable list/dictionary argument issue.
+- process_request:  Fixed mutable list/dictionary argument issue.
+
+### Changed
+- status:  Added capability to mail out JSON formatted data.
+- run_program:  Added setup of mail instance and passing mail instance to functions.
+- main:  Added '-e' and '-s' options to allow for email capability for some options.
+- status:  Replaced mongo_libs.json_prt_ins_2_db call with own internal code.
+- status:  Converted JSON output to camelCase.
+- main:  Refactored 'if' statement to streamline the checks.
+- run_program:  Updated variables names to standard convention.
+- get_log:  Updated variables names to standard convention.
+- rotate:  Updated variables names to standard convention.
+- status:  Updated variables names to standard convention.
+- repair_db:  Updated variables names to standard convention.
+- run_repair:  Updated variables names to standard convention.
+- defrag:  Updated variables names to standard convention.
+- run_compact:  Updated variables names to standard convention.
+- dbcc:  Updated variables names to standard convention.
+- run_dbcc:  Updated variables names to standard convention.
+- process_request:  Updated variables names to standard convention.
+- run_compact:  Added \*\*kwargs to argument list.
+- run_repair:  Added \*\*kwargs to argument list.
+
+### Added
+- setup_mail:  Initialize a mail instance.
+
+
 ## [2.0.1] - 2018-11-30
 ### Fixed
 - main:  Corrected incorrect function name calls.
@@ -53,7 +91,7 @@ Breaking Change
 
 ## [1.11.0] - 2017-08-21
 ### Changed
-- Help_Message:  Replace docstring with printing the programs __doc__.
+- Help_Message:  Replace docstring with printing the programs \_\_doc\_\_.
 - Change single quotes to double quotes.
 - Convert program to use local libraries from ./lib directory.
 - Run_Program:  Change REP_SET to Rep_Cfg to be standardized.
@@ -79,8 +117,8 @@ Breaking Change
 
 ### Changed
 - DBCC:  Added named argment 'full' to function call.
-- Process_Request:  Added **kwargs to a number of func_name function calls.  Also added **kwargs to the function argment list.
-- Run_DBCC:  Added **kwargs to the function argment list.  Changed function name to validate_tbl and also added named argument 'scan' to function call.
+- Process_Request:  Added \*\*kwargs to a number of func_name function calls.  Also added \*\*kwargs to the function argment list.
+- Run_DBCC:  Added \*\*kwargs to the function argment list.  Changed function name to validate_tbl and also added named argument 'scan' to function call.
 - main:  Added -f option to opt_con_req_list variable.
 - Help_Message:  Updated documentation.
 

@@ -1,0 +1,6 @@
+*.pyc
+.coverage
+*.swp
+lib
+mongo_lib
+coverage.xml
