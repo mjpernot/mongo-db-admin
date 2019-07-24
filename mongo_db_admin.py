@@ -168,8 +168,14 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     if db_name is None:
         db_name = []
 
+    else:
+        db_name = list(db_name)
+
     if tbl_name is None:
         tbl_name = []
+
+    else:
+        tbl_name = list(tbl_name)
 
     db_list = server.fetch_dbs()
 
