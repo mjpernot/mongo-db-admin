@@ -489,7 +489,7 @@ def rotate(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def get_log(SERVER, args_array, **kwargs):
+def get_log(server, args_array, **kwargs):
 
     """Function:  get_log
 
@@ -497,7 +497,7 @@ def get_log(SERVER, args_array, **kwargs):
         and send to output.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
@@ -507,7 +507,7 @@ def get_log(SERVER, args_array, **kwargs):
     """
 
     # Get log data from mongodb.
-    data = SERVER.adm_cmd("getLog", arg1=args_array["-G"])
+    data = server.adm_cmd("getLog", arg1=args_array["-G"])
 
     if "-j" in args_array:
         gen_libs.print_data(json.dumps(data, indent=4), **kwargs)
