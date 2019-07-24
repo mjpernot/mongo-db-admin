@@ -559,11 +559,11 @@ def run_program(args_array, func_dict, **kwargs):
     Arguments:
         (input) args_array -> Dict of command line options and values.
         (input) func_dict -> Dictionary list of functions and options.
-        (input) **kwargs:
-            multi_val -> List of options that may have multiple values.
 
     """
 
+    args_array = dict(args_array)
+    func_dict = dict(func_dict)
     server = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
                                         mongo_class.Server)
     server.connect()
