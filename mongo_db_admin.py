@@ -383,7 +383,7 @@ def repair_db(server, args_array, **kwargs):
     return False, None
 
 
-def status(SERVER, args_array, **kwargs):
+def status(server, args_array, **kwargs):
 
     """Function:  status
 
@@ -392,7 +392,7 @@ def status(SERVER, args_array, **kwargs):
         is printed and/or insert into the database.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
@@ -403,20 +403,20 @@ def status(SERVER, args_array, **kwargs):
 
     """
 
-    SERVER.upd_srv_stat()
+    server.upd_srv_stat()
 
     outdata = {"Application": "Mongo Database",
-               "Server": SERVER.name,
+               "Server": server.name,
                "Asof": datetime.datetime.strftime(datetime.datetime.now(),
                                                   "%Y-%m-%d %H:%M:%S")}
 
-    outdata.update({"Memory": {"Current_Usage": SERVER.cur_mem,
-                               "Max_Usage": SERVER.max_mem,
-                               "Percent_Used": SERVER.prct_mem},
-                    "Uptime": SERVER.days_up,
-                    "Connections": {"Current_Connected": SERVER.cur_conn,
-                                    "Max_Connections": SERVER.max_conn,
-                                    "Percent_Used": SERVER.prct_conn}})
+    outdata.update({"Memory": {"Current_Usage": server.cur_mem,
+                               "Max_Usage": server.max_mem,
+                               "Percent_Used": server.prct_mem},
+                    "Uptime": server.days_up,
+                    "Connections": {"Current_Connected": server.cur_conn,
+                                    "Max_Connections": server.max_conn,
+                                    "Percent_Used": server.prct_conn}})
 
     if "-j" in args_array:
         mongo_libs.json_prt_ins_2_db(outdata, **kwargs)
