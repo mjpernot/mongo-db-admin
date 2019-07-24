@@ -292,6 +292,9 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     if tbl_list is None:
         tbl_list = []
 
+    else:
+        tbl_list = list(tbl_list)
+
     mongo.chg_db(db=db_name)
     print("Compacting for %s" % (mongo.db_name))
 
