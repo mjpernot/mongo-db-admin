@@ -581,19 +581,23 @@ def run_program(args_array, func_dict, **kwargs):
     server = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
                                         mongo_class.Server)
     server.connect()
-
     outfile = args_array.get("-o", None)
     db_tbl = args_array.get("-i", None)
-
     repcfg = None
+    mail = None
+
     if args_array.get("-m", None):
         repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
+
+    if args_array.get("-e", None):
+        mail = setup_mail(args_array.get("-e"),
+                          subj=args_array.get("-s", None))
 
     # Call function(s) - intersection of command line and function dict.
     for x in set(args_array.keys()) & set(func_dict.keys()):
         err_flag, err_msg = func_dict[x](server, args_array, ofile=outfile,
                                          db_tbl=db_tbl, class_cfg=repcfg,
-                                         **kwargs)
+                                         mail=mail, **kwargs)
 
         if err_flag:
             cmds_gen.disconnect([server])

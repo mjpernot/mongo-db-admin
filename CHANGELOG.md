@@ -18,6 +18,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - process_request:  Fixed mutable list/dictionary argument issue.
 
 ### Changed
+- run_program:  Added setup of mail instance and passing mail instance to functions.
 - main:  Added '-e' and '-s' options to allow for email capability for some options.
 - status:  Replaced mongo_libs.json_prt_ins_2_db call with own internal code.
 - status:  Converted JSON output to camelCase.
