@@ -393,6 +393,8 @@ def repair_db(server, args_array, **kwargs):
 
     """
 
+    args_array = dict(args_array)
+
     process_request(server, run_repair, args_array["-R"], None)
 
     return False, None
