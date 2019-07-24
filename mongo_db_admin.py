@@ -552,14 +552,14 @@ def run_program(args_array, func_dict, **kwargs):
     outfile = args_array.get("-o", None)
     db_tbl = args_array.get("-i", None)
 
-    Rep_Cfg = None
+    repcfg = None
     if args_array.get("-m", None):
-        Rep_Cfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
+        repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
 
     # Call function(s) - intersection of command line and function dict.
     for x in set(args_array.keys()) & set(func_dict.keys()):
         err_flag, err_msg = func_dict[x](server, args_array, ofile=outfile,
-                                         db_tbl=db_tbl, class_cfg=Rep_Cfg,
+                                         db_tbl=db_tbl, class_cfg=repcfg,
                                          **kwargs)
 
         if err_flag:
