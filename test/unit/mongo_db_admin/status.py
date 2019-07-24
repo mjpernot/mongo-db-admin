@@ -106,7 +106,9 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
-        test_to_json -> Test going to JSON.
+        test_to_json_both -> Test with JSON to file and database.
+        test_to_json_file -> Test with JSON to file.
+        test_to_json_db -> Test with JSON to database.
         test_to_file -> Test going to file.
         test_to_standard -> Test going to standard out.
 
@@ -126,20 +128,60 @@ class UnitTest(unittest.TestCase):
         self.args_array = {}
         self.args_array2 = {"-j": True}
 
-    @mock.patch("mongo_db_admin.mongo_libs.json_prt_ins_2_db")
-    def test_to_json(self, mock_print):
+    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
+    def test_to_json_both(self, mock_db, mock_file):
 
-        """Function:  test_to_json
+        """Function:  test_to_json_both
 
-        Description:  Test going to JSON.
+        Description:  Test with JSON to file and database.
 
         Arguments:
 
         """
 
-        mock_print.return_value = True
+        mock_db.return_value = True
+        mock_file.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2),
+        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
+                                               ofile="filename",
+                                               class_cfg="mongo_cfg",
+                                               db_tbl="db:tbl"),
+                         (False, None))
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    def test_to_json_file(self, mock_file):
+
+        """Function:  test_to_json_file
+
+        Description:  Test with JSON to file.
+
+        Arguments:
+
+        """
+
+        mock_file.return_value = True
+
+        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
+                                               ofile="filename"),
+                         (False, None))
+
+    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
+    def test_to_json_db(self, mock_db):
+
+        """Function:  test_to_json_db
+
+        Description:  Test with JSON to database.
+
+        Arguments:
+
+        """
+
+        mock_db.return_value = True
+
+        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
+                                               class_cfg="mongo_cfg",
+                                               db_tbl="db:tbl"),
                          (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.print_dict")
