@@ -353,7 +353,6 @@ class UnitTest(unittest.TestCase):
 
         """
 
-
         mock_arg.arg_parse2.return_value = self.args_array
         mock_help.return_value = False
         mock_arg.arg_require.return_value = False

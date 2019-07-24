@@ -76,6 +76,7 @@ class Server(object):
 
         return {"log": "value"}
 
+
 class UnitTest(unittest.TestCase):
 
     """Class:  UnitTest
