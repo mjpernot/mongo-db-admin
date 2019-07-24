@@ -185,7 +185,6 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         tbl_name = list(tbl_name)
 
     db_list = server.fetch_dbs()
-
     mongo = mongo_class.DB(server.name, server.user, server.passwd,
                            server.host, server.port, "test", server.auth,
                            server.conf_file)
@@ -249,9 +248,7 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     for x in tbl_list:
         print("\tChecking table: {0:50}".format(x + "..."), end="")
-
         data = mongo.validate_tbl(x, scan=kwargs.get("full", False))
-
         print("\t%s" % (data["valid"]))
 
         if data["valid"] is False:
@@ -275,7 +272,6 @@ def dbcc(server, args_array, **kwargs):
     """
 
     args_array = dict(args_array)
-
     process_request(server, run_dbcc, args_array["-D"], args_array.get("-t"),
                     full=args_array.get("-f", False))
 
@@ -310,7 +306,6 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     for x in tbl_list:
         print("\tCompacting: {0:50}".format(x + "..."), end="")
-
         coll = mongo_libs.crt_coll_inst(mongo, db_name, x)
         coll.connect()
 
@@ -347,7 +342,6 @@ def defrag(server, args_array, **kwargs):
     args_array = dict(args_array)
     err_flag = False
     err_msg = None
-
     data = mongo_class.fetch_ismaster(server)
 
     # Primary servers not allowed to be defragged.
@@ -401,7 +395,6 @@ def repair_db(server, args_array, **kwargs):
     """
 
     args_array = dict(args_array)
-
     process_request(server, run_repair, args_array["-R"], None)
 
     return False, None
@@ -430,12 +423,10 @@ def status(server, args_array, **kwargs):
 
     args_array = dict(args_array)
     server.upd_srv_stat()
-
     outdata = {"application": "Mongo Database",
                "server": server.name,
                "asOf": datetime.datetime.strftime(datetime.datetime.now(),
                                                   "%Y-%m-%d %H:%M:%S")}
-
     outdata.update({"memory": {"currentUsage": server.cur_mem,
                                "maxUsage": server.max_mem,
                                "percentUsed": server.prct_mem},
