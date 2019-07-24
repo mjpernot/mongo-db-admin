@@ -363,7 +363,7 @@ def run_repair(mongo, db_name, **kwargs):
         print("\tCommand Failed")
 
 
-def repair_db(SERVER, args_array, **kwargs):
+def repair_db(server, args_array, **kwargs):
 
     """Function:  repair_db
 
@@ -371,14 +371,14 @@ def repair_db(SERVER, args_array, **kwargs):
         which is determined by -R option from the command line.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
     """
 
-    process_request(SERVER, run_repair, args_array["-R"], None)
+    process_request(server, run_repair, args_array["-R"], None)
 
     return False, None
 
