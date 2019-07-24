@@ -47,6 +47,61 @@ def run_compact():
     return True
 
 
+class Mail(object):
+
+    """Class:  Mail
+
+    Description:  Class stub holder for gen_class.Mail class.
+
+    Super-Class:
+
+    Sub-Classes:
+
+    Methods:
+        __init__ -> Class initialization.
+        add_2_msg -> Stub method holder for Mail.add_2_msg.
+        send_mail -> Stub method holder for Mail.send_mail.
+
+    """
+
+    def __init__(self, lag_time=1):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+            None
+
+        """
+
+        pass
+
+    def add_2_msg(self, data):
+
+        """Method:  add_2_msg
+
+        Description:  Stub method holder for Mail.add_2_msg.
+
+        Arguments:
+
+        """
+
+        return True
+
+    def send_mail(self):
+
+        """Method:  get_name
+
+        Description:  Stub method holder for Mail.send_mail.
+
+        Arguments:
+
+        """
+
+        return True
+
+
 class Server(object):
 
     """Class:  Server
@@ -106,6 +161,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_to_json_all -> Test with JSON to file, database, and email.
+        test_to_json_email -> Test with JSON to email.
         test_to_json_both -> Test with JSON to file and database.
         test_to_json_file -> Test with JSON to file.
         test_to_json_db -> Test with JSON to database.
@@ -125,8 +182,50 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
+        self.mail = Mail()
         self.args_array = {}
         self.args_array2 = {"-j": True}
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
+    def test_to_json_all(self, mock_db, mock_file):
+
+        """Function:  test_to_json_all
+
+        Description:  Test with JSON to file, database, and email.
+
+        Arguments:
+
+        """
+
+        mock_db.return_value = True
+        mock_file.return_value = True
+
+        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
+                                               ofile="filename",
+                                               class_cfg="mongo_cfg",
+                                               db_tbl="db:tbl",
+                                               mail=self.mail),
+                         (False, None))
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
+    def test_to_json_email(self, mock_db, mock_file):
+
+        """Function:  test_to_json_email
+
+        Description:  Test with JSON to email.
+
+        Arguments:
+
+        """
+
+        mock_db.return_value = True
+        mock_file.return_value = True
+
+        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
+                                               mail=self.mail),
+                         (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
