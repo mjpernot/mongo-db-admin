@@ -523,6 +523,8 @@ def get_log(server, args_array, **kwargs):
 
     """
 
+    args_array = dict(args_array)
+
     # Get log data from mongodb.
     data = server.adm_cmd("getLog", arg1=args_array["-G"])
 
