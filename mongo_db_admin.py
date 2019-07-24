@@ -340,7 +340,7 @@ def defrag(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def run_repair(DB, db_name, **kwargs):
+def run_repair(mongo, db_name, **kwargs):
 
     """Function:  run_repair
 
@@ -348,15 +348,15 @@ def run_repair(DB, db_name, **kwargs):
         repairDatabase command within the class instance.
 
     Arguments:
-        (input) DB -> Database instance.
+        (input) mongo -> Database instance.
         (input) db_name -> Database name.
 
     """
 
-    DB.chg_db(db=db_name)
+    mongo.chg_db(db=db_name)
     print("Repairing Database: {0:20}".format(db_name + "..."), end="")
 
-    if DB.db_cmd("repairDatabase")["ok"] == 1:
+    if mongo.db_cmd("repairDatabase")["ok"] == 1:
         print("\tDone")
 
     else:
