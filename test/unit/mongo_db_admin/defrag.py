@@ -103,7 +103,6 @@ class UnitTest(unittest.TestCase):
 
         self.server = Server()
         self.args_array = {"-C": "Optionsetting", "-t": "option"}
-        err_msg = "Error:  Primary in a Replica Set and cannot be defragged."
 
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
     def test_errors(self, mock_fetch):

@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.1.0] - 2019-07-24
+### Fixed
+- run_program:  Fixed mutable list/dictionary argument issue.
+- get_log:  Fixed mutable list/dictionary argument issue.
+- rotate:  Fixed mutable list/dictionary argument issue.
+- status:  Fixed mutable list/dictionary argument issue.
+- repair_db:  Fixed mutable list/dictionary argument issue.
+- defrag:  Fixed mutable list/dictionary argument issue.
+- run_compact:  Fixed mutable list/dictionary argument issue.
+- dbcc:  Fixed mutable list/dictionary argument issue.
+- run_dbcc:  Fixed mutable list/dictionary argument issue.
+- process_request:  Fixed mutable list/dictionary argument issue.
+
+### Changed
+- status:  Converted JSON output to camelCase.
+- main:  Refactored 'if' statement to streamline the checks.
+- run_program:  Updated variables names to standard convention.
+- get_log:  Updated variables names to standard convention.
+- rotate:  Updated variables names to standard convention.
+- status:  Updated variables names to standard convention.
+- repair_db:  Updated variables names to standard convention.
+- run_repair:  Updated variables names to standard convention.
+- defrag:  Updated variables names to standard convention.
+- run_compact:  Updated variables names to standard convention.
+- dbcc:  Updated variables names to standard convention.
+- run_dbcc:  Updated variables names to standard convention.
+- process_request:  Updated variables names to standard convention.
+- run_compact:  Added \*\*kwargs to argument list.
+- run_repair:  Added \*\*kwargs to argument list.
+
+
 ## [2.0.1] - 2018-11-30
 ### Fixed
 - main:  Corrected incorrect function name calls.
