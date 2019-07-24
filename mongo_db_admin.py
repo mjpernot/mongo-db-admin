@@ -423,18 +423,18 @@ def status(server, args_array, **kwargs):
     args_array = dict(args_array)
     server.upd_srv_stat()
 
-    outdata = {"Application": "Mongo Database",
-               "Server": server.name,
-               "Asof": datetime.datetime.strftime(datetime.datetime.now(),
+    outdata = {"application": "Mongo Database",
+               "server": server.name,
+               "asOf": datetime.datetime.strftime(datetime.datetime.now(),
                                                   "%Y-%m-%d %H:%M:%S")}
 
-    outdata.update({"Memory": {"Current_Usage": server.cur_mem,
-                               "Max_Usage": server.max_mem,
-                               "Percent_Used": server.prct_mem},
-                    "Uptime": server.days_up,
-                    "Connections": {"Current_Connected": server.cur_conn,
-                                    "Max_Connections": server.max_conn,
-                                    "Percent_Used": server.prct_conn}})
+    outdata.update({"memory": {"currentUsage": server.cur_mem,
+                               "maxUsage": server.max_mem,
+                               "percentUsed": server.prct_mem},
+                    "upTime": server.days_up,
+                    "connections": {"currentConnected": server.cur_conn,
+                                    "maxConnections": server.max_conn,
+                                    "percentUsed": server.prct_conn}})
 
     if "-j" in args_array:
         mongo_libs.json_prt_ins_2_db(outdata, **kwargs)
