@@ -242,7 +242,7 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
             print("\t\tError: %s" % (data["errors"]))
 
 
-def dbcc(SERVER, args_array, **kwargs):
+def dbcc(server, args_array, **kwargs):
 
     """Function:  dbcc
 
@@ -251,14 +251,14 @@ def dbcc(SERVER, args_array, **kwargs):
         options will determine which databases and tables are done.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
     """
 
-    process_request(SERVER, run_dbcc, args_array["-D"], args_array.get("-t"),
+    process_request(server, run_dbcc, args_array["-D"], args_array.get("-t"),
                     full=args_array.get("-f", False))
 
     return False, None
