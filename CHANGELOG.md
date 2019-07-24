@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.1.0] - 2019-07-24
+### Changed
+- run_compact:  Added \*\*kwargs to argument list.
+- run_repair:  Added \*\*kwargs to argument list.
+
+
 ## [2.0.1] - 2018-11-30
 ### Fixed
 - main:  Corrected incorrect function name calls.
