@@ -307,7 +307,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
         cmds_gen.disconnect([coll])
 
 
-def defrag(SERVER, args_array, **kwargs):
+def defrag(server, args_array, **kwargs):
 
     """Function:  defrag
 
@@ -316,7 +316,7 @@ def defrag(SERVER, args_array, **kwargs):
         will determine which databases and tables are done.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (output) err_flag -> True|False - if an error has occurred.
         (output) err_msg -> Error message.
@@ -326,7 +326,7 @@ def defrag(SERVER, args_array, **kwargs):
     err_flag = False
     err_msg = None
 
-    data = mongo_class.fetch_ismaster(SERVER)
+    data = mongo_class.fetch_ismaster(server)
 
     # Primary servers not allowed to be defragged.
     if data["ismaster"] and "setName" in data:
@@ -334,7 +334,7 @@ def defrag(SERVER, args_array, **kwargs):
         err_msg = "Error:  Primary in a Replica Set and cannot be defragged."
 
     else:
-        process_request(SERVER, run_compact, args_array["-C"],
+        process_request(server, run_compact, args_array["-C"],
                         args_array.get("-t"))
 
     return err_flag, err_msg
