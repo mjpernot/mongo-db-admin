@@ -6,6 +6,17 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.1.0] - 2019-07-24
 ### Changed
+- run_program:  Updated variables names to standard convention.
+- get_log:  Updated variables names to standard convention.
+- rotate:  Updated variables names to standard convention.
+- status:  Updated variables names to standard convention.
+- repair_db:  Updated variables names to standard convention.
+- run_repair:  Updated variables names to standard convention.
+- defrag:  Updated variables names to standard convention.
+- run_compact:  Updated variables names to standard convention.
+- dbcc:  Updated variables names to standard convention.
+- run_dbcc:  Updated variables names to standard convention.
+- process_request:  Updated variables names to standard convention.
 - run_compact:  Added \*\*kwargs to argument list.
 - run_repair:  Added \*\*kwargs to argument list.
 
