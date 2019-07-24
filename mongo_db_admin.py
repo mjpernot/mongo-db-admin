@@ -18,7 +18,7 @@
             [-f] {-M {-j | -i db_name:table_name |
             -m file | -o dir_path/file}} |
             {-G {global | rs | startupWarnings} | {-j | -l | -o dir_path/file}}
-            [-v | -h]
+            [-e ToEmail {ToEmail2 ToEmail3 ...} {-s SubjectLine}] [-v | -h]
 
     Arguments:
         -c file => Server configuration file.  Required arg.
@@ -61,6 +61,10 @@
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.  Default value is: global.  Can
             use the following options:  -j or -l and -o.
+        -e to_email_addresses => Enables emailing capability for an option if
+            the option allows it.  Sends output to one or more email addresses.
+        -s subject_line => Subject line of email.  Optional, will create own
+            subject line if one is not provided.
         -v => Display version of this program.
         -h => Help and usage message.
 
@@ -631,13 +635,14 @@ def main():
     func_dict = {"-C": defrag, "-D": dbcc, "-R": repair_db, "-M": status,
                  "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
-    opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"]}
+    opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"],
+                        "-s": ["-e"]}
     opt_def_dict = {"-C": [], "-D": [], "-R": [], "-G": "global",
                     "-i": "sysmon:mongo_db_status"}
-    opt_multi_list = ["-C", "-D", "-R", "-t"]
+    opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
     opt_req_list = ["-c", "-d"]
     opt_val_list = ["-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o",
-                    "-G", "-n"]
+                    "-G", "-n", "-e", "-s"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
     opt_xor_dict = {"-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
                     "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"],
