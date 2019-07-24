@@ -148,7 +148,7 @@ def help_message():
     print(__doc__)
 
 
-def process_request(SERVER, func_name, db_name=None, tbl_name=None, **kwargs):
+def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     """Function:  process_request
 
@@ -156,7 +156,7 @@ def process_request(SERVER, func_name, db_name=None, tbl_name=None, **kwargs):
         to the function and then calls the "func_name" function.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) func_name -> Name of a function.
         (input) db_name -> Database name or 'all'
         (input) tbl_name -> List of table names.
@@ -171,38 +171,39 @@ def process_request(SERVER, func_name, db_name=None, tbl_name=None, **kwargs):
     if tbl_name is None:
         tbl_name = []
 
-    db_list = SERVER.fetch_dbs()
+    db_list = server.fetch_dbs()
 
-    DB = mongo_class.DB(SERVER.name, SERVER.user, SERVER.passwd, SERVER.host,
-                        SERVER.port, "test", SERVER.auth, SERVER.conf_file)
-    DB.connect()
+    mongo = mongo_class.DB(server.name, server.user, server.passwd,
+                           server.host, server.port, "test", server.auth,
+                           server.conf_file)
+    mongo.connect()
 
     # Process all databases.
     if not db_name:
 
         for x in db_list:
-            func_name(DB, x, **kwargs)
+            func_name(mongo, x, **kwargs)
 
     # Process all tables in a database.
     elif not tbl_name:
 
         # Generator builds list of databases to process.
         for db in (db for db in db_name if db in db_list):
-            func_name(DB, db, **kwargs)
+            func_name(mongo, db, **kwargs)
 
     # Process passed databases and tables.
     else:
         # Generator builds list of databases to process.
         for db in (db for db in db_name if db in db_list):
-            DB.chg_db(db=db)
-            tbl_list = DB.get_tbl_list()
+            mongo.chg_db(db=db)
+            tbl_list = mongo.get_tbl_list()
 
             # Generator builds list of tables.
-            func_name(DB, db,
+            func_name(mongo, db,
                       list((tbl for tbl in tbl_name if tbl in tbl_list)),
                       **kwargs)
 
-    cmds_gen.disconnect([DB])
+    cmds_gen.disconnect([mongo])
 
 
 def run_dbcc(DB, db_name, tbl_list=None, **kwargs):
