@@ -267,6 +267,8 @@ def dbcc(server, args_array, **kwargs):
 
     """
 
+    args_array = dict(args_array)
+
     process_request(server, run_dbcc, args_array["-D"], args_array.get("-t"),
                     full=args_array.get("-f", False))
 
