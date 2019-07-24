@@ -464,6 +464,7 @@ def rotate(server, args_array, **kwargs):
 
     """
 
+    args_array = dict(args_array)
     err_flag = False
     err_msg = None
 
@@ -482,12 +483,10 @@ def rotate(server, args_array, **kwargs):
 
             # Pre list of log files before logRotate.
             pre_logs = gen_libs.dir_file_match(dir_path, mdb_log)
-
             server.adm_cmd("logRotate")
 
             # Post list of log files after logRotate.
             post_logs = gen_libs.dir_file_match(dir_path, mdb_log)
-
             diff_list = gen_libs.is_missing_lists(post_logs, pre_logs)
 
             if len(diff_list) > 1:
