@@ -431,7 +431,7 @@ def status(server, args_array, **kwargs):
     return False, None
 
 
-def rotate(SERVER, args_array, **kwargs):
+def rotate(server, args_array, **kwargs):
 
     """Function:  rotate
 
@@ -439,7 +439,7 @@ def rotate(SERVER, args_array, **kwargs):
         directory if requested.
 
     Arguments:
-        (input) SERVER -> Database server instance.
+        (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
         (output) err_flag -> True|False - if an error has occurred.
         (output) err_msg -> Error message.
@@ -457,7 +457,7 @@ def rotate(SERVER, args_array, **kwargs):
 
             # Pull the log and path from Mongodb.
             path_log = \
-                mongo_class.fetch_cmd_line(SERVER)[
+                mongo_class.fetch_cmd_line(server)[
                     "parsed"]["systemLog"]["path"]
             dir_path = os.path.dirname(path_log)
             mdb_log = os.path.basename(path_log)
@@ -465,7 +465,7 @@ def rotate(SERVER, args_array, **kwargs):
             # Pre list of log files before logRotate.
             pre_logs = gen_libs.dir_file_match(dir_path, mdb_log)
 
-            SERVER.adm_cmd("logRotate")
+            server.adm_cmd("logRotate")
 
             # Post list of log files after logRotate.
             post_logs = gen_libs.dir_file_match(dir_path, mdb_log)
@@ -484,7 +484,7 @@ def rotate(SERVER, args_array, **kwargs):
             err_msg = msg
 
     else:
-        SERVER.adm_cmd("logRotate")
+        server.adm_cmd("logRotate")
 
     return err_flag, err_msg
 
