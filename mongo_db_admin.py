@@ -420,6 +420,7 @@ def status(server, args_array, **kwargs):
 
     """
 
+    args_array = dict(args_array)
     server.upd_srv_stat()
 
     outdata = {"Application": "Mongo Database",
