@@ -422,6 +422,7 @@ def status(server, args_array, **kwargs):
             ofile -> file name - Name of output file.
             db_tbl database:table_name -> Mongo database and table name.
             class_cfg -> Mongo Rep Set server configuration.
+            mail -> Mail instance.
         (output) False - if an error has occurred.
         (output) None -> Error message.
 
@@ -448,6 +449,7 @@ def status(server, args_array, **kwargs):
         mongo_cfg = kwargs.get("class_cfg", None)
         db_tbl = kwargs.get("db_tbl", None)
         ofile = kwargs.get("ofile", None)
+        mail = kwargs.get("mail", None)
 
         if mongo_cfg and db_tbl:
             db, tbl = db_tbl.split(":")
@@ -455,6 +457,10 @@ def status(server, args_array, **kwargs):
 
         if ofile:
             gen_libs.write_file(ofile, "w", jdata)
+
+        if mail:
+            mail.add_2_msg(jdata)
+            mail.send_mail()
 
     else:
         if kwargs.get("ofile", None):
