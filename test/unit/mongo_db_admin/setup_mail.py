@@ -82,7 +82,7 @@ class UnitTest(unittest.TestCase):
                                          self.frm_line)
 
         self.assertEqual((mail.to, mail.subj, mail.frm),
-                         ([self.to_line], [self.subj], self.frm_line))
+                         ([self.to_line], self.subj, self.frm_line))
 
     def test_with_from_line(self):
 
@@ -98,7 +98,7 @@ class UnitTest(unittest.TestCase):
                                          self.frm_line)
 
         self.assertEqual((mail.to, mail.subj, mail.frm),
-                         ([self.to_line], [self.subj], self.frm_line))
+                         ([self.to_line], self.subj, self.frm_line))
 
     def test_no_from_line(self):
 
