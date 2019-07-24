@@ -264,7 +264,7 @@ def dbcc(server, args_array, **kwargs):
     return False, None
 
 
-def run_compact(DB, db_name, tbl_list=None, **kwargs):
+def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_compact
 
@@ -272,7 +272,7 @@ def run_compact(DB, db_name, tbl_list=None, **kwargs):
         compact command within the class instance against a list of tables.
 
     Arguments:
-        (input) DB -> Database instance.
+        (input) mongo -> Database instance.
         (input) db_name -> Database name.
         (input) tbl_list -> List of tables.
 
@@ -281,30 +281,30 @@ def run_compact(DB, db_name, tbl_list=None, **kwargs):
     if tbl_list is None:
         tbl_list = []
 
-    DB.chg_db(db=db_name)
-    print("Compacting for %s" % (DB.db_name))
+    mongo.chg_db(db=db_name)
+    print("Compacting for %s" % (mongo.db_name))
 
     if not tbl_list:
-        tbl_list = DB.get_tbl_list(False)
+        tbl_list = mongo.get_tbl_list(False)
 
     for x in tbl_list:
         print("\tCompacting: {0:50}".format(x + "..."), end="")
 
-        COLL = mongo_libs.crt_coll_inst(DB, db_name, x)
-        COLL.connect()
+        coll = mongo_libs.crt_coll_inst(mongo, db_name, x)
+        coll.connect()
 
-        if COLL.coll_options().get("capped", False):
+        if coll.coll_options().get("capped", False):
             print("\tCollection capped: not compacted")
 
         else:
 
-            if DB.db_cmd("compact", obj=x)["ok"] == 1:
+            if mongo.db_cmd("compact", obj=x)["ok"] == 1:
                 print("\tDone")
 
             else:
                 print("\tCommand Failed")
 
-        cmds_gen.disconnect([COLL])
+        cmds_gen.disconnect([coll])
 
 
 def defrag(SERVER, args_array, **kwargs):
