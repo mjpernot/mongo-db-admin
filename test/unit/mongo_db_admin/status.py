@@ -53,10 +53,6 @@ class Mail(object):
 
     Description:  Class stub holder for gen_class.Mail class.
 
-    Super-Class:
-
-    Sub-Classes:
-
     Methods:
         __init__ -> Class initialization.
         add_2_msg -> Stub method holder for Mail.add_2_msg.
@@ -108,10 +104,6 @@ class Server(object):
 
     Description:  Class stub holder for mongo_class.Server class.
 
-    Super-Class:
-
-    Sub-Classes:
-
     Methods:
         __init__ -> Class initialization.
         upd_srv_stat -> Stub holder for mongo_class.Server.upd_srv_stat method.
@@ -155,10 +147,6 @@ class UnitTest(unittest.TestCase):
     """Class:  UnitTest
 
     Description:  Class which is a representation of a unit testing.
-
-    Super-Class:  unittest.TestCase
-
-    Sub-Classes:
 
     Methods:
         setUp -> Initialize testing environment.
