@@ -64,6 +64,7 @@ class Mongo(object):
         """
 
         self.db_name = "DatabaseName"
+        self.type = True
 
     def validate_tbl(self, tbl, scan):
 
@@ -77,7 +78,11 @@ class Mongo(object):
 
         """
 
-        return {"valid": False, "errors": "Error Message"}
+        if self.type:
+            return True, {"valid": False, "errors": "Error Message"}
+
+        else:
+            return False, "Cannot validate view"
 
     def chg_db(self, db):
 
@@ -135,6 +140,22 @@ class UnitTest(unittest.TestCase):
         self.mongo = Mongo()
         self.db_name = "DatabaseName"
         self.tbl_name = ["Table3", "Table4"]
+
+    def test_validate_view(self):
+
+        """Function:  test_validate_view
+
+        Description:  Test with trying to validate a view.
+
+        Arguments:
+
+        """
+
+        self.mongo.type = False
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_dbcc(self.mongo, self.db_name,
+                                                     self.tbl_name))
 
     def test_tbl_list(self):
 
