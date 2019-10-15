@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.2.0] - 2019-10-15
+### Fixed
+- run_dbcc:  Fixed validation of views in Mongo.
+
+
 ## [2.1.0] - 2019-07-24
 ### Fixed
 - run_program:  Fixed mutable list/dictionary argument issue.
