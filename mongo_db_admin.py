@@ -186,8 +186,8 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     db_list = server.fetch_dbs()
     mongo = mongo_class.DB(server.name, server.user, server.passwd,
-                           server.host, server.port, "test", server.auth,
-                           server.conf_file)
+                           host=server.host, port=server.port, db="test",
+                           auth=server.auth, conf_file=server.conf_file)
     mongo.connect()
 
     # Process all databases.

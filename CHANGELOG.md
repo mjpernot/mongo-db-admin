@@ -8,6 +8,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ### Fixed
 - run_dbcc:  Fixed validation of views in Mongo.
 
+### Changed
+- process_request:  Changed a number of arguments from positional to keyword arguments.
+
 
 ## [2.1.0] - 2019-07-24
 ### Fixed
