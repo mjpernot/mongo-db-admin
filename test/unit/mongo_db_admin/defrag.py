@@ -109,7 +109,7 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_fetch.return_value = {"ismaster": True, "setName": True}
-        err_msg = "Error:  Primary in a Replica Set and cannot be defragged."
+        err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
 
         self.assertEqual(mongo_db_admin.defrag(self.server, self.args_array),
                          (True, err_msg))
