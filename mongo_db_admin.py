@@ -569,32 +569,6 @@ def get_log(server, args_array, **kwargs):
     return False, None
 
 
-def setup_mail(to_line, subj=None, frm_line=None, **kwargs):
-
-    """Function:  setup_mail
-
-    Description:  Initialize a mail instance.  Provide 'from line' if one is
-        not passed.
-
-    Arguments:
-        (input) to_line -> Mail to line.
-        (input) subj -> Mail subject line.
-        (input) frm_line -> Mail from line.
-        (output) Mail instance.
-
-    """
-
-    to_line = list(to_line)
-
-    if isinstance(subj, list):
-        subj = list(subj)
-
-    if not frm_line:
-        frm_line = getpass.getuser() + "@" + socket.gethostname()
-
-    return gen_class.Mail(to_line, subj, frm_line)
-
-
 def run_program(args_array, func_dict, **kwargs):
 
     """Function:  run_program
@@ -621,8 +595,8 @@ def run_program(args_array, func_dict, **kwargs):
         repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
 
     if args_array.get("-e", None):
-        mail = setup_mail(args_array.get("-e"),
-                          subj=args_array.get("-s", None))
+        mail = gen_class.setup_mail(args_array.get("-e"),
+                                    subj=args_array.get("-s", None))
 
     # Call function(s) - intersection of command line and function dict.
     for x in set(args_array.keys()) & set(func_dict.keys()):
