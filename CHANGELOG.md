@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
-## [2.2.0] - 2019-10-15
+## [2.2.0] - 2019-10-16
 ### Fixed
 - run_dbcc:  Fixed validation of views in Mongo.
 
 ### Changed
+- run_program:  Replaced setup_mail() call with gen_class.setup_mail() call.
 - process_request:  Changed a number of arguments from positional to keyword arguments.
 
 
