@@ -12,6 +12,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - run_program:  Replaced setup_mail() call with gen_class.setup_mail() call.
 - process_request:  Changed a number of arguments from positional to keyword arguments.
 
+### Removed
+- setup_mail:  Replaced by gen_class.setup_mail function.
+
 
 ## [2.1.0] - 2019-07-24
 ### Fixed
