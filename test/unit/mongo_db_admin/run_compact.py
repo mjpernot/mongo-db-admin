@@ -200,7 +200,7 @@ class Mongo(object):
             (input) obj -> Object name.
 
         """
-        
+
         if self.cmd_type:
             return {"ok": 1}
 
