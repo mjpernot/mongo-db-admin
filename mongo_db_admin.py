@@ -621,8 +621,8 @@ def run_program(args_array, func_dict, **kwargs):
         repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
 
     if args_array.get("-e", None):
-        mail = setup_mail(args_array.get("-e"),
-                          subj=args_array.get("-s", None))
+        mail = gen_class.setup_mail(args_array.get("-e"),
+                                    subj=args_array.get("-s", None))
 
     # Call function(s) - intersection of command line and function dict.
     for x in set(args_array.keys()) & set(func_dict.keys()):
