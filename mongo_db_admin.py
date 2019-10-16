@@ -353,7 +353,7 @@ def defrag(server, args_array, **kwargs):
     # Primary servers not allowed to be defragged.
     if data["ismaster"] and "setName" in data:
         err_flag = True
-        err_msg = "Error:  Primary in a Replica Set and cannot be defragged."
+        err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
 
     else:
         process_request(server, run_compact, args_array["-C"],

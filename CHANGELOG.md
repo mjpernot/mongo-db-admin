@@ -10,6 +10,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - run_dbcc:  Fixed validation of views in Mongo.
 
 ### Changed
+- defrag:  Changed error message to warning message.
 - status:  Refactored entire function to be more streamline.
 - run_program:  Replaced setup_mail() call with gen_class.setup_mail() call.
 - process_request:  Changed a number of arguments from positional to keyword arguments.
