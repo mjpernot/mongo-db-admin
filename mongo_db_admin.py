@@ -128,6 +128,7 @@ import socket
 
 # Third party
 import json
+import ast
 
 # Local
 import lib.arg_parser as arg_parser
@@ -440,30 +441,37 @@ def status(server, args_array, **kwargs):
                                     "maxConnections": server.max_conn,
                                     "percentUsed": server.prct_conn}})
 
-    if "-j" in args_array:
-        jdata = json.dumps(outdata, indent=4)
-        mongo_cfg = kwargs.get("class_cfg", None)
-        db_tbl = kwargs.get("db_tbl", None)
-        ofile = kwargs.get("ofile", None)
-        mail = kwargs.get("mail", None)
+    ofile = kwargs.get("ofile", None)
+    mail = kwargs.get("mail", None)
+    mongo_cfg = kwargs.get("class_cfg", None)
+    db_tbl = kwargs.get("db_tbl", None)
 
-        if mongo_cfg and db_tbl:
-            db, tbl = db_tbl.split(":")
+    if "-j" in args_array:
+        outdata = json.dumps(outdata, indent=4)
+
+    if mongo_cfg and db_tbl:
+        db, tbl = db_tbl.split(":")
+
+        if isinstance(outdata, dict):
             mongo_libs.ins_doc(mongo_cfg, db, tbl, outdata)
 
-        if ofile:
-            gen_libs.write_file(ofile, "w", jdata)
+        else:
+            mongo_libs.ins_doc(mongo_cfg, db, tbl, ast.literal_eval(outdata))
 
-        if mail:
-            mail.add_2_msg(jdata)
-            mail.send_mail()
+    if ofile:
+        gen_libs.write_file(ofile, "w", outdata)
 
-    else:
-        if kwargs.get("ofile", None):
-            gen_libs.print_dict(outdata, no_std=True, **kwargs)
+    if mail:
+        if isinstance(outdata, dict):
+            mail.add_2_msg(json.dumps(outdata, indent=4))
 
         else:
-            gen_libs.display_data(outdata)
+            mail.add_2_msg(outdata)
+
+        mail.send_mail()
+
+    if not args_array.get("-z", False):
+        gen_libs.display_data(outdata)
 
     return False, None
 

@@ -6,9 +6,11 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.2.0] - 2019-10-16
 ### Fixed
+- status:  Allow printing to standard out for the -M and -j argument combination.
 - run_dbcc:  Fixed validation of views in Mongo.
 
 ### Changed
+- status:  Refactored entire function to be more streamline.
 - run_program:  Replaced setup_mail() call with gen_class.setup_mail() call.
 - process_request:  Changed a number of arguments from positional to keyword arguments.
 
