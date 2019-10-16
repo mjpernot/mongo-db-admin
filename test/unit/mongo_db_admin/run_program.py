@@ -34,6 +34,23 @@ import version
 __version__ = version.__version__
 
 
+def dbcc(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
+
+    """Method:  dbcc
+
+    Description:  Stub holder for dbcc function.
+
+    Arguments:
+        (input) server -> Mongo instance.
+        (input) args_array -> Dict of command line options and values.
+        (input) db_tbl -> Database and table names.
+        (input) class_cfg -> Class configuration file.
+
+    """
+
+    return True, "ErrorMessage"
+
+
 def defrag(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
 
     """Method:  defrag
@@ -56,10 +73,6 @@ class Server(object):
     """Class:  Server
 
     Description:  Class stub holder for mongo_class.Server class.
-
-    Super-Class:
-
-    Sub-Classes:
 
     Methods:
         __init__ -> Class initialization.
@@ -98,12 +111,9 @@ class UnitTest(unittest.TestCase):
 
     Description:  Class which is a representation of a unit testing.
 
-    Super-Class:  unittest.TestCase
-
-    Sub-Classes:
-
     Methods:
         setUp -> Initialize testing environment.
+        test_func_failure -> Test with function returning error message.
         test_email -> Test with email option.
         test_cfg -> Test with configuration file.
         test_no_cfg -> Test with no configuration file.
@@ -126,11 +136,35 @@ class UnitTest(unittest.TestCase):
         self.args_array3 = {"-c": True, "-d": True, "-C": True, "-m": True,
                             "-e": "ToEmail", "-s": "SubjectLine"}
         self.func_dict = {"-C": defrag}
+        self.func_dict2 = {"-C": dbcc}
 
+    @mock.patch("mongo_db_admin.sys.exit")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_email(self, mock_mongo, mock_conn, mock_load):
+    def test_func_failure(self, mock_mongo, mock_conn, mock_load, mock_exit):
+
+        """Function:  test_func_failure
+
+        Description:  Test with function returning error message.
+
+        Arguments:
+
+        """
+
+        mock_mongo.return_value = self.server
+        mock_conn.return_value = True
+        mock_load.return_value = "RepConfig"
+        mock_exit.return_value = True
+
+        self.assertFalse(mongo_db_admin.run_program(self.args_array2,
+                                                    self.func_dict2))
+
+    @mock.patch("mongo_db_admin.gen_class.setup_mail")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_email(self, mock_mongo, mock_conn, mock_load, mock_mail):
 
         """Function:  test_email
 
@@ -143,6 +177,7 @@ class UnitTest(unittest.TestCase):
         mock_mongo.return_value = self.server
         mock_conn.return_value = True
         mock_load.return_value = "RepConfig"
+        mock_mail.return_value = "EmailInstance"
 
         self.assertFalse(mongo_db_admin.run_program(self.args_array3,
                                                     self.func_dict))

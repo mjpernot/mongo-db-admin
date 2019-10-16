@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.2.0] - 2019-10-16
+### Fixed
+- status:  Allow printing to standard out for the -M and -j argument combination.
+- run_dbcc:  Fixed validation of views in Mongo.
+
+### Changed
+- defrag:  Changed error message to warning message.
+- status:  Refactored entire function to be more streamline.
+- run_program:  Replaced setup_mail() call with gen_class.setup_mail() call.
+- process_request:  Changed a number of arguments from positional to keyword arguments.
+
+### Removed
+- setup_mail:  Replaced by gen_class.setup_mail function.
+
+### Added
+- Added -z option to program to allow standard out suppression.
+
+
 ## [2.1.0] - 2019-07-24
 ### Fixed
 - run_program:  Fixed mutable list/dictionary argument issue.

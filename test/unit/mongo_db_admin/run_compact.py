@@ -35,20 +35,117 @@ import version
 __version__ = version.__version__
 
 
+class Coll2(object):
+
+    """Class:  Coll
+
+    Description:  Class stub holder for mongo_class.Coll class.
+
+    Methods:
+        __init__ -> Class initialization.
+        connect -> Stub holder for mongo_class.Coll.connect method.
+        coll_options -> Stub holder for mongo_class.Coll.coll_options method.
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        pass
+
+    def connect(self):
+
+        """Method:  connect
+
+        Description:  Stub holder for mongo_class.Coll.connect method.
+
+        Arguments:
+
+        """
+
+        return True
+
+    def coll_options(self):
+
+        """Method:  coll_options
+
+        Description:  Stub holder for mongo_class.Coll.coll_options method.
+
+        Arguments:
+
+        """
+
+        return {"capped": False}
+
+
+class Coll(object):
+
+    """Class:  Coll
+
+    Description:  Class stub holder for mongo_class.Coll class.
+
+    Methods:
+        __init__ -> Class initialization.
+        connect -> Stub holder for mongo_class.Coll.connect method.
+        coll_options -> Stub holder for mongo_class.Coll.coll_options method.
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        pass
+
+    def connect(self):
+
+        """Method:  connect
+
+        Description:  Stub holder for mongo_class.Coll.connect method.
+
+        Arguments:
+
+        """
+
+        return True
+
+    def coll_options(self):
+
+        """Method:  coll_options
+
+        Description:  Stub holder for mongo_class.Coll.coll_options method.
+
+        Arguments:
+
+        """
+
+        return {"capped": True}
+
+
 class Mongo(object):
 
     """Class:  Mongo
 
     Description:  Class stub holder for mongo_class.DB class.
 
-    Super-Class:
-
-    Sub-Classes:
-
     Methods:
         __init__ -> Class initialization.
         chg_db -> Stub holder for mongo_class.DB.chg_db method.
         get_tbl_list -> Stub holder for mongo_class.DB.get_tbl_list method.
+        db_cmd -> Stub holder for mongo_class.DB.db_cmd method.
 
     """
 
@@ -64,6 +161,7 @@ class Mongo(object):
 
         self.db_name = "DatabaseName"
         self.tbl_list = []
+        self.cmd_type = True
 
     def chg_db(self, db):
 
@@ -91,6 +189,24 @@ class Mongo(object):
 
         return self.tbl_list
 
+    def db_cmd(self, type, obj):
+
+        """Method:  db_cmd
+
+        Description:  Stub holder for mongo_class.DB.db_cmd method.
+
+        Arguments:
+            (input) type -> Type of compression.
+            (input) obj -> Object name.
+
+        """
+
+        if self.cmd_type:
+            return {"ok": 1}
+
+        else:
+            return {"ok": 0}
+
 
 class UnitTest(unittest.TestCase):
 
@@ -98,13 +214,12 @@ class UnitTest(unittest.TestCase):
 
     Description:  Class which is a representation of a unit testing.
 
-    Super-Class:  unittest.TestCase
-
-    Sub-Classes:
-
     Methods:
         setUp -> Initialize testing environment.
-        test_no_tbl_list -> Test with empty table list.
+        test_compact_failure -> Test of compact as failure.
+        test_compact_successful -> Test of compact as successful.
+        test_coll_capped -> Test with collection set to capped.
+        test_empty_tbl_list -> Test with empty table list.
 
     """
 
@@ -122,11 +237,72 @@ class UnitTest(unittest.TestCase):
         self.db_name = "DatabaseName"
         self.tbl_name = ["Table3", "Table4"]
 
-    def test_tbl_list(self):
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    def test_compact_failure(self, mock_cmd, mock_create):
 
-        """Function:  test_tbl_list
+        """Function:  test_compact_failure
 
-        Description:  Test with table list.
+        Description:  Test of compact as failure.
+
+        Arguments:
+
+        """
+
+        mock_cmd.return_value = True
+        mock_create.return_value = Coll2()
+        self.mongo.cmd_type = False
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
+                                                        self.db_name,
+                                                        self.tbl_name))
+
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    def test_compact_successful(self, mock_cmd, mock_create):
+
+        """Function:  test_compact_successful
+
+        Description:  Test of compact as successful.
+
+        Arguments:
+
+        """
+
+        mock_cmd.return_value = True
+        mock_create.return_value = Coll2()
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
+                                                        self.db_name,
+                                                        self.tbl_name))
+
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    def test_coll_capped(self, mock_cmd, mock_create):
+
+        """Function:  test_coll_capped
+
+        Description:  Test with collection set to capped.
+
+        Arguments:
+
+        """
+
+        mock_cmd.return_value = True
+        mock_create.return_value = Coll()
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
+                                                        self.db_name,
+                                                        self.tbl_name))
+
+    def test_empty_tbl_list(self):
+
+        """Function:  test_empty_tbl_list
+
+        Description:  Test with empty table list.
 
         Arguments:
 

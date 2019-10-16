@@ -16,7 +16,7 @@
             {-C [db_name [db_name ...]] [-t table_name [table_name ...]]} |
             {-D [db_name [db_name ...]] [-t table_name [table_name ...]]} |
             [-f] {-M {-j | -i db_name:table_name |
-            -m file | -o dir_path/file}} |
+            -m file | -o dir_path/file}} | -z |
             {-G {global | rs | startupWarnings} | {-j | -l | -o dir_path/file}}
             [-e ToEmail {ToEmail2 ToEmail3 ...} {-s SubjectLine}] [-v | -h]
 
@@ -65,6 +65,7 @@
             the option allows it.  Sends output to one or more email addresses.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
+        -z => Suppress standard out.
         -v => Display version of this program.
         -h => Help and usage message.
 
@@ -104,11 +105,6 @@
         databases has no tables in the table listed presented, then all
         of the tables within the database will be processed.
 
-    Known Bug:  The -i option does not work for the -M option if the -j option
-        is not selected also.  It will only display the output to
-        standard out in standard format and will not insert into the database.
-        Workaround:  Use -j option whenever using -i option.
-
     Example:
         mongo_db_admin.py -c mongo -d config -D admin -t system.users
 
@@ -128,6 +124,7 @@ import socket
 
 # Third party
 import json
+import ast
 
 # Local
 import lib.arg_parser as arg_parser
@@ -186,8 +183,8 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     db_list = server.fetch_dbs()
     mongo = mongo_class.DB(server.name, server.user, server.passwd,
-                           server.host, server.port, "test", server.auth,
-                           server.conf_file)
+                           host=server.host, port=server.port, db="test",
+                           auth=server.auth, conf_file=server.conf_file)
     mongo.connect()
 
     # Process all databases.
@@ -248,11 +245,16 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     for x in tbl_list:
         print("\tChecking table: {0:50}".format(x + "..."), end="")
-        data = mongo.validate_tbl(x, scan=kwargs.get("full", False))
-        print("\t%s" % (data["valid"]))
+        status, data = mongo.validate_tbl(x, scan=kwargs.get("full", False))
 
-        if data["valid"] is False:
-            print("\t\tError: %s" % (data["errors"]))
+        if status:
+            print("\t%s" % (data["valid"]))
+
+            if data["valid"] is False:
+                print("\t\tError: %s" % (data["errors"]))
+
+        else:
+            print("\t\tError: %s" % (data))
 
 
 def dbcc(server, args_array, **kwargs):
@@ -347,7 +349,7 @@ def defrag(server, args_array, **kwargs):
     # Primary servers not allowed to be defragged.
     if data["ismaster"] and "setName" in data:
         err_flag = True
-        err_msg = "Error:  Primary in a Replica Set and cannot be defragged."
+        err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
 
     else:
         process_request(server, run_compact, args_array["-C"],
@@ -435,30 +437,37 @@ def status(server, args_array, **kwargs):
                                     "maxConnections": server.max_conn,
                                     "percentUsed": server.prct_conn}})
 
-    if "-j" in args_array:
-        jdata = json.dumps(outdata, indent=4)
-        mongo_cfg = kwargs.get("class_cfg", None)
-        db_tbl = kwargs.get("db_tbl", None)
-        ofile = kwargs.get("ofile", None)
-        mail = kwargs.get("mail", None)
+    ofile = kwargs.get("ofile", None)
+    mail = kwargs.get("mail", None)
+    mongo_cfg = kwargs.get("class_cfg", None)
+    db_tbl = kwargs.get("db_tbl", None)
 
-        if mongo_cfg and db_tbl:
-            db, tbl = db_tbl.split(":")
+    if "-j" in args_array:
+        outdata = json.dumps(outdata, indent=4)
+
+    if mongo_cfg and db_tbl:
+        db, tbl = db_tbl.split(":")
+
+        if isinstance(outdata, dict):
             mongo_libs.ins_doc(mongo_cfg, db, tbl, outdata)
 
-        if ofile:
-            gen_libs.write_file(ofile, "w", jdata)
+        else:
+            mongo_libs.ins_doc(mongo_cfg, db, tbl, ast.literal_eval(outdata))
 
-        if mail:
-            mail.add_2_msg(jdata)
-            mail.send_mail()
+    if ofile:
+        gen_libs.write_file(ofile, "w", outdata)
 
-    else:
-        if kwargs.get("ofile", None):
-            gen_libs.print_dict(outdata, no_std=True, **kwargs)
+    if mail:
+        if isinstance(outdata, dict):
+            mail.add_2_msg(json.dumps(outdata, indent=4))
 
         else:
-            gen_libs.display_data(outdata)
+            mail.add_2_msg(outdata)
+
+        mail.send_mail()
+
+    if not args_array.get("-z", False):
+        gen_libs.display_data(outdata)
 
     return False, None
 
@@ -564,32 +573,6 @@ def get_log(server, args_array, **kwargs):
     return False, None
 
 
-def setup_mail(to_line, subj=None, frm_line=None, **kwargs):
-
-    """Function:  setup_mail
-
-    Description:  Initialize a mail instance.  Provide 'from line' if one is
-        not passed.
-
-    Arguments:
-        (input) to_line -> Mail to line.
-        (input) subj -> Mail subject line.
-        (input) frm_line -> Mail from line.
-        (output) Mail instance.
-
-    """
-
-    to_line = list(to_line)
-
-    if isinstance(subj, list):
-        subj = list(subj)
-
-    if not frm_line:
-        frm_line = getpass.getuser() + "@" + socket.gethostname()
-
-    return gen_class.Mail(to_line, subj, frm_line)
-
-
 def run_program(args_array, func_dict, **kwargs):
 
     """Function:  run_program
@@ -616,8 +599,8 @@ def run_program(args_array, func_dict, **kwargs):
         repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
 
     if args_array.get("-e", None):
-        mail = setup_mail(args_array.get("-e"),
-                          subj=args_array.get("-s", None))
+        mail = gen_class.setup_mail(args_array.get("-e"),
+                                    subj=args_array.get("-s", None))
 
     # Call function(s) - intersection of command line and function dict.
     for x in set(args_array.keys()) & set(func_dict.keys()):
