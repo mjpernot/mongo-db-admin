@@ -235,7 +235,9 @@ class UnitTest(unittest.TestCase):
         self.db_name = "DatabaseName"
         self.tbl_name = ["Table3", "Table4"]
 
-    def test_coll_capped(self):
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    def test_coll_capped(self, mock_cmd, mock_create):
 
         """Function:  test_coll_capped
 
@@ -244,6 +246,9 @@ class UnitTest(unittest.TestCase):
         Arguments:
 
         """
+
+        mock_cmd.return_value = True
+        mock_create.return_value = Coll()
 
         #with gen_libs.no_std_out():
         self.assertFalse(mongo_db_admin.run_compact(self.mongo,
