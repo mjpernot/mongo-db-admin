@@ -160,10 +160,11 @@ class UnitTest(unittest.TestCase):
         self.assertFalse(mongo_db_admin.run_program(self.args_array2,
                                                     self.func_dict2))
 
+    @mock.patch("mongo_db_admin.gen_class.setup_mail")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_email(self, mock_mongo, mock_conn, mock_load):
+    def test_email(self, mock_mongo, mock_conn, mock_load, mock_mail):
 
         """Function:  test_email
 
@@ -176,6 +177,7 @@ class UnitTest(unittest.TestCase):
         mock_mongo.return_value = self.server
         mock_conn.return_value = True
         mock_load.return_value = "RepConfig"
+        mock_mail.return_value = "EmailInstance"
 
         self.assertFalse(mongo_db_admin.run_program(self.args_array3,
                                                     self.func_dict))
