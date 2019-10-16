@@ -41,10 +41,6 @@ class Mongo(object):
 
     Description:  Class stub holder for mongo_class.DB class.
 
-    Super-Class:
-
-    Sub-Classes:
-
     Methods:
         __init__ -> Class initialization.
         chg_db -> Stub holder for mongo_class.DB.chg_db method.
@@ -97,10 +93,6 @@ class UnitTest(unittest.TestCase):
     """Class:  UnitTest
 
     Description:  Class which is a representation of a unit testing.
-
-    Super-Class:  unittest.TestCase
-
-    Sub-Classes:
 
     Methods:
         setUp -> Initialize testing environment.

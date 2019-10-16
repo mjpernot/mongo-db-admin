@@ -9,19 +9,19 @@ pipeline {
         stage('Test') {
             steps {
                 dir ('lib') {
-                    git branch: "master", credentialsId: "2cfb403c-be21-4fac-94d7-c8cd5c531feb", url: "https://gitlab.dicelab.net/JAC-IDM/python-lib.git"
+                    git branch: "master", credentialsId: "2cfb403c-be21-4fac-94d7-c8cd5c531feb", url: "https://gitlab.code.dicelab.net/JAC-IDM/python-lib.git"
                 }
                 dir ('mongo_lib') {
-                    git branch: "master", credentialsId: "2cfb403c-be21-4fac-94d7-c8cd5c531feb", url: "https://gitlab.dicelab.net/JAC-IDM/mongo-lib.git"
+                    git branch: "master", credentialsId: "2cfb403c-be21-4fac-94d7-c8cd5c531feb", url: "https://gitlab.code.dicelab.net/JAC-IDM/mongo-lib.git"
                 }
                 dir ('mongo_lib/lib') {
-                    git branch: "master", credentialsId: "2cfb403c-be21-4fac-94d7-c8cd5c531feb", url: "https://gitlab.dicelab.net/JAC-IDM/python-lib.git"
+                    git branch: "master", credentialsId: "2cfb403c-be21-4fac-94d7-c8cd5c531feb", url: "https://gitlab.code.dicelab.net/JAC-IDM/python-lib.git"
                 }
                 sh """
                 virtualenv test_env
                 source test_env/bin/activate
-                pip2 install mock --user
-                pip2 install pymongo --user
+                pip2 install mock==2.0.0 --user
+                pip2 install pymongo==3.2.0 --user
                 ./test/unit/mongo_db_admin/dbcc.py
                 ./test/unit/mongo_db_admin/defrag.py
                 ./test/unit/mongo_db_admin/get_log.py
@@ -34,7 +34,6 @@ pipeline {
                 ./test/unit/mongo_db_admin/run_dbcc.py
                 ./test/unit/mongo_db_admin/run_program.py
                 ./test/unit/mongo_db_admin/run_repair.py
-                ./test/unit/mongo_db_admin/setup_mail.py
                 ./test/unit/mongo_db_admin/status.py
                 deactivate
                 rm -rf test_env
