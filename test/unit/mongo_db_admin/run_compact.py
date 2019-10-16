@@ -60,7 +60,7 @@ class Coll2(object):
 
         pass
 
-    def connect(self, db):
+    def connect(self):
 
         """Method:  connect
 
@@ -110,7 +110,7 @@ class Coll(object):
 
         pass
 
-    def connect(self, db):
+    def connect(self):
 
         """Method:  connect
 
@@ -253,10 +253,10 @@ class UnitTest(unittest.TestCase):
         mock_create.return_value = Coll2()
         self.mongo.cmd_type = False
 
-        #with gen_libs.no_std_out():
-        self.assertFalse(mongo_db_admin.run_compact(self.mongo,
-                                                    self.db_name,
-                                                    self.tbl_name))
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
+                                                        self.db_name,
+                                                        self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
@@ -273,10 +273,10 @@ class UnitTest(unittest.TestCase):
         mock_cmd.return_value = True
         mock_create.return_value = Coll2()
 
-        #with gen_libs.no_std_out():
-        self.assertFalse(mongo_db_admin.run_compact(self.mongo,
-                                                    self.db_name,
-                                                    self.tbl_name))
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
+                                                        self.db_name,
+                                                        self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
@@ -293,10 +293,10 @@ class UnitTest(unittest.TestCase):
         mock_cmd.return_value = True
         mock_create.return_value = Coll()
 
-        #with gen_libs.no_std_out():
-        self.assertFalse(mongo_db_admin.run_compact(self.mongo,
-                                                    self.db_name,
-                                                    self.tbl_name))
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
+                                                        self.db_name,
+                                                        self.tbl_name))
 
     def test_empty_tbl_list(self):
 
