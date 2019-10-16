@@ -18,6 +18,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ### Removed
 - setup_mail:  Replaced by gen_class.setup_mail function.
 
+### Added
+- Added -z option to program to allow standard out suppression.
+
 
 ## [2.1.0] - 2019-07-24
 ### Fixed

@@ -16,7 +16,7 @@
             {-C [db_name [db_name ...]] [-t table_name [table_name ...]]} |
             {-D [db_name [db_name ...]] [-t table_name [table_name ...]]} |
             [-f] {-M {-j | -i db_name:table_name |
-            -m file | -o dir_path/file}} |
+            -m file | -o dir_path/file}} | -z |
             {-G {global | rs | startupWarnings} | {-j | -l | -o dir_path/file}}
             [-e ToEmail {ToEmail2 ToEmail3 ...} {-s SubjectLine}] [-v | -h]
 
@@ -65,6 +65,7 @@
             the option allows it.  Sends output to one or more email addresses.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
+        -z => Suppress standard out.
         -v => Display version of this program.
         -h => Help and usage message.
 
@@ -103,11 +104,6 @@
         to the program and the -t option is used.  If one of the
         databases has no tables in the table listed presented, then all
         of the tables within the database will be processed.
-
-    Known Bug:  The -i option does not work for the -M option if the -j option
-        is not selected also.  It will only display the output to
-        standard out in standard format and will not insert into the database.
-        Workaround:  Use -j option whenever using -i option.
 
     Example:
         mongo_db_admin.py -c mongo -d config -D admin -t system.users
