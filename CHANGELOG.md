@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.3.0] - 2020-04-16
+### Changed
+- Documentation updates.
+
+
 ## [2.2.0] - 2019-10-16
 ### Fixed
 - status:  Allow printing to standard out for the -M and -j argument combination.
