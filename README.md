@@ -25,8 +25,6 @@
 # Prerequisites:
 
   * List of Linux packages that need to be installed on the server.
-    - python-libs
-    - python-devel
     - git
     - python-pip
 
@@ -142,33 +140,17 @@ pip install -r requirements-python-lib.txt --target mongo_lib/lib --trusted-host
 ```
 
 
-# Unit test runs for mongo-db-admin.py:
+# Testing:
   * Replace **{Python_Project}** with the baseline path of the python program.
 
 ```
 cd {Python_Project}/mongo-db-admin
-test/unit/mongo_db_admin/dbcc.py
-test/unit/mongo_db_admin/defrag.py
-test/unit/mongo_db_admin/get_log.py
-test/unit/mongo_db_admin/help_message.py
-test/unit/mongo_db_admin/main.py
-test/unit/mongo_db_admin/process_request.py
-test/unit/mongo_db_admin/repair_db.py
-test/unit/mongo_db_admin/rotate.py
-test/unit/mongo_db_admin/run_compact.py
-test/unit/mongo_db_admin/run_dbcc.py
-test/unit/mongo_db_admin/run_program.py
-test/unit/mongo_db_admin/run_repair.py
-test/unit/mongo_db_admin/status.py
-```
-
-### All unit testing
-```
 test/unit/mongo_db_admin/unit_test_run.sh
 ```
 
-### Code coverage program
+### Code Coverage:
 ```
+cd {Python_Project}/mongo-db-admin
 test/unit/mongo_db_admin/code_coverage.sh
 ```
 
