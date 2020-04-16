@@ -66,6 +66,7 @@
             Can use the following options:  -j or -l and -o.
         -e to_email_addresses => Enables emailing capability for an option if
             the option allows it.  Sends output to one or more email addresses.
+            Email addresses are delimited by spaces.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
         -z => Suppress standard out.
