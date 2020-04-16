@@ -25,42 +25,45 @@
         -d dir path => Directory path to config file (-c). Required arg.
         -R [database name(s)] => Repair database.  If no db_name is
             provided, then all databases are repaired.
-        -C [database name(s)] => Defrag tables.  Can be used in
-            conjunction with the -t option to specify an individual
-            table.  If no -t is used, then all tables in the database
-            are compacted.  If no db_name is provided, then all
-            database are processed.
+        -C [database name(s)] => Defrag tables.  If no db_name is provided,
+            then all database are processed.
+            Can be used in conjunction with the -t option to specify an
+            individual table.  If no -t is used, then all tables in the
+            database are compacted.  
         -D [database name(s)] => Validate tables. Can be used in conjunction
             with the -t option to specify an individual table.  If no -t is
             used, then all tables in the database are validated.  If no
             db_name is provided, then all database are processed.  Also used
             in conjunction with the -f option.
-        -f => Run full validate scan on table(s).  For -D option only.
+        -f => Run full validate scan on table(s).
+            For use with the -D option only.
         -M Display the current database status, such as uptime, memory
-            use, and connection usage.  Can use the following options:
-            -m, -j, -i, and -o.
-        -j => Return output in JSON format.  For -G and -M options.
-        -l => Return output in "list" format.  For -G option.
+            use, and connection usage.
+            Can use the following options: -m, -j, -i, and -o.
+        -j => Return output in JSON format.
+            For use with the -G and -M options.
+        -l => Return output in "list" format.
+            For use with the -G option.
         -i {database:collection} => Name of database and collection to insert
-            the database status data into.  Delimited by colon (:).
-            Default: sysmon:mongo_db_status  When using this option, the
-            configuration file format will determine whether the connection
-            will be to a single Mongo database server or to a Mongo replica
-            set.  See Configuration File format below on each format.
+            the database status data into.
+            Default value:  sysmon:mongo_db_status
+            This option requires option:  -m
         -m file => Mongo config file used for the insertion into a Mongo
-            database.  Do not include the .py extension.  Used only with the
-            -i option.
-        -o path/file => Directory path and file name for output.  Can be
-            used with -M or -G options.  Format compability:
+            database.  Do not include the .py extension.
+            This option is required for -i option.
+        -o path/file => Directory path and file name for output.
+            Can be used with -M or -G options.
+            Format compability:
                 -M option => JSON and standard out.
                 -G option => JSON, list, and standard out.
-        -t table_name(s) => Table names.  Used with the -C or -D options.
+        -t table_name(s) => Table names.
+            Used with the -C or -D options.
         -L => Run a log rotate on the mongo database error log.
         -n dir path => Directory path to where the old mongo database
             error log file will be moved to.
         -G {global | rs | startupWarnings} => Retrieve the mongo error
-            log from mongo memory cache.  Default value is: global.  Can
-            use the following options:  -j or -l and -o.
+            log from mongo memory cache.  Default value is: global.
+            Can use the following options:  -j or -l and -o.
         -e to_email_addresses => Enables emailing capability for an option if
             the option allows it.  Sends output to one or more email addresses.
         -s subject_line => Subject line of email.  Optional, will create own
@@ -75,9 +78,14 @@
         NOTE 4:  Options -j and -l are XOR.
 
     Notes:
-        Mongo configuration file format (mongo.py).  The configuration
-            file format for the Mongo connection used for inserting data into
-            a database.  There are two ways to connect:  single or replica set.
+        Mongo configuration file format (config/mongo.py.TEMPLATE).  The
+            configuration file format is for connecting to a Mongo
+            database/replica set for monitoring and is also used to connect to
+            a Mongo database/replica set for for inserting data into.  Create
+            two different configuration files if monitoring one Mongo database
+            and inserting into a different Mongo database.
+
+            There are two ways to connect:  single or replica set.
 
             1.)  Single database connection:
 
@@ -268,7 +276,7 @@ def dbcc(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) False - if an error has occurred.
+        (output) False - If an error has occurred.
         (output) None -> Error message.
 
     """
@@ -336,7 +344,7 @@ def defrag(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) err_flag -> True|False - if an error has occurred.
+        (output) err_flag -> True|False - If an error has occurred.
         (output) err_msg -> Error message.
 
     """
@@ -418,7 +426,7 @@ def status(server, args_array, **kwargs):
             db_tbl database:table_name -> Mongo database and table name.
             class_cfg -> Mongo Rep Set server configuration.
             mail -> Mail instance.
-        (output) False - if an error has occurred.
+        (output) False - If an error has occurred.
         (output) None -> Error message.
 
     """
@@ -497,18 +505,18 @@ def rotate(server, args_array, **kwargs):
 
         if status:
 
-            # Pull the log and path from Mongodb.
+            # Pull the log and path from Mongo.
             path_log = \
                 mongo_class.fetch_cmd_line(server)[
                     "parsed"]["systemLog"]["path"]
             dir_path = os.path.dirname(path_log)
             mdb_log = os.path.basename(path_log)
 
-            # Pre list of log files before logRotate.
+            # Pre-list of log files before logRotate.
             pre_logs = gen_libs.dir_file_match(dir_path, mdb_log)
             server.adm_cmd("logRotate")
 
-            # Post list of log files after logRotate.
+            # Post-list of log files after logRotate.
             post_logs = gen_libs.dir_file_match(dir_path, mdb_log)
             diff_list = gen_libs.is_missing_lists(post_logs, pre_logs)
 
@@ -541,7 +549,7 @@ def get_log(server, args_array, **kwargs):
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
-        (output) False - if an error has occurred.
+        (output) False - If an error has occurred.
         (output) None -> Error message.
 
     """
