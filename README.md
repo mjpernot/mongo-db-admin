@@ -91,6 +91,26 @@ vim mongo.py
 chmod 600 mongo.py
 ```
 
+If inserting the results into a different Mongo database then create another mongo configuration file and use this file with the -m option.
+
+Make the appropriate change to the environment.
+  * Make the appropriate changes to connect to a Mongo database.
+    - user = "USER"
+    - passwd = "PASSWORD"
+    - host = "IP_ADDRESS"
+    - name = "HOSTNAME"
+
+  * If connecting to a Mongo replica set, otherwise set to None.
+    - repset = "REPLICA_SET_NAME"
+    - repset_hosts = "HOST_1:PORT, HOST_2:PORT, ..."
+    - db_auth = "AUTHENTICATION_DATABASE"
+
+```
+cp mongo.py.TEMPLATE mongo_insert.py
+vim mongo_insert.py
+chmod 600 mongo_insert.py
+```
+
 
 # Program Help Function:
 
