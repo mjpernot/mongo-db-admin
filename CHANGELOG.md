@@ -6,6 +6,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.3.0] - 2020-04-16
 ### Fixed
+- run_dbcc:  Changed "status" to "status_flag" due to naming conflict.
 - rotate:  Changed "status" to "status_flag" due to naming conflict.
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
