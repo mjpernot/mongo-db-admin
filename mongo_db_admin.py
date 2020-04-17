@@ -254,9 +254,10 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     for x in tbl_list:
         print("\tChecking table: {0:50}".format(x + "..."), end="")
-        status, data = mongo.validate_tbl(x, scan=kwargs.get("full", False))
+        status_flag, data = mongo.validate_tbl(x, scan=kwargs.get("full",
+                                                                  False))
 
-        if status:
+        if status_flag:
             print("\t%s" % (data["valid"]))
 
             if data["valid"] is False:
