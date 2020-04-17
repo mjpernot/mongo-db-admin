@@ -128,8 +128,6 @@ from __future__ import print_function
 import sys
 import datetime
 import os
-import getpass
-import socket
 
 # Third party
 import json
