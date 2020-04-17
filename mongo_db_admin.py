@@ -502,9 +502,9 @@ def rotate(server, args_array, **kwargs):
 
     if "-n" in args_array:
 
-        status, msg = gen_libs.chk_crt_dir(args_array["-n"], write=True)
+        status_flag, msg = gen_libs.chk_crt_dir(args_array["-n"], write=True)
 
-        if status:
+        if status_flag:
 
             # Pull the log and path from Mongo.
             path_log = \
