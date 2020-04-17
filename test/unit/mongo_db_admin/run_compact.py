@@ -189,14 +189,14 @@ class Mongo(object):
 
         return self.tbl_list
 
-    def db_cmd(self, type, obj):
+    def db_cmd(self, com_type, obj):
 
         """Method:  db_cmd
 
         Description:  Stub holder for mongo_class.DB.db_cmd method.
 
         Arguments:
-            (input) type -> Type of compression.
+            (input) com_type -> Type of compression.
             (input) obj -> Object name.
 
         """
