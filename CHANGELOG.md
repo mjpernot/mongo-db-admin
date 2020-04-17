@@ -9,6 +9,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
 ### Changed
+- rotate:  Changed "status" to "status_flag" due to naming conflict.
 - Documentation updates.
 
 
