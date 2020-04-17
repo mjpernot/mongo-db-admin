@@ -29,7 +29,7 @@
             then all database are processed.
             Can be used in conjunction with the -t option to specify an
             individual table.  If no -t is used, then all tables in the
-            database are compacted.  
+            database are compacted.
         -D [database name(s)] => Validate tables. Can be used in conjunction
             with the -t option to specify an individual table.  If no -t is
             used, then all tables in the database are validated.  If no
