@@ -6,10 +6,10 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.3.0] - 2020-04-16
 ### Fixed
+- rotate:  Changed "status" to "status_flag" due to naming conflict.
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
 ### Changed
-- rotate:  Changed "status" to "status_flag" due to naming conflict.
 - Documentation updates.
 
 
