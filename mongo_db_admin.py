@@ -564,16 +564,20 @@ def get_log(server, args_array, **kwargs):
 
     """
 
+    mode = "w"
     args_array = dict(args_array)
+
+    if args_array.get("-a", False):
+        mode = "a"
 
     # Get log data from mongodb.
     data = server.adm_cmd("getLog", arg1=args_array["-G"])
 
     if "-j" in args_array:
-        gen_libs.print_data(json.dumps(data, indent=4), **kwargs)
+        gen_libs.print_data(json.dumps(data, indent=4), mode=mode, **kwargs)
 
     elif "-l" in args_array:
-        gen_libs.print_data(data["log"], **kwargs)
+        gen_libs.print_data(data["log"], mode=mode, **kwargs)
 
     else:
         if kwargs.get("ofile", None):
