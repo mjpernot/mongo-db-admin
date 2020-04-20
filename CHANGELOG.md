@@ -5,6 +5,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 
 ## [2.3.0] - 2020-04-16
+### Added
+- Added -a option to allow for append of data to an existing output file.
+
 ### Fixed
 - run_dbcc:  Changed "status" to "status_flag" due to naming conflict.
 - rotate:  Changed "status" to "status_flag" due to naming conflict.
