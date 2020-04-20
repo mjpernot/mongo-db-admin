@@ -6,6 +6,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.3.0] - 2020-04-16
 ### Added
+- Added -g option to Flatten the JSON data structure to file and standard out.
 - Added -a option to allow for append of data to an existing output file.
 
 ### Fixed
