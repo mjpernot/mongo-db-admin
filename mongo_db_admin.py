@@ -437,6 +437,7 @@ def status(server, args_array, **kwargs):
 
     """
 
+    mode = "w"
     args_array = dict(args_array)
     server.upd_srv_stat()
     outdata = {"application": "Mongo Database",
@@ -456,6 +457,9 @@ def status(server, args_array, **kwargs):
     mongo_cfg = kwargs.get("class_cfg", None)
     db_tbl = kwargs.get("db_tbl", None)
 
+    if args_array.get("-a", False):
+        mode = "a"
+
     if "-j" in args_array:
         outdata = json.dumps(outdata, indent=4)
 
@@ -469,7 +473,7 @@ def status(server, args_array, **kwargs):
             mongo_libs.ins_doc(mongo_cfg, db, tbl, ast.literal_eval(outdata))
 
     if ofile:
-        gen_libs.write_file(ofile, "w", outdata)
+        gen_libs.write_file(ofile, mode, outdata)
 
     if mail:
         if isinstance(outdata, dict):
