@@ -581,7 +581,7 @@ def get_log(server, args_array, **kwargs):
 
     else:
         if kwargs.get("ofile", None):
-            f_hldr = open(kwargs.get("ofile"), "w")
+            f_hldr = open(kwargs.get("ofile"), mode)
 
         else:
             f_hldr = sys.stdout
