@@ -439,6 +439,7 @@ def status(server, args_array, **kwargs):
     """
 
     mode = "w"
+    indent = 4
     args_array = dict(args_array)
     server.upd_srv_stat()
     outdata = {"application": "Mongo Database",
@@ -461,8 +462,11 @@ def status(server, args_array, **kwargs):
     if args_array.get("-a", False):
         mode = "a"
 
+    if args_array.get("-g", False):
+        indent = None
+
     if "-j" in args_array:
-        outdata = json.dumps(outdata, indent=4)
+        outdata = json.dumps(outdata, indent=indent)
 
     if mongo_cfg and db_tbl:
         db, tbl = db_tbl.split(":")
@@ -478,7 +482,7 @@ def status(server, args_array, **kwargs):
 
     if mail:
         if isinstance(outdata, dict):
-            mail.add_2_msg(json.dumps(outdata, indent=4))
+            mail.add_2_msg(json.dumps(outdata, indent=indent))
 
         else:
             mail.add_2_msg(outdata)
