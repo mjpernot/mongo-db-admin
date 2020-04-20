@@ -17,9 +17,9 @@
             {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-f]} |
-            {-M [-j] | [-i db_name:table_name -m config_file] |
+            {-M [-j [-g]] | [-i db_name:table_name -m config_file] |
                 [-o dir_path/file [-a]] | [-z]} |
-            {-G {global | rs | startupWarnings} | [-j | -l] |
+            {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
                 [-o dir_path/file [-a]]} |
             [-e to_email [to_email2 ...] [-s subject_line]]
             [-v | -h]
@@ -46,6 +46,7 @@
             Can use the following options: -m, -j, -i, and -o.
         -j => Return output in JSON format.
             For use with the -G and -M options.
+        -g => Flatten the JSON data structure to file and standard out.
         -l => Return output in "list" format.
             For use with the -G option.
         -i {database:collection} => Name of database and collection to insert
