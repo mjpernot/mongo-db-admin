@@ -14,6 +14,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
 ### Changed
+- status: Added file mode option to writing data to a file.  Default is write.
 - Removed unused modules getpass and socket.
 - Documentation updates.
 
