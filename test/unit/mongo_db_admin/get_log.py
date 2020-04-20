@@ -81,6 +81,7 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_to_json_flatten -> Test with going to JSON and flattening.
         test_to_json -> Test going to JSON.
         test_to_list -> Test going to list.
         test_append_to_file -> Test with appending to a file.
@@ -105,7 +106,24 @@ class UnitTest(unittest.TestCase):
         self.args_array2 = {"-l": True, "-G": True}
         self.args_array3 = {"-G": True}
         self.args_array4 = {"-G": True, "-a": True}
+        self.args_array5 = {"-j": True, "-G": True, "-g": True}
         self.ofile = "./test/unit/mongo_db_admin/tmp/get_log.txt"
+
+    @mock.patch("mongo_db_admin.gen_libs.print_data")
+    def test_to_json_flatten(self, mock_print):
+
+        """Function:  test_to_json_flatten
+
+        Description:  Test with going to JSON and flattening.
+
+        Arguments:
+
+        """
+
+        mock_print.return_value = True
+
+        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array5),
+                         (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.print_data")
     def test_to_json(self, mock_print):
