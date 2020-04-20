@@ -57,9 +57,11 @@
             This option is required for -i option.
         -o path/file => Directory path and file name for output.
             Can be used with -M or -G options.
+            Use the -a option to append to an existing file.
             Format compability:
                 -M option => JSON and standard out.
                 -G option => JSON, list, and standard out.
+        -a => Append output to output file.
         -t table_name(s) => Table names.
             Used with the -C or -D options.
         -L => Run a log rotate on the mongo database error log.
