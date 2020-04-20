@@ -124,7 +124,6 @@ chmod 600 mongo_insert.py
 
 # Testing:
 
-
 # Unit Testing:
 
 ### Description: Testing consists of unit testing for the functions in the mongo-db-admin.py program.
@@ -161,8 +160,6 @@ pip install -r requirements-python-lib.txt --target mongo_lib/lib --trusted-host
 
 
 # Testing:
-  * Replace **{Python_Project}** with the baseline path of the python program.
-
 ```
 cd {Python_Project}/mongo-db-admin
 test/unit/mongo_db_admin/unit_test_run.sh
