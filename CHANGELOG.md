@@ -17,6 +17,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ### Changed
 - status: Added file mode option to writing data to a file.  Default is write.
 - get_log: Added file mode option to writing data to a file.  Default is write.
+- status:  Added flattening of JSON structure to standard out and to file.
 - Removed unused modules getpass and socket.
 - Documentation updates.
 
