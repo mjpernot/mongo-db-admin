@@ -11,14 +11,18 @@
         retrieve the Mongo error log that currently resides in memory.
 
     Usage:
-        mongo_db_admin.py -c file -d path -L [-n dir_path] |
-            {-R [db_name [db_name ...]]} |
-            {-C [db_name [db_name ...]] [-t table_name [table_name ...]]} |
-            {-D [db_name [db_name ...]] [-t table_name [table_name ...]]} |
-            [-f] {-M {-j | -i db_name:table_name |
-            -m file | -o dir_path/file}} | -z |
-            {-G {global | rs | startupWarnings} | {-j | -l | -o dir_path/file}}
-            [-e ToEmail {ToEmail2 ToEmail3 ...} {-s SubjectLine}] [-v | -h]
+        mongo_db_admin.py -c file -d path
+            {-L [-n dir_path]} |
+            {-R [db_name [db_name2 ...]]} |
+            {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
+            {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
+                [-f]} |
+            {-M [-j] | [-i db_name:table_name -m config_file] |
+                [-o dir_path/file [-a]] | [-z]} |
+            {-G {global | rs | startupWarnings} | [-j | -l] |
+                [-o dir_path/file [-a]]} |
+            [-e to_email [to_email2 ...] [-s subject_line]]
+            [-v | -h]
 
     Arguments:
         -c file => Server configuration file.  Required arg.
