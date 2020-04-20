@@ -159,6 +159,7 @@ class UnitTest(unittest.TestCase):
         test_to_json_file -> Test with JSON to file.
         test_to_dict_db -> Test with dictionary to database.
         test_to_json_db -> Test with JSON to database.
+        test_append_to_file -> Testing with appending data to a file.
         test_to_file -> Test going to file.
         test_std_suppress -> Test with standard out suppressed.
         test_to_standard -> Test going to standard out.
@@ -180,6 +181,7 @@ class UnitTest(unittest.TestCase):
         self.args_array = {}
         self.args_array2 = {"-j": True, "-z": True}
         self.args_array3 = {"-z": True}
+        self.args_array4 = {"-z": True, "-a": True}
         self.db_tbl = "db:tbl"
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
@@ -345,6 +347,22 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(mongo_db_admin.status(
             self.server, self.args_array2, class_cfg="mongo_cfg",
             db_tbl=self.db_tbl), (False, None))
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    def test_append_to_file(self, mock_file):
+
+        """Function:  test_append_to_file
+
+        Description:  Testing with appending data to a file.
+
+        Arguments:
+
+        """
+
+        mock_file.return_value = True
+
+        self.assertEqual(mongo_db_admin.status(self.server, self.args_array4,
+                                               ofile="Outfile"), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     def test_to_file(self, mock_file):
