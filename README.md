@@ -2,7 +2,7 @@
 # Classification (U)
 
 # Description:
-  This is used to adminstrate a Mongo database, to include repairing, defragmentation, and validatine tables.
+  This is used to adminstrate a Mongo database, to include repairing and defragmentating databases and defragmenting and validating tables.
 
 
 ###  This README file is broken down into the following sections:
