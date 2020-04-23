@@ -156,9 +156,11 @@ class UnitTest(unittest.TestCase):
         test_to_json_email -> Test with JSON to email.
         test_to_dict_both -> Test with dictionary to file and database.
         test_to_json_both -> Test with JSON to file and database.
+        test_to_json_file_flatten -> Test with flatten JSON to file.
         test_to_json_file -> Test with JSON to file.
         test_to_dict_db -> Test with dictionary to database.
         test_to_json_db -> Test with JSON to database.
+        test_append_to_file -> Testing with appending data to a file.
         test_to_file -> Test going to file.
         test_std_suppress -> Test with standard out suppressed.
         test_to_standard -> Test going to standard out.
@@ -180,6 +182,9 @@ class UnitTest(unittest.TestCase):
         self.args_array = {}
         self.args_array2 = {"-j": True, "-z": True}
         self.args_array3 = {"-z": True}
+        self.args_array4 = {"-z": True, "-a": True}
+        self.args_array5 = {"-j": True, "-z": True, "-g": True}
+        self.db_tbl = "db:tbl"
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
@@ -196,12 +201,10 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = True
         mock_file.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array3,
-                                               ofile="filename",
-                                               class_cfg="mongo_cfg",
-                                               db_tbl="db:tbl",
-                                               mail=self.mail),
-                         (False, None))
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array3, ofile="filename",
+            class_cfg="mongo_cfg", db_tbl=self.db_tbl,
+            mail=self.mail), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
@@ -218,12 +221,10 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = True
         mock_file.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
-                                               ofile="filename",
-                                               class_cfg="mongo_cfg",
-                                               db_tbl="db:tbl",
-                                               mail=self.mail),
-                         (False, None))
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array2, ofile="filename",
+            class_cfg="mongo_cfg", db_tbl=self.db_tbl,
+            mail=self.mail), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
@@ -241,8 +242,7 @@ class UnitTest(unittest.TestCase):
         mock_file.return_value = True
 
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array3,
-                                               mail=self.mail),
-                         (False, None))
+                                               mail=self.mail), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
@@ -260,8 +260,7 @@ class UnitTest(unittest.TestCase):
         mock_file.return_value = True
 
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
-                                               mail=self.mail),
-                         (False, None))
+                                               mail=self.mail), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
@@ -278,11 +277,9 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = True
         mock_file.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array3,
-                                               ofile="filename",
-                                               class_cfg="mongo_cfg",
-                                               db_tbl="db:tbl"),
-                         (False, None))
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array3, ofile="filename",
+            class_cfg="mongo_cfg", db_tbl=self.db_tbl), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
@@ -299,11 +296,25 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = True
         mock_file.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
-                                               ofile="filename",
-                                               class_cfg="mongo_cfg",
-                                               db_tbl="db:tbl"),
-                         (False, None))
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array2, ofile="filename",
+            class_cfg="mongo_cfg", db_tbl=self.db_tbl), (False, None))
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    def test_to_json_file_flatten(self, mock_file):
+
+        """Function:  test_to_json_file_flatten
+
+        Description:  Test with flatten JSON to file.
+
+        Arguments:
+
+        """
+
+        mock_file.return_value = True
+
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array5, ofile="filename"), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     def test_to_json_file(self, mock_file):
@@ -318,9 +329,8 @@ class UnitTest(unittest.TestCase):
 
         mock_file.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
-                                               ofile="filename"),
-                         (False, None))
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array2, ofile="filename"), (False, None))
 
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
     def test_to_dict_db(self, mock_db):
@@ -335,10 +345,9 @@ class UnitTest(unittest.TestCase):
 
         mock_db.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array3,
-                                               class_cfg="mongo_cfg",
-                                               db_tbl="db:tbl"),
-                         (False, None))
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array3, class_cfg="mongo_cfg",
+            db_tbl=self.db_tbl), (False, None))
 
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
     def test_to_json_db(self, mock_db):
@@ -353,10 +362,25 @@ class UnitTest(unittest.TestCase):
 
         mock_db.return_value = True
 
-        self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
-                                               class_cfg="mongo_cfg",
-                                               db_tbl="db:tbl"),
-                         (False, None))
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array2, class_cfg="mongo_cfg",
+            db_tbl=self.db_tbl), (False, None))
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    def test_append_to_file(self, mock_file):
+
+        """Function:  test_append_to_file
+
+        Description:  Testing with appending data to a file.
+
+        Arguments:
+
+        """
+
+        mock_file.return_value = True
+
+        self.assertEqual(mongo_db_admin.status(self.server, self.args_array4,
+                                               ofile="Outfile"), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file")
     def test_to_file(self, mock_file):
@@ -372,8 +396,7 @@ class UnitTest(unittest.TestCase):
         mock_file.return_value = True
 
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array3,
-                                               ofile="Outfile"),
-                         (False, None))
+                                               ofile="Outfile"), (False, None))
 
     def test_std_suppress(self):
 
