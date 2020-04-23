@@ -2,7 +2,7 @@
 # Classification (U)
 
 # Description:
-  This is used to adminstrate a Mongo database, to include repairing, defragmentation, and validatine tables.
+  This is used to adminstrate a Mongo database, to include repairing and defragmentating databases and defragmenting and validating tables.
 
 
 ###  This README file is broken down into the following sections:
@@ -16,17 +16,15 @@
 
 
 # Features
-  * Repair a Mongo database.
-  * Validate one or more tables/collections in a Mongo database.
-  * Defragmentation of a database or table in a Mongo database server.
-  * Display current status of a Mongo database.
-  * Check for errors in the Mongo log that is stored in Mongo memory cache.
+  * Repair Mongo databases.
+  * Validate tables in a Mongo database.
+  * Defragment a Mongo database or table.
+  * Display current status of a Mongo database server.
+  * Check for errors in the Mongo log that is stored in memory cache.
 
 # Prerequisites:
 
   * List of Linux packages that need to be installed on the server.
-    - python-libs
-    - python-devel
     - git
     - python-pip
 
@@ -82,6 +80,9 @@ Make the appropriate change to the environment.
     - passwd = "PASSWORD"
     - host = "IP_ADDRESS"
     - name = "HOSTNAME"
+    - port = 27017
+    - conf_file = None
+    - auth = True
 
   * If connecting to a Mongo replica set, otherwise set to None.
     - repset = "REPLICA_SET_NAME"
@@ -91,6 +92,29 @@ Make the appropriate change to the environment.
 ```
 vim mongo.py
 chmod 600 mongo.py
+```
+
+If inserting the results into a different Mongo database then create another mongo configuration file and use this file with the -m option.
+
+Make the appropriate change to the environment.
+  * Make the appropriate changes to connect to a Mongo database.
+    - user = "USER"
+    - passwd = "PASSWORD"
+    - host = "IP_ADDRESS"
+    - name = "HOSTNAME"
+    - port = 27017
+    - conf_file = None
+    - auth = True
+
+  * If connecting to a Mongo replica set, otherwise set to None.
+    - repset = "REPLICA_SET_NAME"
+    - repset_hosts = "HOST_1:PORT, HOST_2:PORT, ..."
+    - db_auth = "AUTHENTICATION_DATABASE"
+
+```
+cp mongo.py.TEMPLATE mongo_insert.py
+vim mongo_insert.py
+chmod 600 mongo_insert.py
 ```
 
 
@@ -105,7 +129,6 @@ chmod 600 mongo.py
 
 
 # Testing:
-
 
 # Unit Testing:
 
@@ -142,33 +165,15 @@ pip install -r requirements-python-lib.txt --target mongo_lib/lib --trusted-host
 ```
 
 
-# Unit test runs for mongo-db-admin.py:
-  * Replace **{Python_Project}** with the baseline path of the python program.
-
+# Testing:
 ```
 cd {Python_Project}/mongo-db-admin
-test/unit/mongo_db_admin/dbcc.py
-test/unit/mongo_db_admin/defrag.py
-test/unit/mongo_db_admin/get_log.py
-test/unit/mongo_db_admin/help_message.py
-test/unit/mongo_db_admin/main.py
-test/unit/mongo_db_admin/process_request.py
-test/unit/mongo_db_admin/repair_db.py
-test/unit/mongo_db_admin/rotate.py
-test/unit/mongo_db_admin/run_compact.py
-test/unit/mongo_db_admin/run_dbcc.py
-test/unit/mongo_db_admin/run_program.py
-test/unit/mongo_db_admin/run_repair.py
-test/unit/mongo_db_admin/status.py
-```
-
-### All unit testing
-```
 test/unit/mongo_db_admin/unit_test_run.sh
 ```
 
-### Code coverage program
+### Code Coverage:
 ```
+cd {Python_Project}/mongo-db-admin
 test/unit/mongo_db_admin/code_coverage.sh
 ```
 

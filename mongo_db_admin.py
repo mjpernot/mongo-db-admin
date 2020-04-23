@@ -11,58 +11,69 @@
         retrieve the Mongo error log that currently resides in memory.
 
     Usage:
-        mongo_db_admin.py -c file -d path -L [-n dir_path] |
-            {-R [db_name [db_name ...]]} |
-            {-C [db_name [db_name ...]] [-t table_name [table_name ...]]} |
-            {-D [db_name [db_name ...]] [-t table_name [table_name ...]]} |
-            [-f] {-M {-j | -i db_name:table_name |
-            -m file | -o dir_path/file}} | -z |
-            {-G {global | rs | startupWarnings} | {-j | -l | -o dir_path/file}}
-            [-e ToEmail {ToEmail2 ToEmail3 ...} {-s SubjectLine}] [-v | -h]
+        mongo_db_admin.py -c file -d path
+            {-L [-n dir_path]} |
+            {-R [db_name [db_name2 ...]]} |
+            {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
+            {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
+                [-f]} |
+            {-M [-j [-g]] | [-i db_name:table_name -m config_file] |
+                [-o dir_path/file [-a]] | [-z]} |
+            {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
+                [-o dir_path/file [-a]]} |
+            [-e to_email [to_email2 ...] [-s subject_line]]
+            [-v | -h]
 
     Arguments:
         -c file => Server configuration file.  Required arg.
         -d dir path => Directory path to config file (-c). Required arg.
         -R [database name(s)] => Repair database.  If no db_name is
             provided, then all databases are repaired.
-        -C [database name(s)] => Defrag tables.  Can be used in
-            conjunction with the -t option to specify an individual
-            table.  If no -t is used, then all tables in the database
-            are compacted.  If no db_name is provided, then all
-            database are processed.
+        -C [database name(s)] => Defrag tables.  If no db_name is provided,
+            then all database are processed.
+            Can be used in conjunction with the -t option to specify an
+            individual table.  If no -t is used, then all tables in the
+            database are compacted.
         -D [database name(s)] => Validate tables. Can be used in conjunction
             with the -t option to specify an individual table.  If no -t is
             used, then all tables in the database are validated.  If no
             db_name is provided, then all database are processed.  Also used
             in conjunction with the -f option.
-        -f => Run full validate scan on table(s).  For -D option only.
+        -f => Run full validate scan on table(s).
+            For use with the -D option only.
         -M Display the current database status, such as uptime, memory
-            use, and connection usage.  Can use the following options:
-            -m, -j, -i, and -o.
-        -j => Return output in JSON format.  For -G and -M options.
-        -l => Return output in "list" format.  For -G option.
+            use, and connection usage.
+            Can use the following options: -m, -j, -i, and -o.
+        -j => Return output in JSON format.
+            For use with the -G and -M options.
+        -g => Flatten the JSON data structure to file and standard out.
+        -l => Return output in "list" format.
+            For use with the -G option.
         -i {database:collection} => Name of database and collection to insert
-            the database status data into.  Delimited by colon (:).
-            Default: sysmon:mongo_db_status  When using this option, the
-            configuration file format will determine whether the connection
-            will be to a single Mongo database server or to a Mongo replica
-            set.  See Configuration File format below on each format.
+            the database status data into.
+            Default value:  sysmon:mongo_db_status
+            This option requires option:  -m
         -m file => Mongo config file used for the insertion into a Mongo
-            database.  Do not include the .py extension.  Used only with the
-            -i option.
-        -o path/file => Directory path and file name for output.  Can be
-            used with -M or -G options.  Format compability:
+            database.  Do not include the .py extension.
+            This option is required for -i option.
+        -o path/file => Directory path and file name for output.
+            Can be used with -M or -G options.
+            Use the -a option to append to an existing file.
+            Format compability:
                 -M option => JSON and standard out.
                 -G option => JSON, list, and standard out.
-        -t table_name(s) => Table names.  Used with the -C or -D options.
+        -a => Append output to output file.
+        -t table_name(s) => Table names.
+            Used with the -C or -D options.
         -L => Run a log rotate on the mongo database error log.
         -n dir path => Directory path to where the old mongo database
             error log file will be moved to.
         -G {global | rs | startupWarnings} => Retrieve the mongo error
-            log from mongo memory cache.  Default value is: global.  Can
-            use the following options:  -j or -l and -o.
+            log from mongo memory cache.  Default value is: global.
+            Can use the following options:  -j or -l and -o.
         -e to_email_addresses => Enables emailing capability for an option if
             the option allows it.  Sends output to one or more email addresses.
+            Email addresses are delimited by spaces.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
         -z => Suppress standard out.
@@ -75,9 +86,14 @@
         NOTE 4:  Options -j and -l are XOR.
 
     Notes:
-        Mongo configuration file format (mongo.py).  The configuration
-            file format for the Mongo connection used for inserting data into
-            a database.  There are two ways to connect:  single or replica set.
+        Mongo configuration file format (config/mongo.py.TEMPLATE).  The
+            configuration file format is for connecting to a Mongo
+            database/replica set for monitoring and is also used to connect to
+            a Mongo database/replica set for for inserting data into.  Create
+            two different configuration files if monitoring one Mongo database
+            and inserting into a different Mongo database.
+
+            There are two ways to connect:  single or replica set.
 
             1.)  Single database connection:
 
@@ -119,8 +135,6 @@ from __future__ import print_function
 import sys
 import datetime
 import os
-import getpass
-import socket
 
 # Third party
 import json
@@ -245,9 +259,10 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     for x in tbl_list:
         print("\tChecking table: {0:50}".format(x + "..."), end="")
-        status, data = mongo.validate_tbl(x, scan=kwargs.get("full", False))
+        status_flag, data = mongo.validate_tbl(x, scan=kwargs.get("full",
+                                                                  False))
 
-        if status:
+        if status_flag:
             print("\t%s" % (data["valid"]))
 
             if data["valid"] is False:
@@ -268,7 +283,7 @@ def dbcc(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) False - if an error has occurred.
+        (output) False - If an error has occurred.
         (output) None -> Error message.
 
     """
@@ -336,7 +351,7 @@ def defrag(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) err_flag -> True|False - if an error has occurred.
+        (output) err_flag -> True|False - If an error has occurred.
         (output) err_msg -> Error message.
 
     """
@@ -418,11 +433,13 @@ def status(server, args_array, **kwargs):
             db_tbl database:table_name -> Mongo database and table name.
             class_cfg -> Mongo Rep Set server configuration.
             mail -> Mail instance.
-        (output) False - if an error has occurred.
+        (output) False - If an error has occurred.
         (output) None -> Error message.
 
     """
 
+    mode = "w"
+    indent = 4
     args_array = dict(args_array)
     server.upd_srv_stat()
     outdata = {"application": "Mongo Database",
@@ -442,8 +459,14 @@ def status(server, args_array, **kwargs):
     mongo_cfg = kwargs.get("class_cfg", None)
     db_tbl = kwargs.get("db_tbl", None)
 
+    if args_array.get("-a", False):
+        mode = "a"
+
+    if args_array.get("-g", False):
+        indent = None
+
     if "-j" in args_array:
-        outdata = json.dumps(outdata, indent=4)
+        outdata = json.dumps(outdata, indent=indent)
 
     if mongo_cfg and db_tbl:
         db, tbl = db_tbl.split(":")
@@ -455,11 +478,11 @@ def status(server, args_array, **kwargs):
             mongo_libs.ins_doc(mongo_cfg, db, tbl, ast.literal_eval(outdata))
 
     if ofile:
-        gen_libs.write_file(ofile, "w", outdata)
+        gen_libs.write_file(ofile, mode, outdata)
 
     if mail:
         if isinstance(outdata, dict):
-            mail.add_2_msg(json.dumps(outdata, indent=4))
+            mail.add_2_msg(json.dumps(outdata, indent=indent))
 
         else:
             mail.add_2_msg(outdata)
@@ -493,22 +516,22 @@ def rotate(server, args_array, **kwargs):
 
     if "-n" in args_array:
 
-        status, msg = gen_libs.chk_crt_dir(args_array["-n"], write=True)
+        status_flag, msg = gen_libs.chk_crt_dir(args_array["-n"], write=True)
 
-        if status:
+        if status_flag:
 
-            # Pull the log and path from Mongodb.
+            # Pull the log and path from Mongo.
             path_log = \
                 mongo_class.fetch_cmd_line(server)[
                     "parsed"]["systemLog"]["path"]
             dir_path = os.path.dirname(path_log)
             mdb_log = os.path.basename(path_log)
 
-            # Pre list of log files before logRotate.
+            # Pre-list of log files before logRotate.
             pre_logs = gen_libs.dir_file_match(dir_path, mdb_log)
             server.adm_cmd("logRotate")
 
-            # Post list of log files after logRotate.
+            # Post-list of log files after logRotate.
             post_logs = gen_libs.dir_file_match(dir_path, mdb_log)
             diff_list = gen_libs.is_missing_lists(post_logs, pre_logs)
 
@@ -541,25 +564,34 @@ def get_log(server, args_array, **kwargs):
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
-        (output) False - if an error has occurred.
+        (output) False - If an error has occurred.
         (output) None -> Error message.
 
     """
 
+    mode = "w"
+    indent = 4
     args_array = dict(args_array)
+
+    if args_array.get("-a", False):
+        mode = "a"
+
+    if args_array.get("-g", False):
+        indent = None
 
     # Get log data from mongodb.
     data = server.adm_cmd("getLog", arg1=args_array["-G"])
 
     if "-j" in args_array:
-        gen_libs.print_data(json.dumps(data, indent=4), **kwargs)
+        gen_libs.print_data(json.dumps(data, indent=indent), mode=mode,
+                            **kwargs)
 
     elif "-l" in args_array:
-        gen_libs.print_data(data["log"], **kwargs)
+        gen_libs.print_data(data["log"], mode=mode, **kwargs)
 
     else:
         if kwargs.get("ofile", None):
-            f_hldr = open(kwargs.get("ofile"), "w")
+            f_hldr = open(kwargs.get("ofile"), mode)
 
         else:
             f_hldr = sys.stdout
@@ -642,6 +674,7 @@ def main():
 
     """
 
+    cmdline = gen_libs.get_inst(sys)
     dir_chk_list = ["-d", "-n"]
     file_chk_list = ["-o"]
     file_crt_list = ["-o"]
@@ -662,8 +695,8 @@ def main():
                     "-G": ["-M"], "-j": ["-l"], "-l": ["-j"]}
 
     # Process argument list from command line.
-    args_array = arg_parser.arg_parse2(sys.argv, opt_val_list, opt_def_dict,
-                                       multi_val=opt_multi_list)
+    args_array = arg_parser.arg_parse2(cmdline.argv, opt_val_list,
+                                       opt_def_dict, multi_val=opt_multi_list)
 
     if not gen_libs.help_func(args_array, __version__, help_message) \
        and not arg_parser.arg_require(args_array, opt_req_list) \

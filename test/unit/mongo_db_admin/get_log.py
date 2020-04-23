@@ -81,8 +81,10 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_to_json_flatten -> Test with going to JSON and flattening.
         test_to_json -> Test going to JSON.
         test_to_list -> Test going to list.
+        test_append_to_file -> Test with appending to a file.
         test_to_file -> Test going to file.
         test_to_standard -> Test going to standard out.
         tearDown -> Clean up of unit testing.
@@ -103,7 +105,25 @@ class UnitTest(unittest.TestCase):
         self.args_array = {"-j": True, "-G": True}
         self.args_array2 = {"-l": True, "-G": True}
         self.args_array3 = {"-G": True}
+        self.args_array4 = {"-G": True, "-a": True}
+        self.args_array5 = {"-j": True, "-G": True, "-g": True}
         self.ofile = "./test/unit/mongo_db_admin/tmp/get_log.txt"
+
+    @mock.patch("mongo_db_admin.gen_libs.print_data")
+    def test_to_json_flatten(self, mock_print):
+
+        """Function:  test_to_json_flatten
+
+        Description:  Test with going to JSON and flattening.
+
+        Arguments:
+
+        """
+
+        mock_print.return_value = True
+
+        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array5),
+                         (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.print_data")
     def test_to_json(self, mock_print):
@@ -135,6 +155,23 @@ class UnitTest(unittest.TestCase):
         mock_print.return_value = True
 
         self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array2),
+                         (False, None))
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file2")
+    def test_append_to_file(self, mock_print):
+
+        """Function:  test_append_to_file
+
+        Description:  Test with appending to a file.
+
+        Arguments:
+
+        """
+
+        mock_print.return_value = True
+
+        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array4,
+                                                ofile=self.ofile),
                          (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file2")

@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.3.0] - 2020-04-16
+### Added
+- Added -g option to Flatten the JSON data structure to file and standard out.
+- Added -a option to allow for append of data to an existing output file.
+
+### Fixed
+- run_dbcc:  Changed "status" to "status_flag" due to naming conflict.
+- rotate:  Changed "status" to "status_flag" due to naming conflict.
+- main:  Fixed handling command line arguments from SonarQube scan finding.
+
+### Changed
+- status: Added file mode option to writing data to a file.  Default is write.
+- get_log: Added file mode option to writing data to a file.  Default is write.
+- status:  Added flattening of JSON structure to standard out and to file.
+- get_log:  Added flattening of JSON structure to standard out and to file.
+- Removed unused libraries getpass and socket.
+- Documentation updates.
+
+
 ## [2.2.0] - 2019-10-16
 ### Fixed
 - status:  Allow printing to standard out for the -M and -j argument combination.
