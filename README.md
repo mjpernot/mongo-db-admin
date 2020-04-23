@@ -16,11 +16,11 @@
 
 
 # Features
-  * Repair a Mongo database.
-  * Validate one or more tables/collections in a Mongo database.
-  * Defragmentation of a database or table in a Mongo database server.
-  * Display current status of a Mongo database.
-  * Check for errors in the Mongo log that is stored in Mongo memory cache.
+  * Repair Mongo databases.
+  * Validate tables in a Mongo database.
+  * Defragment a Mongo database or table.
+  * Display current status of a Mongo database server.
+  * Check for errors in the Mongo log that is stored in memory cache.
 
 # Prerequisites:
 
@@ -80,6 +80,9 @@ Make the appropriate change to the environment.
     - passwd = "PASSWORD"
     - host = "IP_ADDRESS"
     - name = "HOSTNAME"
+    - port = 27017
+    - conf_file = None
+    - auth = True
 
   * If connecting to a Mongo replica set, otherwise set to None.
     - repset = "REPLICA_SET_NAME"
@@ -99,6 +102,9 @@ Make the appropriate change to the environment.
     - passwd = "PASSWORD"
     - host = "IP_ADDRESS"
     - name = "HOSTNAME"
+    - port = 27017
+    - conf_file = None
+    - auth = True
 
   * If connecting to a Mongo replica set, otherwise set to None.
     - repset = "REPLICA_SET_NAME"
