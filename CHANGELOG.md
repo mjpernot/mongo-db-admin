@@ -6,6 +6,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.3.0] - 2020-04-16
 ### Added
+- Added -p option to allow compression of Mongo log with Log Rotate option.
 - Added -y option to allow a flavor ID for the program lock.
 - Added -g option to Flatten the JSON data structure to file and standard out.
 - Added -a option to allow for append of data to an existing output file.
