@@ -21,7 +21,8 @@
                 [-o dir_path/file [-a]] | [-z]} |
             {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
                 [-o dir_path/file [-a]]} |
-            [-e to_email [to_email2 ...] [-s subject_line]]
+            [-e to_email [to_email2 ...] [-s subject_line]] |
+            [-y flavor_id]
             [-v | -h]
 
     Arguments:
@@ -76,6 +77,7 @@
             Email addresses are delimited by spaces.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
+        -y value => A flavor id for the program lock.  To create unique lock.
         -z => Suppress standard out.
         -v => Display version of this program.
         -h => Help and usage message.
@@ -688,7 +690,7 @@ def main():
     opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
     opt_req_list = ["-c", "-d"]
     opt_val_list = ["-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o",
-                    "-G", "-n", "-e", "-s"]
+                    "-G", "-n", "-e", "-s", "-y"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
     opt_xor_dict = {"-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
                     "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"],
@@ -708,7 +710,15 @@ def main():
        and not arg_parser.arg_file_chk(args_array, file_chk_list,
                                        file_crt_list):
 
-        run_program(args_array, func_dict)
+        try:
+            prog_lock = gen_class.ProgramLock(cmdline.argv,
+                                              args_array.get("-y", ""))
+            run_program(args_array, func_dict)
+            del prog_lock
+
+        except gen_class.SingleInstanceException:
+            print("WARNING:  lock in place for mongo_db_admin with id of: %s"
+                  % (args_array.get("-y", "")))
 
 
 if __name__ == "__main__":
