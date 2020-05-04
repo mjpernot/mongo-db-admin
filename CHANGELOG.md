@@ -6,6 +6,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.3.0] - 2020-04-16
 ### Added
+- Added -y option to allow a flavor ID for the program lock.
 - Added -g option to Flatten the JSON data structure to file and standard out.
 - Added -a option to allow for append of data to an existing output file.
 
@@ -15,6 +16,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
 ### Changed
+- main:  Added program lock functionality to program.
 - status: Added file mode option to writing data to a file.  Default is write.
 - get_log: Added file mode option to writing data to a file.  Default is write.
 - status:  Added flattening of JSON structure to standard out and to file.
