@@ -186,9 +186,9 @@ class UnitTest(unittest.TestCase):
         self.args_array5 = {"-j": True, "-z": True, "-g": True}
         self.db_tbl = "db:tbl"
 
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    @mock.patch("mongo_db_admin.gen_libs")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_dict_all(self, mock_db, mock_file):
+    def test_to_dict_all(self, mock_db, mock_lib):
 
         """Function:  test_to_dict_all
 
@@ -199,7 +199,8 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_db.return_value = True
-        mock_file.return_value = True
+        mock_lib.display_data.return_value = True
+        mock_lib.openfile.return_value = "FileHandler"
 
         self.assertEqual(mongo_db_admin.status(
             self.server, self.args_array3, ofile="filename",
@@ -262,9 +263,9 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
                                                mail=self.mail), (False, None))
 
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
+    @mock.patch("mongo_db_admin.gen_libs")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_dict_both(self, mock_db, mock_file):
+    def test_to_dict_both(self, mock_db, mock_lib):
 
         """Function:  test_to_dict_both
 
@@ -275,7 +276,8 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_db.return_value = True
-        mock_file.return_value = True
+        mock_lib.display_data.return_value = True
+        mock_lib.openfile.return_value = "FileHandler"
 
         self.assertEqual(mongo_db_admin.status(
             self.server, self.args_array3, ofile="filename",
@@ -366,8 +368,8 @@ class UnitTest(unittest.TestCase):
             self.server, self.args_array2, class_cfg="mongo_cfg",
             db_tbl=self.db_tbl), (False, None))
 
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    def test_append_to_file(self, mock_file):
+    @mock.patch("mongo_db_admin.gen_libs")
+    def test_append_to_file(self, mock_lib):
 
         """Function:  test_append_to_file
 
@@ -377,13 +379,14 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_file.return_value = True
+        mock_lib.write_file.return_value = True
+        mock_lib.openfile.return_value = "FileHandler"
 
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array4,
                                                ofile="Outfile"), (False, None))
 
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    def test_to_file(self, mock_file):
+    @mock.patch("mongo_db_admin.gen_libs")
+    def test_to_file(self, mock_lib):
 
         """Function:  test_to_file
 
@@ -393,7 +396,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_file.return_value = True
+        mock_lib.write_file.return_value = True
+        mock_lib.openfile.return_value = "FileHandler"
 
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array3,
                                                ofile="Outfile"), (False, None))
