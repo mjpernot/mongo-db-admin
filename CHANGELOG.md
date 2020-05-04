@@ -18,6 +18,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
 ### Changed
+- rotate:  Added option compression call when rotating log files to -n option directory.
 - main:  Added program lock functionality to program.
 - status: Added file mode option to writing data to a file.  Default is write.
 - get_log: Added file mode option to writing data to a file.  Default is write.
