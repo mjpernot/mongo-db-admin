@@ -479,8 +479,11 @@ def status(server, args_array, **kwargs):
         else:
             mongo_libs.ins_doc(mongo_cfg, db, tbl, ast.literal_eval(outdata))
 
-    if ofile:
+    if ofile and "-j" in args_array:
         gen_libs.write_file(ofile, mode, outdata)
+
+    elif ofile:
+        gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
     if mail:
         if isinstance(outdata, dict):
