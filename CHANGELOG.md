@@ -4,22 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
-## [2.3.0] - 2020-04-16
+## [2.3.1] - 2020-05-04
 ### Added
 - Added -p option to allow compression of Mongo log with Log Rotate option.
 - Added -y option to allow a flavor ID for the program lock.
+
+### Fixed
+- status:  Write to file in correct format.
+
+### Changed
+- rotate:  Added option compression call when rotating log files to -n option directory.
+- main:  Added program lock functionality to program.
+
+
+## [2.3.0] - 2020-04-16
+### Added
 - Added -g option to Flatten the JSON data structure to file and standard out.
 - Added -a option to allow for append of data to an existing output file.
 
 ### Fixed
-- status:  Write to file in correct format.
 - run_dbcc:  Changed "status" to "status_flag" due to naming conflict.
 - rotate:  Changed "status" to "status_flag" due to naming conflict.
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
 ### Changed
-- rotate:  Added option compression call when rotating log files to -n option directory.
-- main:  Added program lock functionality to program.
 - status: Added file mode option to writing data to a file.  Default is write.
 - get_log: Added file mode option to writing data to a file.  Default is write.
 - status:  Added flattening of JSON structure to standard out and to file.
