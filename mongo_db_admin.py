@@ -12,7 +12,7 @@
 
     Usage:
         mongo_db_admin.py -c file -d path
-            {-L [-n dir_path]} |
+            {-L [-n dir_path [-p]]} |
             {-R [db_name [db_name2 ...]]} |
             {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
@@ -69,6 +69,8 @@
         -L => Run a log rotate on the mongo database error log.
         -n dir path => Directory path to where the old mongo database
             error log file will be moved to.
+        -p Compress Mongo log after log rotation.
+            Only applicable with the -n option selected.
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.  Default value is: global.
             Can use the following options:  -j or -l and -o.
