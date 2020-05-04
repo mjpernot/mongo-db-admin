@@ -11,6 +11,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - Added -a option to allow for append of data to an existing output file.
 
 ### Fixed
+- status:  Write to file in correct format.
 - run_dbcc:  Changed "status" to "status_flag" due to naming conflict.
 - rotate:  Changed "status" to "status_flag" due to naming conflict.
 - main:  Fixed handling command line arguments from SonarQube scan finding.
