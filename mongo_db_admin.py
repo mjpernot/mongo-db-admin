@@ -106,7 +106,8 @@
             passwd = "ROOT_PASSWORD"
             host = "IP_ADDRESS"
             name = "HOSTNAME"
-            port = PORT_NUMBER (default of mysql is 27017)
+            # Default port for Mongodb is 27017.
+            port = PORT_NUMBER
             conf_file = None
             auth = True
 
@@ -449,17 +450,17 @@ def status(server, args_array, **kwargs):
     indent = 4
     args_array = dict(args_array)
     server.upd_srv_stat()
-    outdata = {"application": "Mongo Database",
-               "server": server.name,
-               "asOf": datetime.datetime.strftime(datetime.datetime.now(),
+    outdata = {"Application": "MongoDB",
+               "Server": server.name,
+               "AsOf": datetime.datetime.strftime(datetime.datetime.now(),
                                                   "%Y-%m-%d %H:%M:%S")}
-    outdata.update({"memory": {"currentUsage": server.cur_mem,
-                               "maxUsage": server.max_mem,
-                               "percentUsed": server.prct_mem},
-                    "upTime": server.days_up,
-                    "connections": {"currentConnected": server.cur_conn,
-                                    "maxConnections": server.max_conn,
-                                    "percentUsed": server.prct_conn}})
+    outdata.update({"Memory": {"CurrentUsage": server.cur_mem,
+                               "MaxUsage": server.max_mem,
+                               "PercentUsed": server.prct_mem},
+                    "UpTime": server.days_up,
+                    "Connections": {"CurrentConnected": server.cur_conn,
+                                    "MaxConnections": server.max_conn,
+                                    "PercentUsed": server.prct_conn}})
 
     ofile = kwargs.get("ofile", None)
     mail = kwargs.get("mail", None)
