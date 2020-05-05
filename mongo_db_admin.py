@@ -125,6 +125,9 @@
         databases has no tables in the table listed presented, then all
         of the tables within the database will be processed.
 
+    Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
+        "repairDatabase" command was removed from Mongodb.
+
     Example:
         mongo_db_admin.py -c mongo -d config -D admin -t system.users
 
