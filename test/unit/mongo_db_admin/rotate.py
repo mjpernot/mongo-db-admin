@@ -56,7 +56,7 @@ class Server(object):
 
         """
 
-        pass
+        self.cmd = None
 
     def adm_cmd(self, cmd):
 
@@ -68,6 +68,8 @@ class Server(object):
             (input) cmd -> Database command.
 
         """
+
+        self.cmd = cmd
 
         return True
 
