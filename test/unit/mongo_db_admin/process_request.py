@@ -118,7 +118,7 @@ class Mongo(object):
 
         """
 
-        pass
+        self.dbn = None
 
     def connect(self):
 
@@ -142,6 +142,8 @@ class Mongo(object):
             (input) dbn -> Database name.
 
         """
+
+        self.dbn = dbn
 
         return True
 
