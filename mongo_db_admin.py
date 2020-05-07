@@ -219,8 +219,8 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     elif not tbl_name:
 
         # Generator builds list of databases to process.
-        for db in (db for db in db_name if db in db_list):
-            func_name(mongo, db, **kwargs)
+        for dbn in (dbn for dbn in db_name if dbn in db_list):
+            func_name(mongo, dbn, **kwargs)
 
     # Process passed databases and tables.
     else:
