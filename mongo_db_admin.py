@@ -493,13 +493,12 @@ def status(server, args_array, **kwargs):
     elif ofile:
         gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
-    if mail:
-        if isinstance(outdata, dict):
-            mail.add_2_msg(json.dumps(outdata, indent=indent))
+    if mail and isinstance(outdata, dict):
+        mail.add_2_msg(json.dumps(outdata, indent=indent))
+        mail.send_mail()
 
-        else:
-            mail.add_2_msg(outdata)
-
+    elif mail:
+        mail.add_2_msg(outdata)
         mail.send_mail()
 
     if not args_array.get("-z", False):
