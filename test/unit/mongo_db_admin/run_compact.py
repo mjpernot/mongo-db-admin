@@ -162,6 +162,10 @@ class Mongo(object):
         self.db_name = "DatabaseName"
         self.tbl_list = []
         self.cmd_type = True
+        self.dbn = None
+        self.status = None
+        self.com_type = None
+        self.obj = None
 
     def chg_db(self, db):
 
@@ -170,9 +174,11 @@ class Mongo(object):
         Description:  Stub holder for mongo_class.DB.chg_db method.
 
         Arguments:
-            (input) db -> Database name.
+            (input) dbn -> Database name.
 
         """
+
+        self.dbn = db
 
         return True
 
@@ -186,6 +192,8 @@ class Mongo(object):
             (input) status -> Status of check.
 
         """
+
+        self.status = status
 
         return self.tbl_list
 
@@ -201,11 +209,14 @@ class Mongo(object):
 
         """
 
-        if self.cmd_type:
-            return {"ok": 1}
+        self.com_type = com_type
+        self.obj = obj
+        data = {"ok": 0}
 
-        else:
-            return {"ok": 0}
+        if self.cmd_type:
+            data = {"ok": 1}
+
+        return data
 
 
 class UnitTest(unittest.TestCase):
