@@ -29,6 +29,7 @@ import mock
 # Local
 sys.path.append(os.getcwd())
 import mongo_db_admin
+import lib.gen_libs as gen_libs
 import version
 
 __version__ = version.__version__
@@ -138,11 +139,10 @@ class UnitTest(unittest.TestCase):
         self.func_dict = {"-C": defrag}
         self.func_dict2 = {"-C": dbcc}
 
-    @mock.patch("mongo_db_admin.sys.exit")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_func_failure(self, mock_mongo, mock_conn, mock_load, mock_exit):
+    def test_func_failure(self, mock_mongo, mock_conn, mock_load):
 
         """Function:  test_func_failure
 
@@ -155,10 +155,10 @@ class UnitTest(unittest.TestCase):
         mock_mongo.return_value = self.server
         mock_conn.return_value = True
         mock_load.return_value = "RepConfig"
-        mock_exit.return_value = True
 
-        self.assertFalse(mongo_db_admin.run_program(self.args_array2,
-                                                    self.func_dict2))
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_program(self.args_array2,
+                                                        self.func_dict2))
 
     @mock.patch("mongo_db_admin.gen_class.setup_mail")
     @mock.patch("mongo_db_admin.gen_libs.load_module")

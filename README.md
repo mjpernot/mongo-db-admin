@@ -84,7 +84,8 @@ Make the appropriate change to the environment.
     - conf_file = None
     - auth = True
 
-  * If connecting to a Mongo replica set, otherwise set to None.
+  * If connecting to a Mongo replica set.
+  * By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
     - repset_hosts = "HOST_1:PORT, HOST_2:PORT, ..."
     - db_auth = "AUTHENTICATION_DATABASE"
@@ -106,7 +107,8 @@ Make the appropriate change to the environment.
     - conf_file = None
     - auth = True
 
-  * If connecting to a Mongo replica set, otherwise set to None.
+  * If connecting to a Mongo replica set.
+  * By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
     - repset_hosts = "HOST_1:PORT, HOST_2:PORT, ..."
     - db_auth = "AUTHENTICATION_DATABASE"

@@ -34,7 +34,7 @@ import version
 __version__ = version.__version__
 
 
-def func_name(mongo, db, tbl_list=None, **kwargs):
+def func_name(mongo, dbn, tbl_list=None, **kwargs):
 
     """Method:  func_name
 
@@ -42,7 +42,7 @@ def func_name(mongo, db, tbl_list=None, **kwargs):
 
     Arguments:
         (input) mongo -> Mongo instance.
-        (input) db -> Database name.
+        (input) dbn -> Database name.
         (input) tbl_list -> Table name list.
 
     """
@@ -118,7 +118,7 @@ class Mongo(object):
 
         """
 
-        pass
+        self.dbn = None
 
     def connect(self):
 
@@ -139,9 +139,11 @@ class Mongo(object):
         Description:  Stub holder for mongo_class.DB.chg_db method.
 
         Arguments:
-            (input) db -> Database name.
+            (input) dbn -> Database name.
 
         """
+
+        self.dbn = db
 
         return True
 

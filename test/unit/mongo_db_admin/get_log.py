@@ -56,7 +56,8 @@ class Server(object):
 
         """
 
-        pass
+        self.cmd = None
+        self.arg1 = None
 
     def adm_cmd(self, cmd, arg1):
 
@@ -69,6 +70,9 @@ class Server(object):
             (input) arg1 -> Argument one.
 
         """
+
+        self.cmd = cmd
+        self.arg1 = arg1
 
         return {"log": "value"}
 
