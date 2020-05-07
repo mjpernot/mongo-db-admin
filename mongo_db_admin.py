@@ -225,12 +225,12 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     # Process passed databases and tables.
     else:
         # Generator builds list of databases to process.
-        for db in (db for db in db_name if db in db_list):
-            mongo.chg_db(db=db)
+        for dbn in (dbn for dbn in db_name if dbn in db_list):
+            mongo.chg_db(db=dbn)
             tbl_list = mongo.get_tbl_list()
 
             # Generator builds list of tables.
-            func_name(mongo, db,
+            func_name(mongo, dbn,
                       list((tbl for tbl in tbl_name if tbl in tbl_list)),
                       **kwargs)
 
