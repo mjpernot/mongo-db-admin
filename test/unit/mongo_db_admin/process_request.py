@@ -132,7 +132,7 @@ class Mongo(object):
 
         return True
 
-    def chg_db(self, dbn):
+    def chg_db(self, db):
 
         """Method:  chg_db
 
@@ -143,7 +143,7 @@ class Mongo(object):
 
         """
 
-        self.dbn = dbn
+        self.dbn = db
 
         return True
 
