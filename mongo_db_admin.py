@@ -477,13 +477,13 @@ def status(server, args_array, **kwargs):
         outdata = json.dumps(outdata, indent=indent)
 
     if mongo_cfg and db_tbl:
-        db, tbl = db_tbl.split(":")
+        dbn, tbl = db_tbl.split(":")
 
         if isinstance(outdata, dict):
-            mongo_libs.ins_doc(mongo_cfg, db, tbl, outdata)
+            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
 
         else:
-            mongo_libs.ins_doc(mongo_cfg, db, tbl, ast.literal_eval(outdata))
+            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, ast.literal_eval(outdata))
 
     if ofile and "-j" in args_array:
         gen_libs.write_file(ofile, mode, outdata)
