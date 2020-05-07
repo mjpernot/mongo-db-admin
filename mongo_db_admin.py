@@ -329,9 +329,9 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     if not tbl_list:
         tbl_list = mongo.get_tbl_list(False)
 
-    for x in tbl_list:
-        print("\tCompacting: {0:50}".format(x + "..."), end="")
-        coll = mongo_libs.crt_coll_inst(mongo, db_name, x)
+    for item in tbl_list:
+        print("\tCompacting: {0:50}".format(item + "..."), end="")
+        coll = mongo_libs.crt_coll_inst(mongo, db_name, item)
         coll.connect()
 
         if coll.coll_options().get("capped", False):
@@ -339,7 +339,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
         else:
 
-            if mongo.db_cmd("compact", obj=x)["ok"] == 1:
+            if mongo.db_cmd("compact", obj=item)["ok"] == 1:
                 print("\tDone")
 
             else:
