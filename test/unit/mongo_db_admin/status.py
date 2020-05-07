@@ -71,7 +71,8 @@ class Mail(object):
 
         """
 
-        pass
+        self.lag_time = lag_time
+        self.data = None
 
     def add_2_msg(self, data):
 
@@ -82,6 +83,8 @@ class Mail(object):
         Arguments:
 
         """
+
+        self.data = data
 
         return True
 
