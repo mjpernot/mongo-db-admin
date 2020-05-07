@@ -611,8 +611,8 @@ def get_log(server, args_array, **kwargs):
         else:
             f_hldr = sys.stdout
 
-        for x in data["log"]:
-            gen_libs.write_file2(f_hldr, x)
+        for item in data["log"]:
+            gen_libs.write_file2(f_hldr, item)
 
         if kwargs.get("ofile", None):
             f_hldr.close()
