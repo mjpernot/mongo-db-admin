@@ -102,17 +102,19 @@
             1.)  Single database connection:
 
             # Single Configuration file for Mongo Database Server.
-            user = "root"
-            passwd = "ROOT_PASSWORD"
+            user = "USER"
+            passwd = "PASSWORD"
             host = "IP_ADDRESS"
             name = "HOSTNAME"
             # Default port for Mongodb is 27017.
-            port = PORT_NUMBER
+            port = 27017
             conf_file = None
             auth = True
 
             2.)  Replica Set connection:  Same format as above, but with these
-                additional entries at the end of the configuration file:
+                additional entries at the end of the configuration file.  By
+                default all these entries are set to None to represent not
+                connecting to a replica set.
 
             repset = "REPLICA_SET_NAME"
             repset_hosts = "HOST1:PORT, HOST2:PORT, HOST3:PORT, [...]"
@@ -130,7 +132,7 @@
         "repairDatabase" command was removed from Mongodb.
 
     Example:
-        mongo_db_admin.py -c mongo -d config -D admin -t system.users
+        mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
 
 """
 

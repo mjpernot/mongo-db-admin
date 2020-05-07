@@ -13,6 +13,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - status:  Write to file in correct format.
 
 ### Changed
+- config/mongo.py.TEMPLATE:  Set the replica set variables to None.
 - status:  Changed JSON key values to CamelCase.
 - rotate:  Added option compression call when rotating log files to -n option directory.
 - main:  Added program lock functionality to program.
