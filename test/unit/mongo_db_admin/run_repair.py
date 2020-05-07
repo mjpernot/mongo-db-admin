@@ -59,6 +59,8 @@ class Mongo(object):
 
         self.db_name = "DatabaseName"
         self.db_results = {"ok": 1}
+        self.dbn = None
+        self.cmd = None
 
     def chg_db(self, dbn):
 
@@ -70,6 +72,8 @@ class Mongo(object):
             (input) dbn -> Database name.
 
         """
+
+        self.dbn = dbn
 
         return True
 
@@ -83,6 +87,8 @@ class Mongo(object):
             (input) cmd -> Database command.
 
         """
+
+        self.cmd = cmd
 
         return self.db_results
 
