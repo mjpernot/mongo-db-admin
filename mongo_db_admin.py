@@ -657,8 +657,8 @@ def run_program(args_array, func_dict, **kwargs):
                                             mail=mail, **kwargs)
 
         if err_flag:
-            cmds_gen.disconnect([server])
-            sys.exit(err_msg)
+            print("Error:  %s" % (err_msg))
+            break
 
     cmds_gen.disconnect([server])
 
