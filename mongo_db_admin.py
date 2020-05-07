@@ -554,8 +554,8 @@ def rotate(server, args_array, **kwargs):
                 gen_libs.mv_file(diff_list[0], dir_path, args_array["-n"])
 
                 if "-p" in args_array:
-                     gen_libs.compress(os.path.join(args_array["-n"],
-                                                    diff_list[0]))
+                    gen_libs.compress(os.path.join(args_array["-n"],
+                                                   diff_list[0]))
 
         else:
             err_flag = True
