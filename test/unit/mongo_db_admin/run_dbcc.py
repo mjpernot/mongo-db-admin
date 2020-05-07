@@ -60,6 +60,9 @@ class Mongo(object):
 
         self.db_name = "DatabaseName"
         self.type = True
+        self.dbn = None
+        self.tbl = None
+        self.scan = None
 
     def validate_tbl(self, tbl, scan):
 
@@ -73,11 +76,14 @@ class Mongo(object):
 
         """
 
-        if self.type:
-            return True, {"valid": False, "errors": "Error Message"}
+        self.tbl = tbl
+        self.scan = scan
+        data = (False, "Cannot validate view")
 
-        else:
-            return False, "Cannot validate view"
+        if self.type:
+            data = (True, {"valid": False, "errors": "Error Message"})
+
+        return data
 
     def chg_db(self, db):
 
@@ -86,9 +92,11 @@ class Mongo(object):
         Description:  Stub holder for mongo_class.DB.chg_db method.
 
         Arguments:
-            (input) db -> Database name.
+            (input) dbn -> Database name.
 
         """
+
+        self.dbn = db
 
         return True
 

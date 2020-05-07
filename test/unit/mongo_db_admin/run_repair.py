@@ -59,6 +59,8 @@ class Mongo(object):
 
         self.db_name = "DatabaseName"
         self.db_results = {"ok": 1}
+        self.dbn = None
+        self.cmd = None
 
     def chg_db(self, db):
 
@@ -67,9 +69,11 @@ class Mongo(object):
         Description:  Stub holder for mongo_class.DB.chg_db method.
 
         Arguments:
-            (input) db -> Database name.
+            (input) dbn -> Database name.
 
         """
+
+        self.dbn = db
 
         return True
 
@@ -83,6 +87,8 @@ class Mongo(object):
             (input) cmd -> Database command.
 
         """
+
+        self.cmd = cmd
 
         return self.db_results
 

@@ -56,7 +56,7 @@ class Server(object):
 
         """
 
-        pass
+        self.cmd = None
 
     def adm_cmd(self, cmd):
 
@@ -69,6 +69,8 @@ class Server(object):
 
         """
 
+        self.cmd = cmd
+
         return True
 
 
@@ -80,6 +82,7 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_compress -> Test with compression option.
         test_too_many_logs -> Test with too many logs to rotate.
         test_rotate -> Test rotate function.
         test_file_chk_fail -> Test going to file.
@@ -99,7 +102,33 @@ class UnitTest(unittest.TestCase):
 
         self.server = Server()
         self.args_array = {}
-        self.args_array2 = {"-n": True}
+        self.args_array2 = {"-n": "/path"}
+        self.args_array3 = {"-n": "/path", "-p": True}
+        self.filepath = "/dir/path/filename"
+
+    @mock.patch("mongo_db_admin.mongo_class.fetch_cmd_line")
+    @mock.patch("mongo_db_admin.gen_libs")
+    def test_compress(self, mock_lib, mock_fetch):
+
+        """Function:  test_compress
+
+        Description:  Test with compression option.
+
+        Arguments:
+
+        """
+
+        mock_lib.chk_crt_dir.return_value = (True, None)
+        mock_lib.dir_file_match.side_effect = [["File1", "File2"],
+                                               ["File1", "File2"]]
+        mock_lib.mv_file.return_value = True
+        mock_lib.is_missing_lists.return_value = ["File1"]
+        mock_lib.compress.return_value = True
+        mock_fetch.return_value = {"parsed": {"systemLog":
+                                              {"path": self.filepath}}}
+
+        self.assertEqual(mongo_db_admin.rotate(self.server, self.args_array3),
+                         (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.is_missing_lists")
     @mock.patch("mongo_db_admin.gen_libs.dir_file_match")
@@ -119,7 +148,7 @@ class UnitTest(unittest.TestCase):
         err_msg = "Error:  Too many files to move: ['File1', 'File2']"
         mock_check.return_value = (True, None)
         mock_fetch.return_value = {"parsed": {"systemLog":
-                                              {"path": "/dir/path/filename"}}}
+                                              {"path": self.filepath}}}
         mock_match.side_effect = [["File1", "File2"], ["File1"]]
         mock_diff.return_value = ["File1", "File2"]
 
@@ -144,7 +173,7 @@ class UnitTest(unittest.TestCase):
 
         mock_check.return_value = (True, None)
         mock_fetch.return_value = {"parsed": {"systemLog":
-                                              {"path": "/dir/path/filename"}}}
+                                              {"path": self.filepath}}}
         mock_match.side_effect = [["File1", "File2"], ["File1", "File2"]]
         mock_mv.return_value = True
         mock_diff.return_value = ["File1"]

@@ -12,7 +12,7 @@
 
     Usage:
         mongo_db_admin.py -c file -d path
-            {-L [-n dir_path]} |
+            {-L [-n dir_path [-p]]} |
             {-R [db_name [db_name2 ...]]} |
             {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
@@ -21,7 +21,8 @@
                 [-o dir_path/file [-a]] | [-z]} |
             {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
                 [-o dir_path/file [-a]]} |
-            [-e to_email [to_email2 ...] [-s subject_line]]
+            [-e to_email [to_email2 ...] [-s subject_line]] |
+            [-y flavor_id]
             [-v | -h]
 
     Arguments:
@@ -68,6 +69,8 @@
         -L => Run a log rotate on the mongo database error log.
         -n dir path => Directory path to where the old mongo database
             error log file will be moved to.
+        -p Compress Mongo log after log rotation.
+            Only applicable with the -n option selected.
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.  Default value is: global.
             Can use the following options:  -j or -l and -o.
@@ -76,6 +79,7 @@
             Email addresses are delimited by spaces.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
+        -y value => A flavor id for the program lock.  To create unique lock.
         -z => Suppress standard out.
         -v => Display version of this program.
         -h => Help and usage message.
@@ -98,16 +102,19 @@
             1.)  Single database connection:
 
             # Single Configuration file for Mongo Database Server.
-            user = "root"
-            passwd = "ROOT_PASSWORD"
+            user = "USER"
+            passwd = "PASSWORD"
             host = "IP_ADDRESS"
             name = "HOSTNAME"
-            port = PORT_NUMBER (default of mysql is 27017)
+            # Default port for Mongodb is 27017.
+            port = 27017
             conf_file = None
             auth = True
 
             2.)  Replica Set connection:  Same format as above, but with these
-                additional entries at the end of the configuration file:
+                additional entries at the end of the configuration file.  By
+                default all these entries are set to None to represent not
+                connecting to a replica set.
 
             repset = "REPLICA_SET_NAME"
             repset_hosts = "HOST1:PORT, HOST2:PORT, HOST3:PORT, [...]"
@@ -121,8 +128,11 @@
         databases has no tables in the table listed presented, then all
         of the tables within the database will be processed.
 
+    Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
+        "repairDatabase" command was removed from Mongodb.
+
     Example:
-        mongo_db_admin.py -c mongo -d config -D admin -t system.users
+        mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
 
 """
 
@@ -204,25 +214,25 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     # Process all databases.
     if not db_name:
 
-        for x in db_list:
-            func_name(mongo, x, **kwargs)
+        for item in db_list:
+            func_name(mongo, item, **kwargs)
 
     # Process all tables in a database.
     elif not tbl_name:
 
         # Generator builds list of databases to process.
-        for db in (db for db in db_name if db in db_list):
-            func_name(mongo, db, **kwargs)
+        for dbn in (dbn for dbn in db_name if dbn in db_list):
+            func_name(mongo, dbn, **kwargs)
 
     # Process passed databases and tables.
     else:
         # Generator builds list of databases to process.
-        for db in (db for db in db_name if db in db_list):
-            mongo.chg_db(db=db)
+        for dbn in (dbn for dbn in db_name if dbn in db_list):
+            mongo.chg_db(db=dbn)
             tbl_list = mongo.get_tbl_list()
 
             # Generator builds list of tables.
-            func_name(mongo, db,
+            func_name(mongo, dbn,
                       list((tbl for tbl in tbl_name if tbl in tbl_list)),
                       **kwargs)
 
@@ -257,10 +267,10 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
     if not tbl_list:
         tbl_list = mongo.get_tbl_list()
 
-    for x in tbl_list:
-        print("\tChecking table: {0:50}".format(x + "..."), end="")
-        status_flag, data = mongo.validate_tbl(x, scan=kwargs.get("full",
-                                                                  False))
+    for item in tbl_list:
+        print("\tChecking table: {0:50}".format(item + "..."), end="")
+        status_flag, data = mongo.validate_tbl(item, scan=kwargs.get("full",
+                                                                     False))
 
         if status_flag:
             print("\t%s" % (data["valid"]))
@@ -321,9 +331,9 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     if not tbl_list:
         tbl_list = mongo.get_tbl_list(False)
 
-    for x in tbl_list:
-        print("\tCompacting: {0:50}".format(x + "..."), end="")
-        coll = mongo_libs.crt_coll_inst(mongo, db_name, x)
+    for item in tbl_list:
+        print("\tCompacting: {0:50}".format(item + "..."), end="")
+        coll = mongo_libs.crt_coll_inst(mongo, db_name, item)
         coll.connect()
 
         if coll.coll_options().get("capped", False):
@@ -331,7 +341,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
         else:
 
-            if mongo.db_cmd("compact", obj=x)["ok"] == 1:
+            if mongo.db_cmd("compact", obj=item)["ok"] == 1:
                 print("\tDone")
 
             else:
@@ -442,17 +452,17 @@ def status(server, args_array, **kwargs):
     indent = 4
     args_array = dict(args_array)
     server.upd_srv_stat()
-    outdata = {"application": "Mongo Database",
-               "server": server.name,
-               "asOf": datetime.datetime.strftime(datetime.datetime.now(),
+    outdata = {"Application": "MongoDB",
+               "Server": server.name,
+               "AsOf": datetime.datetime.strftime(datetime.datetime.now(),
                                                   "%Y-%m-%d %H:%M:%S")}
-    outdata.update({"memory": {"currentUsage": server.cur_mem,
-                               "maxUsage": server.max_mem,
-                               "percentUsed": server.prct_mem},
-                    "upTime": server.days_up,
-                    "connections": {"currentConnected": server.cur_conn,
-                                    "maxConnections": server.max_conn,
-                                    "percentUsed": server.prct_conn}})
+    outdata.update({"Memory": {"CurrentUsage": server.cur_mem,
+                               "MaxUsage": server.max_mem,
+                               "PercentUsed": server.prct_mem},
+                    "UpTime": server.days_up,
+                    "Connections": {"CurrentConnected": server.cur_conn,
+                                    "MaxConnections": server.max_conn,
+                                    "PercentUsed": server.prct_conn}})
 
     ofile = kwargs.get("ofile", None)
     mail = kwargs.get("mail", None)
@@ -469,24 +479,26 @@ def status(server, args_array, **kwargs):
         outdata = json.dumps(outdata, indent=indent)
 
     if mongo_cfg and db_tbl:
-        db, tbl = db_tbl.split(":")
+        dbn, tbl = db_tbl.split(":")
 
         if isinstance(outdata, dict):
-            mongo_libs.ins_doc(mongo_cfg, db, tbl, outdata)
+            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
 
         else:
-            mongo_libs.ins_doc(mongo_cfg, db, tbl, ast.literal_eval(outdata))
+            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, ast.literal_eval(outdata))
 
-    if ofile:
+    if ofile and "-j" in args_array:
         gen_libs.write_file(ofile, mode, outdata)
 
-    if mail:
-        if isinstance(outdata, dict):
-            mail.add_2_msg(json.dumps(outdata, indent=indent))
+    elif ofile:
+        gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
-        else:
-            mail.add_2_msg(outdata)
+    if mail and isinstance(outdata, dict):
+        mail.add_2_msg(json.dumps(outdata, indent=indent))
+        mail.send_mail()
 
+    elif mail:
+        mail.add_2_msg(outdata)
         mail.send_mail()
 
     if not args_array.get("-z", False):
@@ -542,6 +554,10 @@ def rotate(server, args_array, **kwargs):
             else:
                 gen_libs.mv_file(diff_list[0], dir_path, args_array["-n"])
 
+                if "-p" in args_array:
+                    gen_libs.compress(os.path.join(args_array["-n"],
+                                                   diff_list[0]))
+
         else:
             err_flag = True
             err_msg = msg
@@ -596,8 +612,8 @@ def get_log(server, args_array, **kwargs):
         else:
             f_hldr = sys.stdout
 
-        for x in data["log"]:
-            gen_libs.write_file2(f_hldr, x)
+        for item in data["log"]:
+            gen_libs.write_file2(f_hldr, item)
 
         if kwargs.get("ofile", None):
             f_hldr.close()
@@ -635,14 +651,14 @@ def run_program(args_array, func_dict, **kwargs):
                                     subj=args_array.get("-s", None))
 
     # Call function(s) - intersection of command line and function dict.
-    for x in set(args_array.keys()) & set(func_dict.keys()):
-        err_flag, err_msg = func_dict[x](server, args_array, ofile=outfile,
-                                         db_tbl=db_tbl, class_cfg=repcfg,
-                                         mail=mail, **kwargs)
+    for item in set(args_array.keys()) & set(func_dict.keys()):
+        err_flag, err_msg = func_dict[item](server, args_array, ofile=outfile,
+                                            db_tbl=db_tbl, class_cfg=repcfg,
+                                            mail=mail, **kwargs)
 
         if err_flag:
-            cmds_gen.disconnect([server])
-            sys.exit(err_msg)
+            print("Error:  %s" % (err_msg))
+            break
 
     cmds_gen.disconnect([server])
 
@@ -688,7 +704,7 @@ def main():
     opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
     opt_req_list = ["-c", "-d"]
     opt_val_list = ["-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o",
-                    "-G", "-n", "-e", "-s"]
+                    "-G", "-n", "-e", "-s", "-y"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
     opt_xor_dict = {"-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
                     "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"],
@@ -708,7 +724,15 @@ def main():
        and not arg_parser.arg_file_chk(args_array, file_chk_list,
                                        file_crt_list):
 
-        run_program(args_array, func_dict)
+        try:
+            prog_lock = gen_class.ProgramLock(cmdline.argv,
+                                              args_array.get("-y", ""))
+            run_program(args_array, func_dict)
+            del prog_lock
+
+        except gen_class.SingleInstanceException:
+            print("WARNING:  lock in place for mongo_db_admin with id of: %s"
+                  % (args_array.get("-y", "")))
 
 
 if __name__ == "__main__":
