@@ -212,8 +212,8 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     # Process all databases.
     if not db_name:
 
-        for x in db_list:
-            func_name(mongo, x, **kwargs)
+        for item in db_list:
+            func_name(mongo, item, **kwargs)
 
     # Process all tables in a database.
     elif not tbl_name:
