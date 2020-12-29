@@ -46,10 +46,20 @@ def dbcc(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
         (input) args_array -> Dict of command line options and values.
         (input) db_tbl -> Database and table names.
         (input) class_cfg -> Class configuration file.
+        (input) kwargs:
+            mail => Mail instance.
 
     """
 
-    return True, "ErrorMessage"
+    flag = True
+    errmsg = "ErrorMessage"
+    mail = kwargs.get("mail", None)
+
+    if server and args_array and ofile and db_tbl and class_cfg and mail:
+        flag = True
+        errmsg = "ErrorMessage"
+
+    return flag, errmsg
 
 
 def defrag(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
@@ -63,10 +73,20 @@ def defrag(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
         (input) args_array -> Dict of command line options and values.
         (input) db_tbl -> Database and table names.
         (input) class_cfg -> Class configuration file.
+        (input) kwargs:
+            mail => Mail instance.
 
     """
 
-    return False, None
+    flag = False
+    errmsg = None
+    mail = kwargs.get("mail", None)
+
+    if server and args_array and ofile and db_tbl and class_cfg and mail:
+        flag = False
+        errmsg = None
+
+    return flag, errmsg
 
 
 class Server(object):
