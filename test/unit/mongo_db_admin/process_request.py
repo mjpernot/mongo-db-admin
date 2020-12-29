@@ -74,12 +74,15 @@ class Server(object):
 
         self.name = "Server name"
         self.user = "User name"
-        self.passwd = "User pwd"
+        self.japd = "User pwd"
         self.host = "Host name"
         self.port = 27017
         self.auth = "Auth type"
         self.conf_file = "Config file name"
         self.db_list = ["DB1", "DB2"]
+        self.auth_db = "admin"
+        self.use_arg = True
+        self.use_uri = False
 
     def fetch_dbs(self):
 
@@ -205,10 +208,9 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(mongo_db_admin.process_request(self.server,
-                                                        self.func_name,
-                                                        self.db_name,
-                                                        self.tbl_name))
+        self.assertFalse(
+            mongo_db_admin.process_request(
+                self.server,self.func_name,self.db_name, self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
@@ -225,9 +227,9 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(mongo_db_admin.process_request(self.server,
-                                                        self.func_name,
-                                                        self.db_name))
+        self.assertFalse(
+            mongo_db_admin.process_request(
+                self.server, self.func_name, self.db_name))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.cmds_gen.disconnect")
@@ -244,8 +246,8 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(mongo_db_admin.process_request(self.server,
-                                                        self.func_name))
+        self.assertFalse(
+            mongo_db_admin.process_request(self.server, self.func_name))
 
 
 if __name__ == "__main__":
