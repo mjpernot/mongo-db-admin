@@ -32,7 +32,6 @@
             -n dir path => Directory path to where the old mongo database
                 error log file will be moved to.
             -p Compress Mongo log after log rotation.
-                Only applicable with the -n option selected.
 
         -R [database name(s)] => Repair database.
             Note:  If no database name is provided, then all databases are
