@@ -210,7 +210,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertFalse(
             mongo_db_admin.process_request(
-                self.server,self.func_name,self.db_name, self.tbl_name))
+                self.server, self.func_name, self.db_name, self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.mongo_libs.disconnect")
