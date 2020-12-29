@@ -85,7 +85,7 @@ class Mongo(object):
 
         return data
 
-    def chg_db(self, db):
+    def chg_db(self, dbs):
 
         """Method:  chg_db
 
@@ -96,7 +96,7 @@ class Mongo(object):
 
         """
 
-        self.dbn = db
+        self.dbn = dbs
 
         return True
 
