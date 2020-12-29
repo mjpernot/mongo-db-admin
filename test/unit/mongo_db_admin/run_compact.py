@@ -167,7 +167,7 @@ class Mongo(object):
         self.com_type = None
         self.obj = None
 
-    def chg_db(self, db):
+    def chg_db(self, dbs):
 
         """Method:  chg_db
 
@@ -178,7 +178,7 @@ class Mongo(object):
 
         """
 
-        self.dbn = db
+        self.dbn = dbs
 
         return True
 
@@ -249,7 +249,7 @@ class UnitTest(unittest.TestCase):
         self.tbl_name = ["Table3", "Table4"]
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_compact_failure(self, mock_cmd, mock_create):
 
         """Function:  test_compact_failure
@@ -270,7 +270,7 @@ class UnitTest(unittest.TestCase):
                                                         self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_compact_successful(self, mock_cmd, mock_create):
 
         """Function:  test_compact_successful
@@ -290,7 +290,7 @@ class UnitTest(unittest.TestCase):
                                                         self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_coll_capped(self, mock_cmd, mock_create):
 
         """Function:  test_coll_capped
