@@ -156,7 +156,6 @@ import ast
 # Local
 import lib.arg_parser as arg_parser
 import lib.gen_libs as gen_libs
-import lib.cmds_gen as cmds_gen
 import lib.gen_class as gen_class
 import mongo_lib.mongo_libs as mongo_libs
 import mongo_lib.mongo_class as mongo_class
@@ -241,7 +240,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
                       list((tbl for tbl in tbl_name if tbl in tbl_list)),
                       **kwargs)
 
-    cmds_gen.disconnect([mongo])
+    mongo_libs.disconnect([mongo])
 
 
 def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
@@ -352,7 +351,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
             else:
                 print("\tCommand Failed")
 
-        cmds_gen.disconnect([coll])
+        mongo_libs.disconnect([coll])
 
 
 def defrag(server, args_array, **kwargs):
@@ -665,7 +664,7 @@ def run_program(args_array, func_dict, **kwargs):
             print("Error:  %s" % (err_msg))
             break
 
-    cmds_gen.disconnect([server])
+    mongo_libs.disconnect([server])
 
 
 def main():

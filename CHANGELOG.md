@@ -7,10 +7,14 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ## [2.3.2] - 2020-12-29
 
 ### Changed
-- Upgrade to use mongo-libs v3.1.0 library.
+- process_request, run_compact, run_program:  Replaced cmds_gen.disconnect with mongo_libs.disconnect.
+- Upgrade to use mongo-libs v4.1.0 library.
 - process_request:  Updated Mongo class instance to reflect changes in config file.
 - config/mongo.py.TEMPLATE:  Added authentication mechanism entries to config file.
 - Documentation updates.
+
+### Removed
+- Removed cmds_gen library module, no longer required. 
 
 
 ## [2.3.1] - 2020-05-04
