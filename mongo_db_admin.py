@@ -28,66 +28,67 @@
     Arguments:
         -c file => Server configuration file.  Required arg.
         -d dir path => Directory path to config file (-c). Required arg.
-        -R [database name(s)] => Repair database.  If no db_name is
-            provided, then all databases are repaired.
-        -C [database name(s)] => Defrag tables.  If no db_name is provided,
-            then all database are processed.
-            Can be used in conjunction with the -t option to specify an
-            individual table.  If no -t is used, then all tables in the
-            database are compacted.
-        -D [database name(s)] => Validate tables. Can be used in conjunction
-            with the -t option to specify an individual table.  If no -t is
-            used, then all tables in the database are validated.  If no
-            db_name is provided, then all database are processed.  Also used
-            in conjunction with the -f option.
-        -f => Run full validate scan on table(s).
-            For use with the -D option only.
-        -M Display the current database status, such as uptime, memory
-            use, and connection usage.
-            Can use the following options: -m, -j, -i, and -o.
-        -j => Return output in JSON format.
-            For use with the -G and -M options.
-        -g => Flatten the JSON data structure to file and standard out.
-        -l => Return output in "list" format.
-            For use with the -G option.
-        -i {database:collection} => Name of database and collection to insert
-            the database status data into.
-            Default value:  sysmon:mongo_db_status
-            This option requires option:  -m
-        -m file => Mongo config file used for the insertion into a Mongo
-            database.  Do not include the .py extension.
-            This option is required for -i option.
-        -o path/file => Directory path and file name for output.
-            Can be used with -M or -G options.
-            Use the -a option to append to an existing file.
-            Format compability:
-                -M option => JSON and standard out.
-                -G option => JSON, list, and standard out.
-        -a => Append output to output file.
-        -t table_name(s) => Table names.
-            Used with the -C or -D options.
         -L => Run a log rotate on the mongo database error log.
-        -n dir path => Directory path to where the old mongo database
-            error log file will be moved to.
-        -p Compress Mongo log after log rotation.
-            Only applicable with the -n option selected.
+            -n dir path => Directory path to where the old mongo database
+                error log file will be moved to.
+            -p Compress Mongo log after log rotation.
+                Only applicable with the -n option selected.
+
+        -R [database name(s)] => Repair database.
+            Note:  If no database name is provided, then all databases are
+                repaired.
+
+        -C [database name(s)] => Defrag tables.
+            Note: If no db_name is provided, then all database are processed.
+                Can use the -t option to specify an individual table.  If no
+                -t is used, then all tables in the database are compacted.
+            -t table_name(s) => Table names.
+
+        -D [database name(s)] => Validate tables.
+            Note: If no db_name is provided, then all database are processed.
+                Can use the -t option to specify an individual table.  If no
+                -t is used, then all tables in the database are compacted.
+            -t table_name(s) => Table names.
+            -f => Run full validate scan on table(s).
+
+        -M Display the current database status; uptime, memory use, and usage.
+            -j => Return output in JSON format.
+            -g => Flatten the JSON data structure to file and standard out.
+            -i {database:collection} => Name of database and collection to
+                insert the database status data into.
+                Default value:  sysmon:mongo_db_status
+            -m file => Mongo config file used for the insertion into a Mongo
+                database.  Do not include the .py extension.
+            -o path/file => Directory path and file name for output.
+                Use the -a option to append to an existing file.
+                Format compability: JSON and standard out.
+            -a => Append output to output file.
+            -z => Suppress standard out.
+
         -G {global | rs | startupWarnings} => Retrieve the mongo error
-            log from mongo memory cache.  Default value is: global.
-            Can use the following options:  -j or -l and -o.
+            log from mongo memory cache.
+            Default value is: global.
+            Note:  Options -j and -l are Xor.
+            -j => Return output in JSON format.
+            -g => Flatten the JSON data structure to file and standard out.
+            -l => Return output in "list" format.
+            -o path/file => Directory path and file name for output.
+                Use the -a option to append to an existing file.
+                Format compability: JSON, list, and standard out.
+            -a => Append output to output file.
+
         -e to_email_addresses => Enables emailing capability for an option if
             the option allows it.  Sends output to one or more email addresses.
             Email addresses are delimited by spaces.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
         -y value => A flavor id for the program lock.  To create unique lock.
-        -z => Suppress standard out.
         -v => Display version of this program.
         -h => Help and usage message.
 
-        NOTE 1:  Options -R, -C, -D, and -M are XOR.
-        NOTE 2:  Options -M and -G are XOR.
+        NOTE 1:  Options -R, -C, -D, and -M are Xor.
+        NOTE 2:  Options -M and -G are Xor.
         NOTE 3:  -v and -h overrides all other options.
-        NOTE 4:  Options -j and -l are XOR.
 
     Notes:
         Mongo configuration file format (config/mongo.py.TEMPLATE).  The
@@ -103,13 +104,16 @@
 
             # Single Configuration file for Mongo Database Server.
             user = "USER"
-            passwd = "PASSWORD"
-            host = "IP_ADDRESS"
+            japd = "PSWORD"
+            host = "HOST_IP"
             name = "HOSTNAME"
-            # Default port for Mongodb is 27017.
             port = 27017
             conf_file = None
             auth = True
+            auth_db = "admin"
+            auth_mech = "SCRAM-SHA-1"
+            use_arg = True
+            use_uri = False
 
             2.)  Replica Set connection:  Same format as above, but with these
                 additional entries at the end of the configuration file.  By
