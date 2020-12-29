@@ -6,6 +6,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.3.2] - 2020-12-29
 
+### Fixed
+- get_log:  Added Server and AsOf to the JSON document.
+
 ### Changed
 - process_request, run_compact, run_program:  Replaced cmds_gen.disconnect with mongo_libs.disconnect.
 - Upgrade to use mongo-libs v4.1.0 library.

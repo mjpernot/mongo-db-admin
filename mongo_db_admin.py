@@ -601,6 +601,8 @@ def get_log(server, args_array, **kwargs):
 
     # Get log data from mongodb.
     data = server.adm_cmd("getLog", arg1=args_array["-G"])
+    data["Server"] = server.name
+    data["AsOf"] = gen_libs.get_date() + " " + gen_libs.get_time()
 
     if "-j" in args_array:
         gen_libs.print_data(json.dumps(data, indent=indent), mode=mode,
