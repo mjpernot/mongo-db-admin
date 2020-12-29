@@ -58,6 +58,7 @@ class Server(object):
 
         self.cmd = None
         self.arg1 = None
+        self.name = "ServerName"
 
     def adm_cmd(self, cmd, arg1):
 
