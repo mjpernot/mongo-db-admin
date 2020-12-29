@@ -135,7 +135,7 @@ class Mongo(object):
 
         return True
 
-    def chg_db(self, db):
+    def chg_db(self, dbs):
 
         """Method:  chg_db
 
@@ -146,7 +146,7 @@ class Mongo(object):
 
         """
 
-        self.dbn = db
+        self.dbn = dbs
 
         return True
 
@@ -194,7 +194,7 @@ class UnitTest(unittest.TestCase):
         self.tbl_name = ["Table3", "Table4"]
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_tbl_list(self, mock_conn, mock_db):
 
         """Function:  test_tbl_list
@@ -213,7 +213,7 @@ class UnitTest(unittest.TestCase):
                 self.server,self.func_name,self.db_name, self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_db_list(self, mock_conn, mock_db):
 
         """Function:  test_db_list
@@ -232,7 +232,7 @@ class UnitTest(unittest.TestCase):
                 self.server, self.func_name, self.db_name))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_default(self, mock_conn, mock_db):
 
         """Function:  test_default
