@@ -4,9 +4,9 @@
 
 # All Mongo configuration settings.
 user = "USER"
-passwd = "PASSWORD"
+japd = "PSWORD"
 # Mongo DB host information
-host = "IP_ADDRESS"
+host = "HOST_IP"
 name = "HOSTNAME"
 # Mongo database port (default is 27017)
 port = 27017
@@ -14,6 +14,18 @@ port = 27017
 conf_file = None
 # Authentication required:  True|False
 auth = True
+# Authentication database
+auth_db = "admin"
+# Authentication mechanism
+#   Current values allowed:  MONGODB-CR, SCRAM-SHA-1, SCRAM-SHA-256
+#   NOTE 1:  SCRAM-SHA-256 only works for Mongodb 4.0 and better.
+#   NOTE 2:  FIPS 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
+#   NOTE 3:  MONGODB-CR is not suppoerted in Mongodb 4.0 and better.
+auth_mech = "SCRAM-SHA-1"
+# Use Mongo client arguments
+use_arg = True
+# Use Mongo client uri
+use_uri = False
 
 # Replica Set Mongo configuration settings.
 # By default all settings are set to None.

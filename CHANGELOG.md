@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.3.2] - 2020-12-29
+
+### Changed
+- config/mongo.py.TEMPLATE:  Added authentication mechanism entries to config file.
+- Documentation updates.
+
+
 ## [2.3.1] - 2020-05-04
 ### Added
 - Added -p option to allow compression of Mongo log with Log Rotate option.
