@@ -7,6 +7,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ## [2.3.2] - 2020-12-29
 
 ### Changed
+- process_request:  Updated Mongo class instance to reflect changes in config file.
 - config/mongo.py.TEMPLATE:  Added authentication mechanism entries to config file.
 - Documentation updates.
 

@@ -209,9 +209,11 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         tbl_name = list(tbl_name)
 
     db_list = server.fetch_dbs()
-    mongo = mongo_class.DB(server.name, server.user, server.passwd,
-                           host=server.host, port=server.port, db="test",
-                           auth=server.auth, conf_file=server.conf_file)
+    mongo = mongo_class.DB(
+        server.name, server.user, server.japd, host=server.host,
+        port=server.port, db="test", auth=server.auth,
+        conf_file=server.conf_file, auth_db=server.auth_db,
+        use_arg=server.use_arg, use_uri=server.use_uri)
     mongo.connect()
 
     # Process all databases.
@@ -231,7 +233,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     else:
         # Generator builds list of databases to process.
         for dbn in (dbn for dbn in db_name if dbn in db_list):
-            mongo.chg_db(db=dbn)
+            mongo.chg_db(dbs=dbn)
             tbl_list = mongo.get_tbl_list()
 
             # Generator builds list of tables.
@@ -264,7 +266,7 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
     else:
         tbl_list = list(tbl_list)
 
-    mongo.chg_db(db=db_name)
+    mongo.chg_db(dbs=db_name)
     print("DBCC check for %s" % (mongo.db_name))
 
     if not tbl_list:
@@ -328,7 +330,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     else:
         tbl_list = list(tbl_list)
 
-    mongo.chg_db(db=db_name)
+    mongo.chg_db(dbs=db_name)
     print("Compacting for %s" % (mongo.db_name))
 
     if not tbl_list:
@@ -399,7 +401,7 @@ def run_repair(mongo, db_name, **kwargs):
 
     """
 
-    mongo.chg_db(db=db_name)
+    mongo.chg_db(dbs=db_name)
     print("Repairing Database: {0:20}".format(db_name + "..."), end="")
 
     if mongo.db_cmd("repairDatabase")["ok"] == 1:
