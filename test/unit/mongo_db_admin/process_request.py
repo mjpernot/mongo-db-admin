@@ -44,10 +44,18 @@ def func_name(mongo, dbn, tbl_list=None, **kwargs):
         (input) mongo -> Mongo instance.
         (input) dbn -> Database name.
         (input) tbl_list -> Table name list.
+        (input) kwargs:
+            mail => Mail instance.
 
     """
 
-    return True
+    status = True
+    mail = kwargs.get("mail", None)
+
+    if mongo and dbn and tbl_list and mail:
+        status = True
+
+    return status
 
 
 class Server(object):
