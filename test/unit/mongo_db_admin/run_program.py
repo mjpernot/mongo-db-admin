@@ -140,7 +140,7 @@ class UnitTest(unittest.TestCase):
         self.func_dict2 = {"-C": dbcc}
 
     @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_func_failure(self, mock_mongo, mock_conn, mock_load):
 
@@ -162,7 +162,7 @@ class UnitTest(unittest.TestCase):
 
     @mock.patch("mongo_db_admin.gen_class.setup_mail")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_email(self, mock_mongo, mock_conn, mock_load, mock_mail):
 
@@ -183,7 +183,7 @@ class UnitTest(unittest.TestCase):
                                                     self.func_dict))
 
     @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_cfg(self, mock_mongo, mock_conn, mock_load):
 
@@ -202,7 +202,7 @@ class UnitTest(unittest.TestCase):
         self.assertFalse(mongo_db_admin.run_program(self.args_array2,
                                                     self.func_dict))
 
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_no_cfg(self, mock_mongo, mock_conn):
 
