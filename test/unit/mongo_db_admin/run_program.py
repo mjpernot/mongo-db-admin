@@ -111,7 +111,8 @@ class Server(object):
 
         """
 
-        pass
+        self.status = True
+        self.errmsg = None
 
     def connect(self):
 
@@ -123,7 +124,7 @@ class Server(object):
 
         """
 
-        return True
+        return self.status, self.errmsg
 
 
 class UnitTest(unittest.TestCase):
@@ -134,6 +135,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_connection_failure -> Test with failed connection.
+        test_connection_successful -> Test with successful connection.
         test_func_failure -> Test with function returning error message.
         test_email -> Test with email option.
         test_cfg -> Test with configuration file.
@@ -159,10 +162,50 @@ class UnitTest(unittest.TestCase):
         self.func_dict = {"-C": defrag}
         self.func_dict2 = {"-C": dbcc}
 
-    @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_func_failure(self, mock_mongo, mock_conn, mock_load):
+    def test_connection_failure(self, mock_mongo):
+
+        """Function:  test_connection_failure
+
+        Description:  Test with failed connection.
+
+        Arguments:
+
+        """
+
+        self.server.status = False
+        self.server.errmsg = "Connection failure"
+        mock_mongo.return_value = self.server
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_program(self.args_array,
+                                                        self.func_dict))
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_connection_successful(self, mock_mongo):
+
+        """Function:  test_connection_successful
+
+        Description:  Test with successful connection.
+
+        Arguments:
+
+        """
+
+        mock_mongo.return_value = self.server
+
+        self.assertFalse(mongo_db_admin.run_program(self.args_array,
+                                                    self.func_dict))
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_func_failure(self, mock_mongo, mock_load):
 
         """Function:  test_func_failure
 
@@ -173,18 +216,18 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_mongo.return_value = self.server
-        mock_conn.return_value = True
         mock_load.return_value = "RepConfig"
 
         with gen_libs.no_std_out():
             self.assertFalse(mongo_db_admin.run_program(self.args_array2,
                                                         self.func_dict2))
 
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.gen_class.setup_mail")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_email(self, mock_mongo, mock_conn, mock_load, mock_mail):
+    def test_email(self, mock_mongo, mock_load, mock_mail):
 
         """Function:  test_email
 
@@ -195,17 +238,17 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_mongo.return_value = self.server
-        mock_conn.return_value = True
         mock_load.return_value = "RepConfig"
         mock_mail.return_value = "EmailInstance"
 
         self.assertFalse(mongo_db_admin.run_program(self.args_array3,
                                                     self.func_dict))
 
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_cfg(self, mock_mongo, mock_conn, mock_load):
+    def test_cfg(self, mock_mongo, mock_load):
 
         """Function:  test_cfg
 
@@ -216,15 +259,15 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_mongo.return_value = self.server
-        mock_conn.return_value = True
         mock_load.return_value = "RepConfig"
 
         self.assertFalse(mongo_db_admin.run_program(self.args_array2,
                                                     self.func_dict))
 
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_no_cfg(self, mock_mongo, mock_conn):
+    def test_no_cfg(self, mock_mongo):
 
         """Function:  test_no_cfg
 
@@ -235,7 +278,6 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_mongo.return_value = self.server
-        mock_conn.return_value = True
 
         self.assertFalse(mongo_db_admin.run_program(self.args_array,
                                                     self.func_dict))
