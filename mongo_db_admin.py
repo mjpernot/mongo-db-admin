@@ -492,7 +492,7 @@ def status(server, args_array, **kwargs):
 
         else:
             state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl,
-                                        ast.literal_eval(outdata))
+                                       ast.literal_eval(outdata))
 
         if not state[0]:
             err_flag = True
