@@ -432,15 +432,15 @@ def repair_db(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) False - if an error has occurred.
-        (output) None -> Error message.
+        (output) state[0] -> True|False - If an error has occurred.
+        (output) state[1] -> Error message.
 
     """
 
     args_array = dict(args_array)
-    process_request(server, run_repair, args_array["-R"], None)
+    state = process_request(server, run_repair, args_array["-R"], None)
 
-    return False, None
+    return state[0], state[1]
 
 
 def status(server, args_array, **kwargs):
