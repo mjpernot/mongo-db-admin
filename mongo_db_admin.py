@@ -236,9 +236,9 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
             tbl_list = mongo.get_tbl_list()
 
             # Generator builds list of tables.
-            func_name(mongo, dbn,
-                      list((tbl for tbl in tbl_name if tbl in tbl_list)),
-                      **kwargs)
+            func_name(
+                mongo, dbn, list((tbl for tbl in tbl_name if tbl in tbl_list)),
+                **kwargs)
 
     mongo_libs.disconnect([mongo])
 
