@@ -10,7 +10,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - get_log:  Added Server and AsOf to the JSON document.
 
 ### Changed
-- run_program:  Capture and process connection status.
+- status, run_program:  Capture and process connection status.
 - process_request, run_compact, run_program:  Replaced cmds_gen.disconnect with mongo_libs.disconnect.
 - Upgrade to use mongo-libs v4.1.0 library.
 - process_request:  Updated Mongo class instance to reflect changes in config file.
@@ -111,8 +111,7 @@ Breaking Change
 - get_log:  Replaced "gen_libs.Write_File" to "gen_libs.write_file2" call.
 - get_log:  Replaced "gen_libs.Close_File" with system close call.
 - get_log:  Replaced "gen_libs.Open_File" with system open call.
-- Changed "gen_libs" calls to new naming schema.
-- Changed "arg_parser" calls to new naming schema.
+- Changed "gen_libs" and "arg_parser" calls to new naming schema.
 - Changed function names from uppercase to lowercase.
 - Setup single-source version control.
 

@@ -447,11 +447,13 @@ def status(server, args_array, **kwargs):
             db_tbl database:table_name -> Mongo database and table name.
             class_cfg -> Mongo Rep Set server configuration.
             mail -> Mail instance.
-        (output) False - If an error has occurred.
-        (output) None -> Error message.
+        (output) err_flag -> True|False - If an error has occurred.
+        (output) err_msg -> Error message.
 
     """
 
+    err_flag = False
+    err_msg = None
     mode = "w"
     indent = 4
     args_array = dict(args_array)
@@ -486,10 +488,15 @@ def status(server, args_array, **kwargs):
         dbn, tbl = db_tbl.split(":")
 
         if isinstance(outdata, dict):
-            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
+            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
 
         else:
-            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, ast.literal_eval(outdata))
+            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl,
+                                        ast.literal_eval(outdata))
+
+        if not state[0]:
+            err_flag = True
+            err_msg = "Inserting into Mongo database:  %s" % state[1]
 
     if ofile and "-j" in args_array:
         gen_libs.write_file(ofile, mode, outdata)
@@ -508,7 +515,7 @@ def status(server, args_array, **kwargs):
     if not args_array.get("-z", False):
         gen_libs.display_data(outdata)
 
-    return False, None
+    return err_flag, err_msg
 
 
 def rotate(server, args_array, **kwargs):
