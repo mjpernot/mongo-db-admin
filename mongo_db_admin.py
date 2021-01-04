@@ -311,16 +311,17 @@ def dbcc(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) False - If an error has occurred.
-        (output) None -> Error message.
+        (output) state[0] -> True|False - If an error has occurred.
+        (output) state[1] -> Error message.
 
     """
 
     args_array = dict(args_array)
-    process_request(server, run_dbcc, args_array["-D"], args_array.get("-t"),
-                    full=args_array.get("-f", False))
+    state = process_request(
+        server, run_dbcc, args_array["-D"], args_array.get("-t"),
+        full=args_array.get("-f", False))
 
-    return False, None
+    return state[0], state[1]
 
 
 def run_compact(mongo, db_name, tbl_list=None, **kwargs):
