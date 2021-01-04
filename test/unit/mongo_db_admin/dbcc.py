@@ -79,6 +79,7 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_dbcc2 -> Test dbcc function.
         test_dbcc -> Test dbcc function.
 
     """
@@ -97,6 +98,22 @@ class UnitTest(unittest.TestCase):
         self.args_array = {"-D": "Optionsetting", "-t": "option"}
 
     @mock.patch("mongo_db_admin.process_request")
+    def test_dbcc2(self, mock_process):
+
+        """Function:  test_dbcc2
+
+        Description:  Test dbcc function.
+
+        Arguments:
+
+        """
+
+        mock_process.return_value = (True, "Error Message")
+
+        self.assertEqual(mongo_db_admin.dbcc(self.server, self.args_array),
+                         (True, "Error Message"))
+
+    @mock.patch("mongo_db_admin.process_request")
     def test_dbcc(self, mock_process):
 
         """Function:  test_dbcc
@@ -107,7 +124,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_process.return_value = True
+        mock_process.return_value = (False, None)
 
         self.assertEqual(mongo_db_admin.dbcc(self.server, self.args_array),
                          (False, None))
