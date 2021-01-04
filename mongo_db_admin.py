@@ -386,18 +386,15 @@ def defrag(server, args_array, **kwargs):
     """
 
     args_array = dict(args_array)
-    err_flag = False
-    err_msg = None
     data = mongo_class.fetch_ismaster(server)
 
-    # Primary servers not allowed to be defragged.
     if data["ismaster"] and "setName" in data:
         err_flag = True
         err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
 
     else:
-        process_request(server, run_compact, args_array["-C"],
-                        args_array.get("-t"))
+        err_flag, err_msg = process_request(
+            server, run_compact, args_array["-C"], args_array.get("-t"))
 
     return err_flag, err_msg
 
