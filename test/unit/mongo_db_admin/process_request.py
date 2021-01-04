@@ -130,6 +130,8 @@ class Mongo(object):
         """
 
         self.dbn = None
+        self.state = True
+        self.errmsg = None
 
     def connect(self):
 
@@ -141,7 +143,7 @@ class Mongo(object):
 
         """
 
-        return True
+        return self.state, self.errmsg
 
     def chg_db(self, dbs):
 
@@ -179,6 +181,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_connection_failure -> Test with failed connection.
+        test_connection_success -> Test with successful connection.
         test_tbl_list -> Test with table list.
         test_db_list -> Test with database list.
         test_default -> Test with default arguments.
@@ -200,6 +204,52 @@ class UnitTest(unittest.TestCase):
         self.func_name = func_name
         self.db_name = ["DB1"]
         self.tbl_name = ["Table3", "Table4"]
+        self.err_flag = False
+        self.err_flag2 = True
+        self.err_msg = None
+        msg = "Connection Error"
+        self.err_msg2 = "Connection to Mongo DB:  %s" % msg
+
+    @mock.patch("mongo_db_admin.mongo_class.DB")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_connection_failure(self, mock_conn, mock_db):
+
+        """Function:  test_connection_failure
+
+        Description:  Test with failed connection.
+
+        Arguments:
+
+        """
+
+        self.mongo.state = False
+        self.mongo.errmsg = "Connection Error"
+
+        mock_conn.return_value = True
+        mock_db.return_value = self.mongo
+
+        self.assertEqual(
+            mongo_db_admin.process_request(self.server, self.func_name),
+            (self.err_flag2, self.err_msg2))
+
+    @mock.patch("mongo_db_admin.mongo_class.DB")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_connection_success(self, mock_conn, mock_db):
+
+        """Function:  test_connection_success
+
+        Description:  Test with successful connection.
+
+        Arguments:
+
+        """
+
+        mock_conn.return_value = True
+        mock_db.return_value = self.mongo
+
+        self.assertEqual(
+            mongo_db_admin.process_request(self.server, self.func_name),
+            (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.mongo_libs.disconnect")
@@ -216,9 +266,10 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(
+        self.assertEqual(
             mongo_db_admin.process_request(
-                self.server, self.func_name, self.db_name, self.tbl_name))
+                self.server, self.func_name, self.db_name, self.tbl_name),
+            (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.mongo_libs.disconnect")
@@ -235,9 +286,10 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(
+        self.assertEqual(
             mongo_db_admin.process_request(
-                self.server, self.func_name, self.db_name))
+                self.server, self.func_name, self.db_name),
+            (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.mongo_libs.disconnect")
@@ -254,8 +306,9 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(
-            mongo_db_admin.process_request(self.server, self.func_name))
+        self.assertEqual(
+            mongo_db_admin.process_request(self.server, self.func_name),
+            (self.err_flag, self.err_msg))
 
 
 if __name__ == "__main__":
