@@ -650,9 +650,9 @@ def run_program(args_array, func_dict, **kwargs):
     func_dict = dict(func_dict)
     server = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
                                         mongo_class.Server)
-    status = server.connect()
+    state = server.connect()
 
-    if status[0]:
+    if state[0]:
         outfile = args_array.get("-o", None)
         db_tbl = args_array.get("-i", None)
         repcfg = None
@@ -678,7 +678,7 @@ def run_program(args_array, func_dict, **kwargs):
         mongo_libs.disconnect([server])
 
     else:
-        print("Connection failure:  %s" % (status[1]))
+        print("Connection failure:  %s" % (state[1]))
 
 
 def main():
