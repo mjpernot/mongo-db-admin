@@ -192,8 +192,13 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         (input) tbl_name -> List of table names.
         (input) **kwargs:
             full -> Full validation table check option.
+        (output) err_flag -> True|False - If an error has occurred.
+        (output) err_msg -> Error message.
 
     """
+
+    err_flag = False
+    err_msg = None
 
     if db_name is None:
         db_name = []
@@ -213,34 +218,43 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         port=server.port, db="test", auth=server.auth,
         conf_file=server.conf_file, auth_db=server.auth_db,
         use_arg=server.use_arg, use_uri=server.use_uri)
-    mongo.connect()
+    state = mongo.connect()
 
-    # Process all databases.
-    if not db_name:
 
-        for item in db_list:
-            func_name(mongo, item, **kwargs)
+    if not state[0]:
+        err_flag = True
+        err_msg = "Connection to Mongo DB:  %s" % state[1]
 
-    # Process all tables in a database.
-    elif not tbl_name:
-
-        # Generator builds list of databases to process.
-        for dbn in (dbn for dbn in db_name if dbn in db_list):
-            func_name(mongo, dbn, **kwargs)
-
-    # Process passed databases and tables.
     else:
-        # Generator builds list of databases to process.
-        for dbn in (dbn for dbn in db_name if dbn in db_list):
-            mongo.chg_db(dbs=dbn)
-            tbl_list = mongo.get_tbl_list()
+        # Process all databases.
+        if not db_name:
 
-            # Generator builds list of tables.
-            func_name(
-                mongo, dbn, list((tbl for tbl in tbl_name if tbl in tbl_list)),
-                **kwargs)
+            for item in db_list:
+                func_name(mongo, item, **kwargs)
 
-    mongo_libs.disconnect([mongo])
+        # Process all tables in a database.
+        elif not tbl_name:
+
+            # Generator builds list of databases to process.
+            for dbn in (dbn for dbn in db_name if dbn in db_list):
+                func_name(mongo, dbn, **kwargs)
+
+        # Process passed databases and tables.
+        else:
+            # Generator builds list of databases to process.
+            for dbn in (dbn for dbn in db_name if dbn in db_list):
+                mongo.chg_db(dbs=dbn)
+                tbl_list = mongo.get_tbl_list()
+
+                # Generator builds list of tables.
+                func_name(
+                    mongo, dbn,
+                    list((tbl for tbl in tbl_name if tbl in tbl_list)),
+                    **kwargs)
+
+        mongo_libs.disconnect([mongo])
+
+    return err_flag, err_msg
 
 
 def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):

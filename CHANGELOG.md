@@ -10,7 +10,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - get_log:  Added Server and AsOf to the JSON document.
 
 ### Changed
-- status, run_program:  Capture and process connection status.
+- process_request, status, run_program:  Capture and process connection status.
 - process_request, run_compact, run_program:  Replaced cmds_gen.disconnect with mongo_libs.disconnect.
 - Upgrade to use mongo-libs v4.1.0 library.
 - process_request:  Updated Mongo class instance to reflect changes in config file.
