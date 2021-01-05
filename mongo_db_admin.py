@@ -183,7 +183,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) func_name -> Name of a function.
-        (input) db_name -> Database name or 'all'
+        (input) db_name -> List of database names.
         (input) tbl_name -> List of table names.
         (input) **kwargs:
             full -> Full validation table check option.
