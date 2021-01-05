@@ -62,18 +62,18 @@ class Mongo(object):
         self.dbn = None
         self.cmd = None
 
-    def chg_db(self, db):
+    def chg_db(self, dbs):
 
         """Method:  chg_db
 
         Description:  Stub holder for mongo_class.DB.chg_db method.
 
         Arguments:
-            (input) dbn -> Database name.
+            (input) dbs -> Database name.
 
         """
 
-        self.dbn = db
+        self.dbn = dbs
 
         return True
 

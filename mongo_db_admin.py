@@ -28,66 +28,66 @@
     Arguments:
         -c file => Server configuration file.  Required arg.
         -d dir path => Directory path to config file (-c). Required arg.
-        -R [database name(s)] => Repair database.  If no db_name is
-            provided, then all databases are repaired.
-        -C [database name(s)] => Defrag tables.  If no db_name is provided,
-            then all database are processed.
-            Can be used in conjunction with the -t option to specify an
-            individual table.  If no -t is used, then all tables in the
-            database are compacted.
-        -D [database name(s)] => Validate tables. Can be used in conjunction
-            with the -t option to specify an individual table.  If no -t is
-            used, then all tables in the database are validated.  If no
-            db_name is provided, then all database are processed.  Also used
-            in conjunction with the -f option.
-        -f => Run full validate scan on table(s).
-            For use with the -D option only.
-        -M Display the current database status, such as uptime, memory
-            use, and connection usage.
-            Can use the following options: -m, -j, -i, and -o.
-        -j => Return output in JSON format.
-            For use with the -G and -M options.
-        -g => Flatten the JSON data structure to file and standard out.
-        -l => Return output in "list" format.
-            For use with the -G option.
-        -i {database:collection} => Name of database and collection to insert
-            the database status data into.
-            Default value:  sysmon:mongo_db_status
-            This option requires option:  -m
-        -m file => Mongo config file used for the insertion into a Mongo
-            database.  Do not include the .py extension.
-            This option is required for -i option.
-        -o path/file => Directory path and file name for output.
-            Can be used with -M or -G options.
-            Use the -a option to append to an existing file.
-            Format compability:
-                -M option => JSON and standard out.
-                -G option => JSON, list, and standard out.
-        -a => Append output to output file.
-        -t table_name(s) => Table names.
-            Used with the -C or -D options.
         -L => Run a log rotate on the mongo database error log.
-        -n dir path => Directory path to where the old mongo database
-            error log file will be moved to.
-        -p Compress Mongo log after log rotation.
-            Only applicable with the -n option selected.
+            -n dir path => Directory path to where the old mongo database
+                error log file will be moved to.
+            -p Compress Mongo log after log rotation.
+
+        -R [database name(s)] => Repair database.
+            Note:  If no database name is provided, then all databases are
+                repaired.
+
+        -C [database name(s)] => Defrag tables.
+            Note: If no db_name is provided, then all database are processed.
+                Can use the -t option to specify an individual table.  If no
+                -t is used, then all tables in the database are compacted.
+            -t table_name(s) => Table names.
+
+        -D [database name(s)] => Validate tables.
+            Note: If no db_name is provided, then all database are processed.
+                Can use the -t option to specify an individual table.  If no
+                -t is used, then all tables in the database are compacted.
+            -t table_name(s) => Table names.
+            -f => Run full validate scan on table(s).
+
+        -M Display the current database status; uptime, memory use, and usage.
+            -j => Return output in JSON format.
+            -g => Flatten the JSON data structure to file and standard out.
+            -i {database:collection} => Name of database and collection to
+                insert the database status data into.
+                Default value:  sysmon:mongo_db_status
+            -m file => Mongo config file used for the insertion into a Mongo
+                database.  Do not include the .py extension.
+            -o path/file => Directory path and file name for output.
+                Use the -a option to append to an existing file.
+                Format compability: JSON and standard out.
+            -a => Append output to output file.
+            -z => Suppress standard out.
+
         -G {global | rs | startupWarnings} => Retrieve the mongo error
-            log from mongo memory cache.  Default value is: global.
-            Can use the following options:  -j or -l and -o.
+            log from mongo memory cache.
+            Default value is: global.
+            Note:  Options -j and -l are Xor.
+            -j => Return output in JSON format.
+            -g => Flatten the JSON data structure to file and standard out.
+            -l => Return output in "list" format.
+            -o path/file => Directory path and file name for output.
+                Use the -a option to append to an existing file.
+                Format compability: JSON, list, and standard out.
+            -a => Append output to output file.
+
         -e to_email_addresses => Enables emailing capability for an option if
             the option allows it.  Sends output to one or more email addresses.
             Email addresses are delimited by spaces.
         -s subject_line => Subject line of email.  Optional, will create own
             subject line if one is not provided.
         -y value => A flavor id for the program lock.  To create unique lock.
-        -z => Suppress standard out.
         -v => Display version of this program.
         -h => Help and usage message.
 
-        NOTE 1:  Options -R, -C, -D, and -M are XOR.
-        NOTE 2:  Options -M and -G are XOR.
+        NOTE 1:  Options -R, -C, -D, and -M are Xor.
+        NOTE 2:  Options -M and -G are Xor.
         NOTE 3:  -v and -h overrides all other options.
-        NOTE 4:  Options -j and -l are XOR.
 
     Notes:
         Mongo configuration file format (config/mongo.py.TEMPLATE).  The
@@ -103,13 +103,16 @@
 
             # Single Configuration file for Mongo Database Server.
             user = "USER"
-            passwd = "PASSWORD"
-            host = "IP_ADDRESS"
+            japd = "PSWORD"
+            host = "HOST_IP"
             name = "HOSTNAME"
-            # Default port for Mongodb is 27017.
             port = 27017
             conf_file = None
             auth = True
+            auth_db = "admin"
+            auth_mech = "SCRAM-SHA-1"
+            use_arg = True
+            use_uri = False
 
             2.)  Replica Set connection:  Same format as above, but with these
                 additional entries at the end of the configuration file.  By
@@ -122,11 +125,6 @@
 
         Configuration modules -> Name is runtime dependent as it can be used to
             connect to different databases with different names.
-
-    Known Bug:  For options -C and -D.  If multiple database values are passed
-        to the program and the -t option is used.  If one of the
-        databases has no tables in the table listed presented, then all
-        of the tables within the database will be processed.
 
     Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
         "repairDatabase" command was removed from Mongodb.
@@ -153,7 +151,6 @@ import ast
 # Local
 import lib.arg_parser as arg_parser
 import lib.gen_libs as gen_libs
-import lib.cmds_gen as cmds_gen
 import lib.gen_class as gen_class
 import mongo_lib.mongo_libs as mongo_libs
 import mongo_lib.mongo_class as mongo_class
@@ -186,12 +183,17 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) func_name -> Name of a function.
-        (input) db_name -> Database name or 'all'
+        (input) db_name -> List of database names.
         (input) tbl_name -> List of table names.
         (input) **kwargs:
             full -> Full validation table check option.
+        (output) err_flag -> True|False - If an error has occurred.
+        (output) err_msg -> Error message.
 
     """
+
+    err_flag = False
+    err_msg = None
 
     if db_name is None:
         db_name = []
@@ -206,37 +208,50 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         tbl_name = list(tbl_name)
 
     db_list = server.fetch_dbs()
-    mongo = mongo_class.DB(server.name, server.user, server.passwd,
-                           host=server.host, port=server.port, db="test",
-                           auth=server.auth, conf_file=server.conf_file)
-    mongo.connect()
+    mongo = mongo_class.DB(
+        server.name, server.user, server.japd, host=server.host,
+        port=server.port, db="test", auth=server.auth,
+        conf_file=server.conf_file, auth_db=server.auth_db,
+        use_arg=server.use_arg, use_uri=server.use_uri)
+    state = mongo.connect()
 
-    # Process all databases.
-    if not db_name:
+    if not state[0]:
+        err_flag = True
+        err_msg = "Connection to Mongo DB:  %s" % state[1]
 
-        for item in db_list:
-            func_name(mongo, item, **kwargs)
-
-    # Process all tables in a database.
-    elif not tbl_name:
-
-        # Generator builds list of databases to process.
-        for dbn in (dbn for dbn in db_name if dbn in db_list):
-            func_name(mongo, dbn, **kwargs)
-
-    # Process passed databases and tables.
     else:
-        # Generator builds list of databases to process.
-        for dbn in (dbn for dbn in db_name if dbn in db_list):
-            mongo.chg_db(db=dbn)
-            tbl_list = mongo.get_tbl_list()
 
-            # Generator builds list of tables.
-            func_name(mongo, dbn,
-                      list((tbl for tbl in tbl_name if tbl in tbl_list)),
-                      **kwargs)
+        # Process all databases.
+        if not db_name:
 
-    cmds_gen.disconnect([mongo])
+            for item in db_list:
+                func_name(mongo, item, **kwargs)
+
+        # Process all tables in a database.
+        elif not tbl_name:
+
+            # Generator builds list of databases to process.
+            for dbn in (dbn for dbn in db_name if dbn in db_list):
+                func_name(mongo, dbn, **kwargs)
+
+        # Process passed databases and tables.
+        else:
+
+            # Generator builds list of databases to process.
+            for dbn in (dbn for dbn in db_name if dbn in db_list):
+                mongo.chg_db(dbs=dbn)
+                tbl_list = mongo.get_tbl_list()
+                fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
+
+                if fnd_tbls:
+                    func_name(mongo, dbn, fnd_tbls, **kwargs)
+
+                else:
+                    print("Found no tables to process in: %s" % (dbn))
+
+        mongo_libs.disconnect([mongo])
+
+    return err_flag, err_msg
 
 
 def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
@@ -261,7 +276,7 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
     else:
         tbl_list = list(tbl_list)
 
-    mongo.chg_db(db=db_name)
+    mongo.chg_db(dbs=db_name)
     print("DBCC check for %s" % (mongo.db_name))
 
     if not tbl_list:
@@ -293,16 +308,17 @@ def dbcc(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) False - If an error has occurred.
-        (output) None -> Error message.
+        (output) state[0] -> True|False - If an error has occurred.
+        (output) state[1] -> Error message.
 
     """
 
     args_array = dict(args_array)
-    process_request(server, run_dbcc, args_array["-D"], args_array.get("-t"),
-                    full=args_array.get("-f", False))
+    state = process_request(
+        server, run_dbcc, args_array["-D"], args_array.get("-t"),
+        full=args_array.get("-f", False))
 
-    return False, None
+    return state[0], state[1]
 
 
 def run_compact(mongo, db_name, tbl_list=None, **kwargs):
@@ -325,7 +341,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     else:
         tbl_list = list(tbl_list)
 
-    mongo.chg_db(db=db_name)
+    mongo.chg_db(dbs=db_name)
     print("Compacting for %s" % (mongo.db_name))
 
     if not tbl_list:
@@ -334,20 +350,24 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     for item in tbl_list:
         print("\tCompacting: {0:50}".format(item + "..."), end="")
         coll = mongo_libs.crt_coll_inst(mongo, db_name, item)
-        coll.connect()
+        state = coll.connect()
 
-        if coll.coll_options().get("capped", False):
-            print("\tCollection capped: not compacted")
-
-        else:
-
-            if mongo.db_cmd("compact", obj=item)["ok"] == 1:
-                print("\tDone")
+        if state[0]:
+            if coll.coll_options().get("capped", False):
+                print("\tCollection capped: not compacted")
 
             else:
-                print("\tCommand Failed")
 
-        cmds_gen.disconnect([coll])
+                if mongo.db_cmd("compact", obj=item)["ok"] == 1:
+                    print("\tDone")
+
+                else:
+                    print("\tCommand Failed")
+
+            mongo_libs.disconnect([coll])
+
+        else:
+            print("\tError encountered:  %s" % (state[1]))
 
 
 def defrag(server, args_array, **kwargs):
@@ -367,18 +387,15 @@ def defrag(server, args_array, **kwargs):
     """
 
     args_array = dict(args_array)
-    err_flag = False
-    err_msg = None
     data = mongo_class.fetch_ismaster(server)
 
-    # Primary servers not allowed to be defragged.
     if data["ismaster"] and "setName" in data:
         err_flag = True
         err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
 
     else:
-        process_request(server, run_compact, args_array["-C"],
-                        args_array.get("-t"))
+        err_flag, err_msg = process_request(
+            server, run_compact, args_array["-C"], args_array.get("-t"))
 
     return err_flag, err_msg
 
@@ -396,7 +413,7 @@ def run_repair(mongo, db_name, **kwargs):
 
     """
 
-    mongo.chg_db(db=db_name)
+    mongo.chg_db(dbs=db_name)
     print("Repairing Database: {0:20}".format(db_name + "..."), end="")
 
     if mongo.db_cmd("repairDatabase")["ok"] == 1:
@@ -416,15 +433,15 @@ def repair_db(server, args_array, **kwargs):
     Arguments:
         (input) server -> Database server instance.
         (input) args_array -> Array of command line options and values.
-        (output) False - if an error has occurred.
-        (output) None -> Error message.
+        (output) state[0] -> True|False - If an error has occurred.
+        (output) state[1] -> Error message.
 
     """
 
     args_array = dict(args_array)
-    process_request(server, run_repair, args_array["-R"], None)
+    state = process_request(server, run_repair, args_array["-R"], None)
 
-    return False, None
+    return state[0], state[1]
 
 
 def status(server, args_array, **kwargs):
@@ -443,11 +460,13 @@ def status(server, args_array, **kwargs):
             db_tbl database:table_name -> Mongo database and table name.
             class_cfg -> Mongo Rep Set server configuration.
             mail -> Mail instance.
-        (output) False - If an error has occurred.
-        (output) None -> Error message.
+        (output) err_flag -> True|False - If an error has occurred.
+        (output) err_msg -> Error message.
 
     """
 
+    err_flag = False
+    err_msg = None
     mode = "w"
     indent = 4
     args_array = dict(args_array)
@@ -482,10 +501,15 @@ def status(server, args_array, **kwargs):
         dbn, tbl = db_tbl.split(":")
 
         if isinstance(outdata, dict):
-            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
+            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
 
         else:
-            mongo_libs.ins_doc(mongo_cfg, dbn, tbl, ast.literal_eval(outdata))
+            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl,
+                                       ast.literal_eval(outdata))
+
+        if not state[0]:
+            err_flag = True
+            err_msg = "Inserting into Mongo database:  %s" % state[1]
 
     if ofile and "-j" in args_array:
         gen_libs.write_file(ofile, mode, outdata)
@@ -504,7 +528,7 @@ def status(server, args_array, **kwargs):
     if not args_array.get("-z", False):
         gen_libs.display_data(outdata)
 
-    return False, None
+    return err_flag, err_msg
 
 
 def rotate(server, args_array, **kwargs):
@@ -580,11 +604,13 @@ def get_log(server, args_array, **kwargs):
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
-        (output) False - If an error has occurred.
-        (output) None -> Error message.
+        (output) err_flag -> True|False - if an error has occurred.
+        (output) err_msg -> Error message.
 
     """
 
+    err_flag = False
+    err_msg = None
     mode = "w"
     indent = 4
     args_array = dict(args_array)
@@ -597,6 +623,8 @@ def get_log(server, args_array, **kwargs):
 
     # Get log data from mongodb.
     data = server.adm_cmd("getLog", arg1=args_array["-G"])
+    data["Server"] = server.name
+    data["AsOf"] = gen_libs.get_date() + " " + gen_libs.get_time()
 
     if "-j" in args_array:
         gen_libs.print_data(json.dumps(data, indent=indent), mode=mode,
@@ -618,7 +646,7 @@ def get_log(server, args_array, **kwargs):
         if kwargs.get("ofile", None):
             f_hldr.close()
 
-    return False, None
+    return err_flag, err_msg
 
 
 def run_program(args_array, func_dict, **kwargs):
@@ -637,30 +665,35 @@ def run_program(args_array, func_dict, **kwargs):
     func_dict = dict(func_dict)
     server = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
                                         mongo_class.Server)
-    server.connect()
-    outfile = args_array.get("-o", None)
-    db_tbl = args_array.get("-i", None)
-    repcfg = None
-    mail = None
+    state = server.connect()
 
-    if args_array.get("-m", None):
-        repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
+    if state[0]:
+        outfile = args_array.get("-o", None)
+        db_tbl = args_array.get("-i", None)
+        repcfg = None
+        mail = None
 
-    if args_array.get("-e", None):
-        mail = gen_class.setup_mail(args_array.get("-e"),
-                                    subj=args_array.get("-s", None))
+        if args_array.get("-m", None):
+            repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
 
-    # Call function(s) - intersection of command line and function dict.
-    for item in set(args_array.keys()) & set(func_dict.keys()):
-        err_flag, err_msg = func_dict[item](server, args_array, ofile=outfile,
-                                            db_tbl=db_tbl, class_cfg=repcfg,
-                                            mail=mail, **kwargs)
+        if args_array.get("-e", None):
+            mail = gen_class.setup_mail(args_array.get("-e"),
+                                        subj=args_array.get("-s", None))
 
-        if err_flag:
-            print("Error:  %s" % (err_msg))
-            break
+        # Call function(s) - intersection of command line and function dict.
+        for item in set(args_array.keys()) & set(func_dict.keys()):
+            err_flag, err_msg = func_dict[item](
+                server, args_array, ofile=outfile, db_tbl=db_tbl,
+                class_cfg=repcfg, mail=mail, **kwargs)
 
-    cmds_gen.disconnect([server])
+            if err_flag:
+                print("Error:  %s" % (err_msg))
+                break
+
+        mongo_libs.disconnect([server])
+
+    else:
+        print("Connection failure:  %s" % (state[1]))
 
 
 def main():

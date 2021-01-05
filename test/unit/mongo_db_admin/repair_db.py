@@ -79,6 +79,7 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_repair_db2 -> Test repair_db function.
         test_repair_db -> Test repair_db function.
 
     """
@@ -97,6 +98,23 @@ class UnitTest(unittest.TestCase):
         self.args_array = {"-R": "Optionsetting"}
 
     @mock.patch("mongo_db_admin.process_request")
+    def test_repair_db2(self, mock_process):
+
+        """Function:  test_repair_db2
+
+        Description:  Test repair_db function.
+
+        Arguments:
+
+        """
+
+        mock_process.return_value = (True, "Error Message")
+
+        self.assertEqual(
+            mongo_db_admin.repair_db(
+                self.server, self.args_array), (True, "Error Message"))
+
+    @mock.patch("mongo_db_admin.process_request")
     def test_repair_db(self, mock_process):
 
         """Function:  test_repair_db
@@ -107,11 +125,11 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_process.return_value = True
+        mock_process.return_value = (False, None)
 
-        self.assertEqual(mongo_db_admin.repair_db(self.server,
-                                                  self.args_array),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.repair_db(
+                self.server, self.args_array), (False, None))
 
 
 if __name__ == "__main__":

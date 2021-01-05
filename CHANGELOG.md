@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.3.2] - 2020-12-29
+
+### Fixed
+- process_request:  When using the -t option, do not process a database if no tables are present.
+- get_log:  Added Server and AsOf to the JSON document.
+
+### Changed
+- run_compact, repair_db, defrag, dbcc, process_request, status, run_program:  Capture and process connection status.
+- process_request, run_compact, run_program:  Replaced cmds_gen.disconnect with mongo_libs.disconnect.
+- Upgrade to use mongo-libs v4.1.0 library.
+- process_request:  Updated Mongo class instance to reflect changes in config file.
+- config/mongo.py.TEMPLATE:  Added authentication mechanism entries to config file.
+- Documentation updates.
+
+### Removed
+- Removed cmds_gen library module, no longer required. 
+
+
 ## [2.3.1] - 2020-05-04
 ### Added
 - Added -p option to allow compression of Mongo log with Log Rotate option.
@@ -27,15 +45,12 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - Added -a option to allow for append of data to an existing output file.
 
 ### Fixed
-- run_dbcc:  Changed "status" to "status_flag" due to naming conflict.
-- rotate:  Changed "status" to "status_flag" due to naming conflict.
+- run_dbcc, rotate:  Changed "status" to "status_flag" due to naming conflict.
 - main:  Fixed handling command line arguments from SonarQube scan finding.
 
 ### Changed
-- status: Added file mode option to writing data to a file.  Default is write.
-- get_log: Added file mode option to writing data to a file.  Default is write.
-- status:  Added flattening of JSON structure to standard out and to file.
-- get_log:  Added flattening of JSON structure to standard out and to file.
+- status, get_log: Added file mode option to writing data to a file.  Default is write.
+- status, get_log:  Added flattening of JSON structure to standard out and to file.
 - Removed unused libraries getpass and socket.
 - Documentation updates.
 
@@ -60,16 +75,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 ## [2.1.0] - 2019-07-24
 ### Fixed
-- run_program:  Fixed mutable list/dictionary argument issue.
-- get_log:  Fixed mutable list/dictionary argument issue.
-- rotate:  Fixed mutable list/dictionary argument issue.
-- status:  Fixed mutable list/dictionary argument issue.
-- repair_db:  Fixed mutable list/dictionary argument issue.
-- defrag:  Fixed mutable list/dictionary argument issue.
-- run_compact:  Fixed mutable list/dictionary argument issue.
-- dbcc:  Fixed mutable list/dictionary argument issue.
-- run_dbcc:  Fixed mutable list/dictionary argument issue.
-- process_request:  Fixed mutable list/dictionary argument issue.
+- Fixed mutable list/dictionary argument issues in a number of functions.
 
 ### Changed
 - status:  Added capability to mail out JSON formatted data.
@@ -78,19 +84,8 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - status:  Replaced mongo_libs.json_prt_ins_2_db call with own internal code.
 - status:  Converted JSON output to camelCase.
 - main:  Refactored 'if' statement to streamline the checks.
-- run_program:  Updated variables names to standard convention.
-- get_log:  Updated variables names to standard convention.
-- rotate:  Updated variables names to standard convention.
-- status:  Updated variables names to standard convention.
-- repair_db:  Updated variables names to standard convention.
-- run_repair:  Updated variables names to standard convention.
-- defrag:  Updated variables names to standard convention.
-- run_compact:  Updated variables names to standard convention.
-- dbcc:  Updated variables names to standard convention.
-- run_dbcc:  Updated variables names to standard convention.
-- process_request:  Updated variables names to standard convention.
-- run_compact:  Added \*\*kwargs to argument list.
-- run_repair:  Added \*\*kwargs to argument list.
+- Updated variables names to standard convention.
+- run_compact, run_repair:  Added \*\*kwargs to argument list.
 
 ### Added
 - setup_mail:  Initialize a mail instance.
@@ -99,9 +94,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ## [2.0.1] - 2018-11-30
 ### Fixed
 - main:  Corrected incorrect function name calls.
-- run_compact:  Changed function parameter mutable argument default to immutable argument default.
-- run_dbcc:  Changed function parameter mutable argument default to immutable argument default.
-- process_request:  Changed function parameter mutable argument default to immutable argument default.
+- run_compact, run_dbcc, process_request:  Changed function parameter mutable argument default to immutable argument default.
 
 ### Changed
 - main:  Removed non-used argument in run_program call.
@@ -119,8 +112,7 @@ Breaking Change
 - get_log:  Replaced "gen_libs.Write_File" to "gen_libs.write_file2" call.
 - get_log:  Replaced "gen_libs.Close_File" with system close call.
 - get_log:  Replaced "gen_libs.Open_File" with system open call.
-- Changed "gen_libs" calls to new naming schema.
-- Changed "arg_parser" calls to new naming schema.
+- Changed "gen_libs" and "arg_parser" calls to new naming schema.
 - Changed function names from uppercase to lowercase.
 - Setup single-source version control.
 
@@ -162,7 +154,7 @@ Breaking Change
 - Added the ability for the -i option to connect to either a single Mongo database server or to a Mongo replica set. This will require svr_mongo V1.10 or better and cmds_mongo V1.5 or better.  Also the Mongo database configuration file will need to be modified to allow a connection to a Mongo replica set.
 
 ### Changed
-- Help_Message:  Updated documentation to reflect the changes in the Mongo configuration file format for the two types of connections.  Also included a new Known Bug entry.
+- Update documentation.
 
 
 ## [1.8.0] - 2017-04-12
@@ -174,7 +166,7 @@ Breaking Change
 - Process_Request:  Added \*\*kwargs to a number of func_name function calls.  Also added \*\*kwargs to the function argment list.
 - Run_DBCC:  Added \*\*kwargs to the function argment list.  Changed function name to validate_tbl and also added named argument 'scan' to function call.
 - main:  Added -f option to opt_con_req_list variable.
-- Help_Message:  Updated documentation.
+- Updated documentation.
 
 
 ## [1.7.0] - 2017-04-11
@@ -192,7 +184,7 @@ Breaking Change
 
 ### Changed
 - Rotate:  Rewrote the entire function to handle moving the old Mongo log to another directory with the -n option.
-- Help_Message:  Updated documentation.
+- Updated documentation.
 
 
 ## [1.5.0] - 2017-01-24
@@ -200,18 +192,10 @@ Breaking Change
 - Added error exception handling in several functions and also allowed multiple database and tables names to be passed to the program.
 
 ### Changed
-- Help_Message:  Updated documentation.
 - Process_Request:  Added connect() for the class.  Set default values for arguments.  Changed 'if' statement to deal with multiple values for databases and tables and use generators to build lists.
-- Run_Compact:  Changed print to use format option.
-- Run_DBCC:  Changed print to use format option.
-- Run_Repair:  Changed print to use format option.
-- Defrag:  Added error exception handling code.
-- Run_Program:  Added error exception handling code.
-- DBCC:  Added error exception handling code.
-- Repair_DB:  Added error exception handling code.
-- Status:  Added error exception handling code.
-- Rotate:  Added error exception handling code.
-- Get_Log:  Added error exception handling code.
+- Run_Compact, Run_DBCC, Run_Repair:  Changed print to use format option.
+- Defrag, Run_Program, DBCC, Repair_DB, Status, Rotate, Get_Log:  Added error exception handling code.
+- Updated documentation.
 
 
 ## [1.4.0] - 2016-05-16
@@ -227,7 +211,7 @@ Breaking Change
 ### Changed
 - main:  Added option "-G" to a number of variables, added new variable: opt_valid_val, and added Arg_Valid_Val function call.
 - Status:  Added additional check due to new format options.
-- Help_Message:  Added new option to help message.
+- Updated documentation.
 
 
 ## [1.2.0] - 2016-04-26
@@ -236,8 +220,8 @@ Breaking Change
 - Rotate function.
 
 ### Changed
-- Help_Message:  Added new option to help message.
 - main:  Added option "-L" to the func_dict variable.
+- Updated documentation.
 
 
 ## [1.1.0] - 2016-04-19
@@ -248,7 +232,7 @@ Breaking Change
 ### Changed
 - main:  Added options "-M", "-m", "-f", "-i", and "-o" options to a number of variables and added a number of new function call checks.
 - Run_Program:  Processing for some of the new options and passing to the functions as named arguments.  Also setup a Mongo Rep Set instance.
-- Help_Message:  Added new options to help message.
+- Updated documentation.
 
 
 ## [1.0.0] - 2016-03-09
