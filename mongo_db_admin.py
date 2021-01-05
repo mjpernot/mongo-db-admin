@@ -353,20 +353,24 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     for item in tbl_list:
         print("\tCompacting: {0:50}".format(item + "..."), end="")
         coll = mongo_libs.crt_coll_inst(mongo, db_name, item)
-        coll.connect()
+        state = coll.connect()
 
-        if coll.coll_options().get("capped", False):
-            print("\tCollection capped: not compacted")
-
-        else:
-
-            if mongo.db_cmd("compact", obj=item)["ok"] == 1:
-                print("\tDone")
+        if state[0]:
+            if coll.coll_options().get("capped", False):
+                print("\tCollection capped: not compacted")
 
             else:
-                print("\tCommand Failed")
 
-        mongo_libs.disconnect([coll])
+                if mongo.db_cmd("compact", obj=item)["ok"] == 1:
+                    print("\tDone")
+
+                else:
+                    print("\tCommand Failed")
+
+            mongo_libs.disconnect([coll])
+
+        else:
+            print("\tError encountered:  %s" % (state[1]))
 
 
 def defrag(server, args_array, **kwargs):
