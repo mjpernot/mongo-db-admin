@@ -7,6 +7,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ## [2.3.2] - 2020-12-29
 
 ### Fixed
+- process_request:  When using the -t option, do not process a database if no tables are present.
 - get_log:  Added Server and AsOf to the JSON document.
 
 ### Changed

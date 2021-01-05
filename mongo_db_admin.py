@@ -126,11 +126,6 @@
         Configuration modules -> Name is runtime dependent as it can be used to
             connect to different databases with different names.
 
-    Known Bug:  For options -C and -D.  If multiple database values are passed
-        to the program and the -t option is used.  If one of the
-        databases has no tables in the table listed presented, then all
-        of the tables within the database will be processed.
-
     Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
         "repairDatabase" command was removed from Mongodb.
 
@@ -245,12 +240,13 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
             for dbn in (dbn for dbn in db_name if dbn in db_list):
                 mongo.chg_db(dbs=dbn)
                 tbl_list = mongo.get_tbl_list()
+                fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
 
-                # Generator builds list of tables.
-                func_name(
-                    mongo, dbn,
-                    list((tbl for tbl in tbl_name if tbl in tbl_list)),
-                    **kwargs)
+                if fnd_tbls:
+                    func_name(mongo, dbn, fnd_tbls, **kwargs)
+
+                else:
+                    print("Found no tables to process in: %s" % (dbn))
 
         mongo_libs.disconnect([mongo])
 
