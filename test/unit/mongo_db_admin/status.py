@@ -153,6 +153,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_ins_doc_failure -> Test with failed insert into database.
+        test_ins_doc_success -> Test with successful insert into database.
         test_to_dict_all -> Test with dictionary to file, database, and email.
         test_to_json_all -> Test with JSON to file, database, and email.
         test_to_dict_email -> Test with dictionary to email.
@@ -188,6 +190,50 @@ class UnitTest(unittest.TestCase):
         self.args_array4 = {"-z": True, "-a": True}
         self.args_array5 = {"-j": True, "-z": True, "-g": True}
         self.db_tbl = "db:tbl"
+        self.status = (False, "Connection Failure")
+        self.errmsg = "Inserting into Mongo database:  %s" % self.status[1]
+
+    @mock.patch("mongo_db_admin.gen_libs")
+    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
+    def test_ins_doc_failure(self, mock_db, mock_lib):
+
+        """Function:  test_ins_doc_failure
+
+        Description:  Test with failed insert into database.
+
+        Arguments:
+
+        """
+
+        mock_db.return_value = self.status
+        mock_lib.display_data.return_value = True
+        mock_lib.openfile.return_value = "FileHandler"
+
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array3, ofile="filename",
+            class_cfg="mongo_cfg", db_tbl=self.db_tbl,
+            mail=self.mail), (True, self.errmsg))
+
+    @mock.patch("mongo_db_admin.gen_libs")
+    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
+    def test_ins_doc_success(self, mock_db, mock_lib):
+
+        """Function:  test_ins_doc_success
+
+        Description:  Test with successful insert into database.
+
+        Arguments:
+
+        """
+
+        mock_db.return_value = (True, None)
+        mock_lib.display_data.return_value = True
+        mock_lib.openfile.return_value = "FileHandler"
+
+        self.assertEqual(mongo_db_admin.status(
+            self.server, self.args_array3, ofile="filename",
+            class_cfg="mongo_cfg", db_tbl=self.db_tbl,
+            mail=self.mail), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs")
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
@@ -201,7 +247,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
         mock_lib.display_data.return_value = True
         mock_lib.openfile.return_value = "FileHandler"
 
@@ -222,7 +268,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
         mock_file.return_value = True
 
         self.assertEqual(mongo_db_admin.status(
@@ -242,7 +288,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
         mock_file.return_value = True
 
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array3,
@@ -260,7 +306,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
         mock_file.return_value = True
 
         self.assertEqual(mongo_db_admin.status(self.server, self.args_array2,
@@ -278,7 +324,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
         mock_lib.display_data.return_value = True
         mock_lib.openfile.return_value = "FileHandler"
 
@@ -298,7 +344,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
         mock_file.return_value = True
 
         self.assertEqual(mongo_db_admin.status(
@@ -348,7 +394,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
 
         self.assertEqual(mongo_db_admin.status(
             self.server, self.args_array3, class_cfg="mongo_cfg",
@@ -365,7 +411,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_db.return_value = True
+        mock_db.return_value = (True, None)
 
         self.assertEqual(mongo_db_admin.status(
             self.server, self.args_array2, class_cfg="mongo_cfg",

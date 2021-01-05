@@ -79,7 +79,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
-        test_errors -> Test with errors detected.
+        test_errors -> Test with errors returned.
+        test_is_master -> Test with database being the master.
         test_no_errors -> Test with no errors detected.
 
     """
@@ -98,11 +99,29 @@ class UnitTest(unittest.TestCase):
         self.args_array = {"-C": "Optionsetting", "-t": "option"}
 
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
-    def test_errors(self, mock_fetch):
+    @mock.patch("mongo_db_admin.process_request")
+    def test_errors(self, mock_process, mock_fetch):
 
         """Function:  test_errors
 
-        Description:  Test with errors detected.
+        Description:  Test with errors returned.
+
+        Arguments:
+
+        """
+
+        mock_process.return_value = (True, "Error Message")
+        mock_fetch.return_value = {"ismaster": False}
+
+        self.assertEqual(mongo_db_admin.defrag(self.server, self.args_array),
+                         (True, "Error Message"))
+
+    @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
+    def test_is_master(self, mock_fetch):
+
+        """Function:  test_is_master
+
+        Description:  Test with database being the master.
 
         Arguments:
 
@@ -126,7 +145,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_process.return_value = True
+        mock_process.return_value = (False, None)
         mock_fetch.return_value = {"ismaster": False}
 
         self.assertEqual(mongo_db_admin.defrag(self.server, self.args_array),

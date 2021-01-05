@@ -29,6 +29,7 @@ import mock
 # Local
 sys.path.append(os.getcwd())
 import mongo_db_admin
+import lib.gen_libs as gen_libs
 import version
 
 __version__ = version.__version__
@@ -44,10 +45,18 @@ def func_name(mongo, dbn, tbl_list=None, **kwargs):
         (input) mongo -> Mongo instance.
         (input) dbn -> Database name.
         (input) tbl_list -> Table name list.
+        (input) kwargs:
+            mail => Mail instance.
 
     """
 
-    return True
+    status = True
+    mail = kwargs.get("mail", None)
+
+    if mongo and dbn and tbl_list and mail:
+        status = True
+
+    return status
 
 
 class Server(object):
@@ -74,12 +83,15 @@ class Server(object):
 
         self.name = "Server name"
         self.user = "User name"
-        self.passwd = "User pwd"
+        self.japd = "User pwd"
         self.host = "Host name"
         self.port = 27017
         self.auth = "Auth type"
         self.conf_file = "Config file name"
         self.db_list = ["DB1", "DB2"]
+        self.auth_db = "admin"
+        self.use_arg = True
+        self.use_uri = False
 
     def fetch_dbs(self):
 
@@ -119,6 +131,9 @@ class Mongo(object):
         """
 
         self.dbn = None
+        self.state = True
+        self.errmsg = None
+        self.tbl_list = ["Table1", "Table2"]
 
     def connect(self):
 
@@ -130,9 +145,9 @@ class Mongo(object):
 
         """
 
-        return True
+        return self.state, self.errmsg
 
-    def chg_db(self, db):
+    def chg_db(self, dbs):
 
         """Method:  chg_db
 
@@ -143,7 +158,7 @@ class Mongo(object):
 
         """
 
-        self.dbn = db
+        self.dbn = dbs
 
         return True
 
@@ -157,7 +172,7 @@ class Mongo(object):
 
         """
 
-        return ["Table1", "Table2"]
+        return self.tbl_list
 
 
 class UnitTest(unittest.TestCase):
@@ -168,6 +183,11 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_tbl_list4 -> Test with no match table list.
+        test_tbl_list3 -> Test with partial table list.
+        test_tbl_list2 -> Test with partial table list.
+        test_connection_failure -> Test with failed connection.
+        test_connection_success -> Test with successful connection.
         test_tbl_list -> Test with table list.
         test_db_list -> Test with database list.
         test_default -> Test with default arguments.
@@ -188,10 +208,120 @@ class UnitTest(unittest.TestCase):
         self.mongo = Mongo()
         self.func_name = func_name
         self.db_name = ["DB1"]
-        self.tbl_name = ["Table3", "Table4"]
+        self.tbl_name = ["Table1", "Table2"]
+        self.tbl_name2 = ["Table2"]
+        self.tbl_name3 = ["Table2", "Table3"]
+        self.tbl_name4 = ["Table3", "Table4"]
+        self.err_flag = False
+        self.err_flag2 = True
+        self.err_msg = None
+        msg = "Connection Error"
+        self.err_msg2 = "Connection to Mongo DB:  %s" % msg
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_tbl_list4(self, mock_conn, mock_db):
+
+        """Function:  test_tbl_list4
+
+        Description:  Test with no match table list.
+
+        Arguments:
+
+        """
+
+        mock_conn.return_value = True
+        mock_db.return_value = self.mongo
+
+        with gen_libs.no_std_out():
+            self.assertEqual(
+                mongo_db_admin.process_request(
+                    self.server, self.func_name, self.db_name, self.tbl_name4),
+                (self.err_flag, self.err_msg))
+
+    @mock.patch("mongo_db_admin.mongo_class.DB")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_tbl_list3(self, mock_conn, mock_db):
+
+        """Function:  test_tbl_list3
+
+        Description:  Test with partial table list.
+
+        Arguments:
+
+        """
+
+        mock_conn.return_value = True
+        mock_db.return_value = self.mongo
+
+        self.assertEqual(
+            mongo_db_admin.process_request(
+                self.server, self.func_name, self.db_name, self.tbl_name3),
+            (self.err_flag, self.err_msg))
+
+    @mock.patch("mongo_db_admin.mongo_class.DB")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_tbl_list2(self, mock_conn, mock_db):
+
+        """Function:  test_tbl_list2
+
+        Description:  Test with partial table list.
+
+        Arguments:
+
+        """
+
+        mock_conn.return_value = True
+        mock_db.return_value = self.mongo
+
+        self.assertEqual(
+            mongo_db_admin.process_request(
+                self.server, self.func_name, self.db_name, self.tbl_name2),
+            (self.err_flag, self.err_msg))
+
+    @mock.patch("mongo_db_admin.mongo_class.DB")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_connection_failure(self, mock_conn, mock_db):
+
+        """Function:  test_connection_failure
+
+        Description:  Test with failed connection.
+
+        Arguments:
+
+        """
+
+        self.mongo.state = False
+        self.mongo.errmsg = "Connection Error"
+
+        mock_conn.return_value = True
+        mock_db.return_value = self.mongo
+
+        self.assertEqual(
+            mongo_db_admin.process_request(self.server, self.func_name),
+            (self.err_flag2, self.err_msg2))
+
+    @mock.patch("mongo_db_admin.mongo_class.DB")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_connection_success(self, mock_conn, mock_db):
+
+        """Function:  test_connection_success
+
+        Description:  Test with successful connection.
+
+        Arguments:
+
+        """
+
+        mock_conn.return_value = True
+        mock_db.return_value = self.mongo
+
+        self.assertEqual(
+            mongo_db_admin.process_request(self.server, self.func_name),
+            (self.err_flag, self.err_msg))
+
+    @mock.patch("mongo_db_admin.mongo_class.DB")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_tbl_list(self, mock_conn, mock_db):
 
         """Function:  test_tbl_list
@@ -205,13 +335,13 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(mongo_db_admin.process_request(self.server,
-                                                        self.func_name,
-                                                        self.db_name,
-                                                        self.tbl_name))
+        self.assertEqual(
+            mongo_db_admin.process_request(
+                self.server, self.func_name, self.db_name, self.tbl_name),
+            (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_db_list(self, mock_conn, mock_db):
 
         """Function:  test_db_list
@@ -225,12 +355,13 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(mongo_db_admin.process_request(self.server,
-                                                        self.func_name,
-                                                        self.db_name))
+        self.assertEqual(
+            mongo_db_admin.process_request(
+                self.server, self.func_name, self.db_name),
+            (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_default(self, mock_conn, mock_db):
 
         """Function:  test_default
@@ -244,8 +375,9 @@ class UnitTest(unittest.TestCase):
         mock_conn.return_value = True
         mock_db.return_value = self.mongo
 
-        self.assertFalse(mongo_db_admin.process_request(self.server,
-                                                        self.func_name))
+        self.assertEqual(
+            mongo_db_admin.process_request(self.server, self.func_name),
+            (self.err_flag, self.err_msg))
 
 
 if __name__ == "__main__":

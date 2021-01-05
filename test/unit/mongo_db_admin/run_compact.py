@@ -58,7 +58,8 @@ class Coll2(object):
 
         """
 
-        pass
+        self.status = True
+        self.errmsg = None
 
     def connect(self):
 
@@ -70,7 +71,7 @@ class Coll2(object):
 
         """
 
-        return True
+        return self.status, self.errmsg
 
     def coll_options(self):
 
@@ -108,7 +109,8 @@ class Coll(object):
 
         """
 
-        pass
+        self.status = True
+        self.errmsg = None
 
     def connect(self):
 
@@ -120,7 +122,7 @@ class Coll(object):
 
         """
 
-        return True
+        return self.status, self.errmsg
 
     def coll_options(self):
 
@@ -167,7 +169,7 @@ class Mongo(object):
         self.com_type = None
         self.obj = None
 
-    def chg_db(self, db):
+    def chg_db(self, dbs):
 
         """Method:  chg_db
 
@@ -178,7 +180,7 @@ class Mongo(object):
 
         """
 
-        self.dbn = db
+        self.dbn = dbs
 
         return True
 
@@ -227,6 +229,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp -> Initialize testing environment.
+        test_failed_connection -> Test with failed connection.
+        test_successful_connection -> Test with successful connection.
         test_compact_failure -> Test of compact as failure.
         test_compact_successful -> Test of compact as successful.
         test_coll_capped -> Test with collection set to capped.
@@ -249,7 +253,48 @@ class UnitTest(unittest.TestCase):
         self.tbl_name = ["Table3", "Table4"]
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_failed_connection(self, mock_cmd, mock_create):
+
+        """Function:  test_failed_connection
+
+        Description:  Test with failed connection.
+
+        Arguments:
+
+        """
+
+        mock_cmd.return_value = True
+        conn = Coll2()
+        conn.status = False
+        conn.errmsg = "Error Message"
+        mock_create.return_value = conn
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(
+                self.mongo, self.db_name, self.tbl_name))
+
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
+    def test_successful_connection(self, mock_cmd, mock_create):
+
+        """Function:  test_successful_connection
+
+        Description:  Test with successful connection.
+
+        Arguments:
+
+        """
+
+        mock_cmd.return_value = True
+        mock_create.return_value = Coll2()
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(
+                self.mongo, self.db_name, self.tbl_name))
+
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_compact_failure(self, mock_cmd, mock_create):
 
         """Function:  test_compact_failure
@@ -265,12 +310,11 @@ class UnitTest(unittest.TestCase):
         self.mongo.cmd_type = False
 
         with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
-                                                        self.db_name,
-                                                        self.tbl_name))
+            self.assertFalse(mongo_db_admin.run_compact(
+                self.mongo, self.db_name, self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_compact_successful(self, mock_cmd, mock_create):
 
         """Function:  test_compact_successful
@@ -285,12 +329,11 @@ class UnitTest(unittest.TestCase):
         mock_create.return_value = Coll2()
 
         with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
-                                                        self.db_name,
-                                                        self.tbl_name))
+            self.assertFalse(mongo_db_admin.run_compact(
+                self.mongo, self.db_name, self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
-    @mock.patch("mongo_db_admin.cmds_gen.disconnect")
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
     def test_coll_capped(self, mock_cmd, mock_create):
 
         """Function:  test_coll_capped
@@ -305,9 +348,8 @@ class UnitTest(unittest.TestCase):
         mock_create.return_value = Coll()
 
         with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
-                                                        self.db_name,
-                                                        self.tbl_name))
+            self.assertFalse(mongo_db_admin.run_compact(
+                self.mongo, self.db_name, self.tbl_name))
 
     def test_empty_tbl_list(self):
 
@@ -320,8 +362,8 @@ class UnitTest(unittest.TestCase):
         """
 
         with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.run_compact(self.mongo,
-                                                        self.db_name))
+            self.assertFalse(mongo_db_admin.run_compact(
+                self.mongo, self.db_name))
 
 
 if __name__ == "__main__":
