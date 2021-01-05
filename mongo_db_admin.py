@@ -220,6 +220,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         err_msg = "Connection to Mongo DB:  %s" % state[1]
 
     else:
+
         # Process all databases.
         if not db_name:
 
@@ -235,6 +236,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
         # Process passed databases and tables.
         else:
+
             # Generator builds list of databases to process.
             for dbn in (dbn for dbn in db_name if dbn in db_list):
                 mongo.chg_db(dbs=dbn)
