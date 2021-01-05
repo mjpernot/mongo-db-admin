@@ -215,7 +215,6 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         use_arg=server.use_arg, use_uri=server.use_uri)
     state = mongo.connect()
 
-
     if not state[0]:
         err_flag = True
         err_msg = "Connection to Mongo DB:  %s" % state[1]
@@ -603,11 +602,13 @@ def get_log(server, args_array, **kwargs):
         (input) args_array -> Array of command line options and values.
         (input) **kwargs:
             ofile -> file name - Name of output file.
-        (output) False - If an error has occurred.
-        (output) None -> Error message.
+        (output) err_flag -> True|False - if an error has occurred.
+        (output) err_msg -> Error message.
 
     """
 
+    err_flag = False
+    err_msg = None
     mode = "w"
     indent = 4
     args_array = dict(args_array)
@@ -643,7 +644,7 @@ def get_log(server, args_array, **kwargs):
         if kwargs.get("ofile", None):
             f_hldr.close()
 
-    return False, None
+    return err_flag, err_msg
 
 
 def run_program(args_array, func_dict, **kwargs):
