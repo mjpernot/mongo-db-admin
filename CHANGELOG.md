@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.3.3] - 2020-14-01
+
+
 ## [2.3.2] - 2020-12-29
+- Verified to work with pymongo v3.8.0.
+- Updated to be used in FIPS 140-2 environment.
 
 ### Fixed
 - process_request:  When using the -t option, do not process a database if no tables are present.
