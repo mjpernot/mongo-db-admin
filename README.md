@@ -94,8 +94,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
     - NOTE 2:  FIPS 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
     - NOTE 3:  MONGODB-CR is not supported in Mongodb 4.0 and better.
 
-  * If connecting to a Mongo replica set.
-  * By default set to None to represent not connecting to replica set.
+  * If connecting to a Mongo replica set.  By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
     - repset_hosts = "HOST_1:PORT, HOST_2:PORT, ..."
     - db_auth = "AUTHENTICATION_DATABASE"
@@ -128,8 +127,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
     - NOTE 2:  FIPS 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
     - NOTE 3:  MONGODB-CR is not supported in Mongodb 4.0 and better.
 
-  * If connecting to a Mongo replica set.
-  * By default set to None to represent not connecting to replica set.
+  * If connecting to a Mongo replica set.  By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
     - repset_hosts = "HOST_1:PORT, HOST_2:PORT, ..."
     - db_auth = "AUTHENTICATION_DATABASE"
