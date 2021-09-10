@@ -514,7 +514,7 @@ def status(server, args_array, **kwargs):
         gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
     if mail:
-        process_mail(mail, outdata)
+        process_mail(mail, outdata, indent)
 
     if not args_array.get("-z", False):
         gen_libs.display_data(outdata)
@@ -522,7 +522,7 @@ def status(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def process_mail(mail, data):
+def process_mail(mail, data, indent=4):
 
     """Function:  process_mail
 
@@ -531,6 +531,7 @@ def process_mail(mail, data):
     Arguments:
         (input) mail -> Mail instance.
         (input) data -> Email message data.
+        (input) indent -> Spacing for JSON document.
 
     """
 
