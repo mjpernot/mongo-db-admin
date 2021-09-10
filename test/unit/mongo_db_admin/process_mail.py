@@ -127,7 +127,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data)
+        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data))
 
     def test_str_to_email(self):
 
@@ -139,7 +139,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data2, self.indent)
+        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data2,
+                                                     self.indent))
 
     def test_dict_to_email(self):
 
@@ -151,7 +152,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data, self.indent)
+        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data,
+                                                     self.indent))
 
     def test_json_to_email(self):
 
@@ -165,7 +167,8 @@ class UnitTest(unittest.TestCase):
 
         self.data = json.dumps(self.data, indent=4)
 
-        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data, self.indent)
+        self.assertFalse(mongo_db_admin.process_mail(self.mail, self.data,
+                                                     self.indent))
 
 
 if __name__ == "__main__":
