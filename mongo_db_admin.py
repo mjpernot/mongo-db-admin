@@ -36,7 +36,8 @@
         -R [database name(s)] => Repair database.
             Note 1:  If no database name is provided, then all databases are
                 repaired.
-            Warning:  This option will not work with Mongo 4.2.0 and above.
+            Warning:  This option will not work with Mongo 4.2.0 and above and
+                will cause the node to stacktrace.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
@@ -155,6 +156,8 @@
 
     Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
         "repairDatabase" command was removed from Mongodb.
+        Warning:  Do not run it on a 4.2.0 or better as it will cause the
+            database node to stacktrace.
 
     Example:
         mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
