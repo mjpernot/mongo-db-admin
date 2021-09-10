@@ -42,9 +42,9 @@ class Coll2(object):
     Description:  Class stub holder for mongo_class.Coll class.
 
     Methods:
-        __init__ -> Class initialization.
-        connect -> Stub holder for mongo_class.Coll.connect method.
-        coll_options -> Stub holder for mongo_class.Coll.coll_options method.
+        __init__
+        connect
+        coll_options
 
     """
 
@@ -93,9 +93,9 @@ class Coll(object):
     Description:  Class stub holder for mongo_class.Coll class.
 
     Methods:
-        __init__ -> Class initialization.
-        connect -> Stub holder for mongo_class.Coll.connect method.
-        coll_options -> Stub holder for mongo_class.Coll.coll_options method.
+        __init__
+        connect
+        coll_options
 
     """
 
@@ -144,10 +144,10 @@ class Mongo(object):
     Description:  Class stub holder for mongo_class.DB class.
 
     Methods:
-        __init__ -> Class initialization.
-        chg_db -> Stub holder for mongo_class.DB.chg_db method.
-        get_tbl_list -> Stub holder for mongo_class.DB.get_tbl_list method.
-        db_cmd -> Stub holder for mongo_class.DB.db_cmd method.
+        __init__
+        chg_db
+        get_tbl_list
+        db_cmd
 
     """
 
@@ -228,13 +228,13 @@ class UnitTest(unittest.TestCase):
     Description:  Class which is a representation of a unit testing.
 
     Methods:
-        setUp -> Initialize testing environment.
-        test_failed_connection -> Test with failed connection.
-        test_successful_connection -> Test with successful connection.
-        test_compact_failure -> Test of compact as failure.
-        test_compact_successful -> Test of compact as successful.
-        test_coll_capped -> Test with collection set to capped.
-        test_empty_tbl_list -> Test with empty table list.
+        setUp
+        test_failed_connection
+        test_successful_connection
+        test_compact_failure
+        test_compact_successful
+        test_coll_capped
+        test_empty_tbl_list
 
     """
 
