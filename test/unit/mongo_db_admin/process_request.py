@@ -66,8 +66,8 @@ class Server(object):
     Description:  Class stub holder for mongo_class.Server class.
 
     Methods:
-        __init__ -> Class initialization.
-        fetch_dbs -> Stub holder for mongo_class.Server.fetch_dbs method
+        __init__
+        fetch_dbs
 
     """
 
@@ -113,10 +113,10 @@ class Mongo(object):
     Description:  Class stub holder for mongo_class.DB class.
 
     Methods:
-        __init__ -> Class initialization.
-        connect -> Stub holder for mongo_class.DB.connect method.
-        chg_db -> Stub holder for mongo_class.DB.chg_db method.
-        get_tbl_list -> Stub holder for mongo_class.DB.get_tbl_list method.
+        __init__
+        connect
+        chg_db
+        get_tbl_list
 
     """
 
@@ -182,15 +182,15 @@ class UnitTest(unittest.TestCase):
     Description:  Class which is a representation of a unit testing.
 
     Methods:
-        setUp -> Initialize testing environment.
-        test_tbl_list4 -> Test with no match table list.
-        test_tbl_list3 -> Test with partial table list.
-        test_tbl_list2 -> Test with partial table list.
-        test_connection_failure -> Test with failed connection.
-        test_connection_success -> Test with successful connection.
-        test_tbl_list -> Test with table list.
-        test_db_list -> Test with database list.
-        test_default -> Test with default arguments.
+        setUp
+        test_tbl_list4
+        test_tbl_list3
+        test_tbl_list2
+        test_connection_failure
+        test_connection_success
+        test_tbl_list
+        test_db_list
+        test_default
 
     """
 

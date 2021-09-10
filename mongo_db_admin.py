@@ -194,19 +194,8 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     err_flag = False
     err_msg = None
-
-    if db_name is None:
-        db_name = []
-
-    else:
-        db_name = list(db_name)
-
-    if tbl_name is None:
-        tbl_name = []
-
-    else:
-        tbl_name = list(tbl_name)
-
+    db_name = list() if db_name is None else list(db_name)
+    tbl_name = list() if tbl_name is None else list(tbl_name)
     db_list = server.fetch_dbs()
     mongo = mongo_class.DB(
         server.name, server.user, server.japd, host=server.host,
@@ -236,22 +225,45 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
         # Process passed databases and tables.
         else:
-
-            # Generator builds list of databases to process.
-            for dbn in (dbn for dbn in db_name if dbn in db_list):
-                mongo.chg_db(dbs=dbn)
-                tbl_list = mongo.get_tbl_list()
-                fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
-
-                if fnd_tbls:
-                    func_name(mongo, dbn, fnd_tbls, **kwargs)
-
-                else:
-                    print("Found no tables to process in: %s" % (dbn))
+            process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs)
 
         mongo_libs.disconnect([mongo])
 
     return err_flag, err_msg
+
+
+def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
+
+    """Function:  process_dbs_tbls
+
+    Description:  Process a list of databases and tables.
+
+    Arguments:
+        (input) mongo -> Database instance.
+        (input) func_name -> Name of a function.
+        (input) db_name -> List of database names to check.
+        (input) db_list -> List of all databases in Mongo database.
+        (input) tbl_name -> List of tables to check.
+        (input) **kwargs:
+            full -> Full validation table check option.
+
+    """
+
+    db_name = list(db_name)
+    db_list = list(db_list)
+    tbl_name = list(tbl_name)
+
+    # Generator builds list of databases to process.
+    for dbn in (dbn for dbn in db_name if dbn in db_list):
+        mongo.chg_db(dbs=dbn)
+        tbl_list = mongo.get_tbl_list()
+        fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
+
+        if fnd_tbls:
+            func_name(mongo, dbn, fnd_tbls, **kwargs)
+
+        else:
+            print("Found no tables to process in: %s" % (dbn))
 
 
 def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
@@ -335,11 +347,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """
 
-    if tbl_list is None:
-        tbl_list = []
-
-    else:
-        tbl_list = list(tbl_list)
+    tbl_list = list() if tbl_list is None else list(tbl_list)
 
     mongo.chg_db(dbs=db_name)
     print("Compacting for %s" % (mongo.db_name))
@@ -517,18 +525,35 @@ def status(server, args_array, **kwargs):
     elif ofile:
         gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
-    if mail and isinstance(outdata, dict):
-        mail.add_2_msg(json.dumps(outdata, indent=indent))
-        mail.send_mail()
-
-    elif mail:
-        mail.add_2_msg(outdata)
-        mail.send_mail()
+    if mail:
+        process_mail(mail, outdata, indent)
 
     if not args_array.get("-z", False):
         gen_libs.display_data(outdata)
 
     return err_flag, err_msg
+
+
+def process_mail(mail, data, indent=4):
+
+    """Function:  process_mail
+
+    Description:  Add data to mail instance and send mail.
+
+    Arguments:
+        (input) mail -> Mail instance.
+        (input) data -> Email message data.
+        (input) indent -> Spacing for JSON document.
+
+    """
+
+    if isinstance(data, dict):
+        mail.add_2_msg(json.dumps(data, indent=indent))
+
+    else:
+        mail.add_2_msg(data)
+    
+    mail.send_mail()
 
 
 def rotate(server, args_array, **kwargs):

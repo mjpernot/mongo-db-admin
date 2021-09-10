@@ -41,8 +41,8 @@ class Server(object):
     Description:  Class stub holder for mongo_class.Server class.
 
     Methods:
-        __init__ -> Class initialization.
-        adm_cmd -> Stub holder for mongo_class.Server.adm_cmd method.
+        __init__
+        adm_cmd
 
     """
 
@@ -85,14 +85,14 @@ class UnitTest(unittest.TestCase):
     Description:  Class which is a representation of a unit testing.
 
     Methods:
-        setUp -> Initialize testing environment.
-        test_to_json_flatten -> Test with going to JSON and flattening.
-        test_to_json -> Test going to JSON.
-        test_to_list -> Test going to list.
-        test_append_to_file -> Test with appending to a file.
-        test_to_file -> Test going to file.
-        test_to_standard -> Test going to standard out.
-        tearDown -> Clean up of unit testing.
+        setUp
+        test_to_json_flatten
+        test_to_json
+        test_to_list
+        test_append_to_file
+        test_to_file
+        test_to_standard
+        tearDown
 
     """
 

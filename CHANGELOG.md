@@ -5,6 +5,15 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 
 ## [2.4.0] - 2021-09-09
+### Added
+- process_dbs_tbls:  Process a list of databases and tables.
+- process_mail:  Add data to mail instance and send mail.
+
+### Changed
+- process_request:  Replaced process databases and tables with call to process_dbs_tbls and combined a number of if and else statements into a single statement.
+- status:  Replaced email section with call to process_mail.
+- run_compact:  Combined if and else into a single statement.
+- Documentation updates.
 
 
 ## [2.3.2] - 2020-12-29
@@ -39,7 +48,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - run_program:  Removed sys.exit() call.
 - status:  Refactored the email code section to reduce complexity.
 - config/mongo.py.TEMPLATE:  Set the replica set variables to None.
-- status:  Changed JSON key values to CamelCase.
+- status:  Changed JSON key values to PascalCase.
 - rotate:  Added option compression call when rotating log files to -n option directory.
 - main:  Added program lock functionality to program.
 
