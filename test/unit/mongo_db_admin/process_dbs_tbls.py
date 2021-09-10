@@ -164,10 +164,11 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertFalse(
-            mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name3, self.db_list,
-                self.tbl_name4))
+        with gen_libs.no_std_out():
+            self.assertFalse(
+                mongo_db_admin.process_dbs_tbls(
+                    self.mongo, self.func_name, self.db_name3, self.db_list,
+                    self.tbl_name4))
 
     def test_not_found_db(self):
 
@@ -254,10 +255,11 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertFalse(
-            mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name2, self.db_list,
-                self.tbl_name))
+        with gen_libs.no_std_out():
+            self.assertFalse(
+                mongo_db_admin.process_dbs_tbls(
+                    self.mongo, self.func_name, self.db_name2, self.db_list,
+                    self.tbl_name))
 
     def test_no_db_list(self):
 
