@@ -560,7 +560,7 @@ def status(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def process_mail(mail, data, indent=4):
+def process_mail(mail, data, indent=4, use_mailx=False):
 
     """Function:  process_mail
 
@@ -570,6 +570,7 @@ def process_mail(mail, data, indent=4):
         (input) mail -> Mail instance.
         (input) data -> Email message data.
         (input) indent -> Spacing for JSON document.
+        (input) use_mailx -> True|False - To use the mailx command.
 
     """
 
@@ -579,7 +580,7 @@ def process_mail(mail, data, indent=4):
     else:
         mail.add_2_msg(data)
 
-    mail.send_mail()
+    mail.send_mail(use_mailx=use_mailx)
 
 
 def rotate(server, args_array, **kwargs):
