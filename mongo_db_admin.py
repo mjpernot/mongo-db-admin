@@ -34,8 +34,9 @@
             -p Compress Mongo log after log rotation.
 
         -R [database name(s)] => Repair database.
-            Note:  If no database name is provided, then all databases are
+            Note 1:  If no database name is provided, then all databases are
                 repaired.
+            Warning:  This option will not work with Mongo 4.2.0 and above.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
