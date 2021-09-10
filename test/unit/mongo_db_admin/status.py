@@ -54,9 +54,9 @@ class Mail(object):
     Description:  Class stub holder for gen_class.Mail class.
 
     Methods:
-        __init__ -> Class initialization.
-        add_2_msg -> Stub method holder for Mail.add_2_msg.
-        send_mail -> Stub method holder for Mail.send_mail.
+        __init__
+        add_2_msg
+        send_mail
 
     """
 
@@ -67,7 +67,6 @@ class Mail(object):
         Description:  Class initialization.
 
         Arguments:
-            None
 
         """
 
@@ -108,8 +107,8 @@ class Server(object):
     Description:  Class stub holder for mongo_class.Server class.
 
     Methods:
-        __init__ -> Class initialization.
-        upd_srv_stat -> Stub holder for mongo_class.Server.upd_srv_stat method.
+        __init__
+        upd_srv_stat
 
     """
 
@@ -152,23 +151,23 @@ class UnitTest(unittest.TestCase):
     Description:  Class which is a representation of a unit testing.
 
     Methods:
-        setUp -> Initialize testing environment.
-        test_ins_doc_failure -> Test with failed insert into database.
-        test_ins_doc_success -> Test with successful insert into database.
-        test_to_dict_all -> Test with dictionary to file, database, and email.
-        test_to_json_all -> Test with JSON to file, database, and email.
-        test_to_dict_email -> Test with dictionary to email.
-        test_to_json_email -> Test with JSON to email.
-        test_to_dict_both -> Test with dictionary to file and database.
-        test_to_json_both -> Test with JSON to file and database.
-        test_to_json_file_flatten -> Test with flatten JSON to file.
-        test_to_json_file -> Test with JSON to file.
-        test_to_dict_db -> Test with dictionary to database.
-        test_to_json_db -> Test with JSON to database.
-        test_append_to_file -> Testing with appending data to a file.
-        test_to_file -> Test going to file.
-        test_std_suppress -> Test with standard out suppressed.
-        test_to_standard -> Test going to standard out.
+        setUp
+        test_ins_doc_failure
+        test_ins_doc_success
+        test_to_dict_all
+        test_to_json_all
+        test_to_dict_email
+        test_to_json_email
+        test_to_dict_both
+        test_to_json_both
+        test_to_json_file_flatten
+        test_to_json_file
+        test_to_dict_db
+        test_to_json_db
+        test_append_to_file
+        test_to_file
+        test_std_suppress
+        test_to_standard
 
     """
 
