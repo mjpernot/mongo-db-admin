@@ -7,6 +7,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 ## [2.4.0] - 2021-09-09
 - Updated to work in Mongo 4.2.14 environment.
 - Updated to work in a SSL environment.
+- Added ability to override the default mail command and use mailx.
 
 ### Added
 - process_dbs_tbls:  Process a list of databases and tables.

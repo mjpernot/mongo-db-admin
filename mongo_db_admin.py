@@ -18,10 +18,10 @@
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-f]} |
             {-M [-j [-g]] | [-i db_name:table_name -m config_file] |
-                [-o dir_path/file [-a]] | [-z]} |
+                [-o dir_path/file [-a]] | [-z]}
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]] |
             {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
                 [-o dir_path/file [-a]]} |
-            [-e to_email [to_email2 ...] [-s subject_line]] |
             [-y flavor_id]
             [-v | -h]
 
@@ -63,6 +63,12 @@
                 Format compability: JSON and standard out.
             -a => Append output to output file.
             -z => Suppress standard out.
+            -e to_email_addresses => Enables emailing capability for an option
+                if the option allows it.  Sends output to one or more email
+                addresses.  Email addresses are delimited by spaces.
+                -s subject_line => Subject line of email.  Optional, will
+                    create own subject line if one is not provided.
+                -u => Override the default mail command and use mailx.
 
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.
@@ -76,11 +82,6 @@
                 Format compability: JSON, list, and standard out.
             -a => Append output to output file.
 
-        -e to_email_addresses => Enables emailing capability for an option if
-            the option allows it.  Sends output to one or more email addresses.
-            Email addresses are delimited by spaces.
-        -s subject_line => Subject line of email.  Optional, will create own
-            subject line if one is not provided.
         -y value => A flavor id for the program lock.  To create unique lock.
         -v => Display version of this program.
         -h => Help and usage message.
