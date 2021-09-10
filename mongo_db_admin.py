@@ -236,18 +236,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
         # Process passed databases and tables.
         else:
-
-            # Generator builds list of databases to process.
-            for dbn in (dbn for dbn in db_name if dbn in db_list):
-                mongo.chg_db(dbs=dbn)
-                tbl_list = mongo.get_tbl_list()
-                fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
-
-                if fnd_tbls:
-                    func_name(mongo, dbn, fnd_tbls, **kwargs)
-
-                else:
-                    print("Found no tables to process in: %s" % (dbn))
+            process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs)
 
         mongo_libs.disconnect([mongo])
 
