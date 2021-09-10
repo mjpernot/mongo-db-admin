@@ -47,7 +47,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - run_program:  Removed sys.exit() call.
 - status:  Refactored the email code section to reduce complexity.
 - config/mongo.py.TEMPLATE:  Set the replica set variables to None.
-- status:  Changed JSON key values to CamelCase.
+- status:  Changed JSON key values to PascalCase.
 - rotate:  Added option compression call when rotating log files to -n option directory.
 - main:  Added program lock functionality to program.
 
