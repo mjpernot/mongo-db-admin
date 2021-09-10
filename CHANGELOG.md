@@ -5,6 +5,8 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 
 ## [2.4.0] - 2021-09-09
+### Changed
+- run_compact:  Combined if and else into a single statement.
 
 
 ## [2.3.2] - 2020-12-29
