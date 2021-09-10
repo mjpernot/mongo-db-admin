@@ -28,13 +28,11 @@
   * List of Linux packages that need to be installed on the server.
     - git
     - python-pip
+    - python-devel
 
   * Local class/library dependencies within the program structure.
-    - lib/arg_parser
-    - lib/gen_libs
-    - lib/gen_class
-    - mongo_lib/mongo_class
-    - mongo_lib/mongo_libs
+    - python-lib
+    - mongo-lib
 
   * FIPS Environment
     If operating in a FIPS 104-2 environment, this package will require at least a minimum of pymongo==3.8.0 or better.  It will also require a manual change to the auth.py module in the pymongo package.  See below for changes to auth.py.
