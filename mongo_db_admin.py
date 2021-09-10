@@ -552,7 +552,7 @@ def process_mail(mail, data, indent=4):
 
     else:
         mail.add_2_msg(data)
-    
+
     mail.send_mail()
 
 
