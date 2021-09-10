@@ -254,6 +254,40 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     return err_flag, err_msg
 
 
+def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_list, **kwargs):
+
+    """Function:  process_dbs_tbls
+
+    Description:  Process a list of databases and tables.
+
+    Arguments:
+        (input) mongo -> Database instance.
+        (input) func_name -> Name of a function.
+        (input) db_name -> List of database names to check.
+        (input) db_list -> List of all databases in Mongo database.
+        (input) tbl_name -> List of tables to check.
+        (input) **kwargs:
+            full -> Full validation table check option.
+
+    """
+
+    db_name = list(db_name)
+    db_list = list(db_list)
+    tbl_name = list(tbl_name)
+
+    # Generator builds list of databases to process.
+    for dbn in (dbn for dbn in db_name if dbn in db_list):
+        mongo.chg_db(dbs=dbn)
+        tbl_list = mongo.get_tbl_list()
+        fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
+
+        if fnd_tbls:
+            func_name(mongo, dbn, fnd_tbls, **kwargs)
+
+        else:
+            print("Found no tables to process in: %s" % (dbn))
+
+
 def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_dbcc
