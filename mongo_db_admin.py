@@ -782,7 +782,7 @@ def main():
                  "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
     opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"],
-                        "-s": ["-e"]}
+                        "-s": ["-e"], "-u": ["-e"]}
     opt_def_dict = {"-C": [], "-D": [], "-R": [], "-G": "global",
                     "-i": "sysmon:mongo_db_status"}
     opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
