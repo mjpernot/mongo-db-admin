@@ -194,19 +194,8 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     err_flag = False
     err_msg = None
-
-    if db_name is None:
-        db_name = []
-
-    else:
-        db_name = list(db_name)
-
-    if tbl_name is None:
-        tbl_name = []
-
-    else:
-        tbl_name = list(tbl_name)
-
+    db_name = list() if db_name is None else list(db_name)
+    tbl_name = list() if tbl_name is None else list(tbl_name)
     db_list = server.fetch_dbs()
     mongo = mongo_class.DB(
         server.name, server.user, server.japd, host=server.host,
