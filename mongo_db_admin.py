@@ -552,7 +552,7 @@ def status(server, args_array, **kwargs):
         gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
     if mail:
-        process_mail(mail, outdata, indent)
+        process_mail(mail, outdata, indent, args_array.get("-u", False))
 
     if not args_array.get("-z", False):
         gen_libs.display_data(outdata)
