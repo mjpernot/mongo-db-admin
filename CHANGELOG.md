@@ -13,6 +13,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - process_request:  Replaced process databases and tables with call to process_dbs_tbls and combined a number of if and else statements into a single statement.
 - status:  Replaced email section with call to process_mail.
 - run_compact:  Combined if and else into a single statement.
+- Documentation updates.
 
 
 ## [2.3.2] - 2020-12-29
