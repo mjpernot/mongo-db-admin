@@ -5,6 +5,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 
 ## [2.4.0] - 2021-09-09
+### Added
+- process_mail:  Add data to mail instance and send mail.
+
 ### Changed
 - run_compact:  Combined if and else into a single statement.
 

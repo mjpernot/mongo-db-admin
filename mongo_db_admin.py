@@ -527,6 +527,27 @@ def status(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
+def process_mail(mail, data):
+
+    """Function:  process_mail
+
+    Description:  Add data to mail instance and send mail.
+
+    Arguments:
+        (input) mail -> Mail instance.
+        (input) data -> Email message data.
+
+    """
+
+    if isinstance(data, dict):
+        mail.add_2_msg(json.dumps(data, indent=indent))
+
+    else:
+        mail.add_2_msg(data)
+    
+    mail.send_mail()
+
+
 def rotate(server, args_array, **kwargs):
 
     """Function:  rotate
