@@ -254,7 +254,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     return err_flag, err_msg
 
 
-def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_list, **kwargs):
+def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
 
     """Function:  process_dbs_tbls
 
