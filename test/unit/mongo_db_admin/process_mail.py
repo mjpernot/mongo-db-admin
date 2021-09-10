@@ -74,17 +74,23 @@ class Mail(object):
 
         return True
 
-    def send_mail(self):
+    def send_mail(self, use_mailx=False):
 
         """Method:  get_name
 
         Description:  Stub method holder for Mail.send_mail.
 
         Arguments:
+            (input) use_mailx -> True|False - To use mailx command.
 
         """
 
-        return True
+        status = True
+
+        if use_mailx:
+            status = True
+
+        return status
 
 
 class UnitTest(unittest.TestCase):
@@ -95,6 +101,9 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
+        test_mailx_default
+        test_mailx_true
+        test_mailx_false
         test_mail_no_indent
         test_str_to_email
         test_dict_to_email
@@ -116,6 +125,50 @@ class UnitTest(unittest.TestCase):
         self.data = {"key": "value"}
         self.data2 = "Key: Value"
         self.indent = 4
+        self.use_mailx = True
+        self.use_mailx2 = False
+
+    def test_mailx_default(self):
+
+        """Function:  test_mailx_default
+
+        Description:  Test with use_mailx option using default setting.
+
+        Arguments:
+
+        """
+
+        self.assertFalse(
+            mongo_db_admin.process_mail(
+                self.mail, self.data2, self.indent))
+
+    def test_mailx_true(self):
+
+        """Function:  test_mailx_true
+
+        Description:  Test with use_mailx option set to True.
+
+        Arguments:
+
+        """
+
+        self.assertFalse(
+            mongo_db_admin.process_mail(
+                self.mail, self.data2, self.indent, self.use_mailx))
+
+    def test_mailx_false(self):
+
+        """Function:  test_mailx_false
+
+        Description:  Test with use_mailx option set to False.
+
+        Arguments:
+
+        """
+
+        self.assertFalse(
+            mongo_db_admin.process_mail(
+                self.mail, self.data2, self.indent, self.use_mailx2))
 
     def test_mail_no_indent(self):
 
