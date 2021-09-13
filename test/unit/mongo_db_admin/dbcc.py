@@ -54,7 +54,7 @@ class Server(object):
     Description:  Class stub holder for mongo_class.Server class.
 
     Methods:
-        __init__ -> Class initialization.
+        __init__
 
     """
 
@@ -78,9 +78,9 @@ class UnitTest(unittest.TestCase):
     Description:  Class which is a representation of a unit testing.
 
     Methods:
-        setUp -> Initialize testing environment.
-        test_dbcc2 -> Test dbcc function.
-        test_dbcc -> Test dbcc function.
+        setUp
+        test_dbcc2
+        test_dbcc
 
     """
 

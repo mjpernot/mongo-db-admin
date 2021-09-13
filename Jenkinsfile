@@ -21,12 +21,15 @@ pipeline {
                 virtualenv test_env
                 source test_env/bin/activate
                 pip2 install mock==2.0.0 --user
-                pip2 install pymongo==3.2.0 --user
+                pip2 install psutil==5.4.3 --user
+                pip2 install pymongo==3.8.0 --user
                 ./test/unit/mongo_db_admin/dbcc.py
                 ./test/unit/mongo_db_admin/defrag.py
                 ./test/unit/mongo_db_admin/get_log.py
                 ./test/unit/mongo_db_admin/help_message.py
                 ./test/unit/mongo_db_admin/main.py
+                ./test/unit/mongo_db_admin/process_dbs_tbls.py
+                ./test/unit/mongo_db_admin/process_mail.py
                 ./test/unit/mongo_db_admin/process_request.py
                 ./test/unit/mongo_db_admin/repair_db.py
                 ./test/unit/mongo_db_admin/rotate.py
@@ -90,6 +93,11 @@ pipeline {
                     server.upload(uploadSpec)
                 }
             }
+        }
+    }
+    post {
+        always {
+            cleanWs disableDeferredWipeout: true
         }
     }
 }

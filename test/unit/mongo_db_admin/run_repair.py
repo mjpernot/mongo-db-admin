@@ -41,9 +41,9 @@ class Mongo(object):
     Description:  Class stub holder for mongo_class.DB class.
 
     Methods:
-        __init__ -> Class initialization.
-        chg_db -> Stub holder for mongo_class.DB.chg_db method.
-        get_tbl_list -> Stub holder for mongo_class.DB.get_tbl_list method.
+        __init__
+        chg_db
+        get_tbl_list
 
     """
 
@@ -100,9 +100,9 @@ class UnitTest(unittest.TestCase):
     Description:  Class which is a representation of a unit testing.
 
     Methods:
-        setUp -> Initialize testing environment.
-        test_errors -> Test with errors detected.
-        test_no_errors -> Test with no errors detected.
+        setUp
+        test_errors
+        test_no_errors
 
     """
 
