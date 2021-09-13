@@ -259,7 +259,8 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
         # Process passed databases and tables.
         else:
-            process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs)
+            process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name,
+                             **kwargs)
 
         mongo_libs.disconnect([mongo])
 
