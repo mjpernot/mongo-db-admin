@@ -227,11 +227,15 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     db_name = list() if db_name is None else list(db_name)
     tbl_name = list() if tbl_name is None else list(tbl_name)
     db_list = server.fetch_dbs()
+
+    # Only pass authorization mechanism if present.
+    auth_mech = {"auth_mech": server.auth_mech} if hasattr(
+        server, "auth_mech") else {}
     mongo = mongo_class.DB(
         server.name, server.user, server.japd, host=server.host,
         port=server.port, db="test", auth=server.auth,
         conf_file=server.conf_file, auth_db=server.auth_db,
-        use_arg=server.use_arg, use_uri=server.use_uri)
+        use_arg=server.use_arg, use_uri=server.use_uri, **auth_mech)
     state = mongo.connect()
 
     if not state[0]:

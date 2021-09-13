@@ -14,6 +14,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - process_mail:  Add data to mail instance and send mail.
 
 ### Changed
+- process_request:  Added auth_mech to mongo_class instance call.
 - main:  Add -u option to the conditional required list.
 - config/mongo.py.TEMPLATE:  Added SSL connection entries.
 - process_request:  Replaced process databases and tables with call to process_dbs_tbls and combined a number of if and else statements into a single statement.
