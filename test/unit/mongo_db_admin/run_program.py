@@ -96,8 +96,8 @@ class Server(object):
     Description:  Class stub holder for mongo_class.Server class.
 
     Methods:
-        __init__ -> Class initialization.
-        connect -> Stub holder for mongo_class.Server.connect method.
+        __init__
+        connect
 
     """
 
@@ -134,13 +134,13 @@ class UnitTest(unittest.TestCase):
     Description:  Class which is a representation of a unit testing.
 
     Methods:
-        setUp -> Initialize testing environment.
-        test_connection_failure -> Test with failed connection.
-        test_connection_successful -> Test with successful connection.
-        test_func_failure -> Test with function returning error message.
-        test_email -> Test with email option.
-        test_cfg -> Test with configuration file.
-        test_no_cfg -> Test with no configuration file.
+        setUp
+        test_connection_failure
+        test_connection_successful
+        test_func_failure
+        test_email
+        test_cfg
+        test_no_cfg
 
     """
 

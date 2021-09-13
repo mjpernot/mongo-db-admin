@@ -18,10 +18,10 @@
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-f]} |
             {-M [-j [-g]] | [-i db_name:table_name -m config_file] |
-                [-o dir_path/file [-a]] | [-z]} |
+                [-o dir_path/file [-a]] | [-z]}
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]] |
             {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
                 [-o dir_path/file [-a]]} |
-            [-e to_email [to_email2 ...] [-s subject_line]] |
             [-y flavor_id]
             [-v | -h]
 
@@ -34,8 +34,10 @@
             -p Compress Mongo log after log rotation.
 
         -R [database name(s)] => Repair database.
-            Note:  If no database name is provided, then all databases are
+            Note 1:  If no database name is provided, then all databases are
                 repaired.
+            Warning:  This option will not work with Mongo 4.2.0 and above and
+                will cause the node to stacktrace.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
@@ -63,6 +65,12 @@
                 Format compability: JSON and standard out.
             -a => Append output to output file.
             -z => Suppress standard out.
+            -e to_email_addresses => Enables emailing capability for an option
+                if the option allows it.  Sends output to one or more email
+                addresses.  Email addresses are delimited by spaces.
+                -s subject_line => Subject line of email.  Optional, will
+                    create own subject line if one is not provided.
+                -u => Override the default mail command and use mailx.
 
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.
@@ -76,11 +84,6 @@
                 Format compability: JSON, list, and standard out.
             -a => Append output to output file.
 
-        -e to_email_addresses => Enables emailing capability for an option if
-            the option allows it.  Sends output to one or more email addresses.
-            Email addresses are delimited by spaces.
-        -s subject_line => Subject line of email.  Optional, will create own
-            subject line if one is not provided.
         -y value => A flavor id for the program lock.  To create unique lock.
         -v => Display version of this program.
         -h => Help and usage message.
@@ -99,7 +102,7 @@
 
             There are two ways to connect:  single or replica set.
 
-            1.)  Single database connection:
+            Single database connection:
 
             # Single Configuration file for Mongo Database Server.
             user = "USER"
@@ -114,7 +117,7 @@
             use_arg = True
             use_uri = False
 
-            2.)  Replica Set connection:  Same format as above, but with these
+            Replica Set connection:  Same format as above, but with these
                 additional entries at the end of the configuration file.  By
                 default all these entries are set to None to represent not
                 connecting to a replica set.
@@ -123,11 +126,38 @@
             repset_hosts = "HOST1:PORT, HOST2:PORT, HOST3:PORT, [...]"
             db_auth = "AUTHENTICATION_DATABASE"
 
+            Note:  If using SSL connections then set one or more of the
+                following entries.  This will automatically enable SSL
+                connections. Below are the configuration settings for SSL
+                connections.  See configuration file for details on each entry:
+
+            ssl_client_ca = None
+            ssl_client_key = None
+            ssl_client_cert = None
+            ssl_client_phrase = None
+
+            Note:  FIPS Environment for Mongo.
+              If operating in a FIPS 104-2 environment, this package will
+              require at least a minimum of pymongo==3.8.0 or better.  It will
+              also require a manual change to the auth.py module in the pymongo
+              package.  See below for changes to auth.py.
+
+            - Locate the auth.py file python installed packages on the system
+                in the pymongo package directory.
+            - Edit the file and locate the "_password_digest" function.
+            - In the "_password_digest" function there is an line that should
+                match: "md5hash = hashlib.md5()".  Change it to
+                "md5hash = hashlib.md5(usedforsecurity=False)".
+            - Lastly, it will require the Mongo configuration file entry
+                auth_mech to be set to: SCRAM-SHA-1 or SCRAM-SHA-256.
+
         Configuration modules -> Name is runtime dependent as it can be used to
             connect to different databases with different names.
 
     Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
         "repairDatabase" command was removed from Mongodb.
+        Warning:  Do not run it on a 4.2.0 or better as it will cause the
+            database node to stacktrace.
 
     Example:
         mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
@@ -194,25 +224,18 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     err_flag = False
     err_msg = None
-
-    if db_name is None:
-        db_name = []
-
-    else:
-        db_name = list(db_name)
-
-    if tbl_name is None:
-        tbl_name = []
-
-    else:
-        tbl_name = list(tbl_name)
-
+    db_name = list() if db_name is None else list(db_name)
+    tbl_name = list() if tbl_name is None else list(tbl_name)
     db_list = server.fetch_dbs()
+
+    # Only pass authorization mechanism if present.
+    auth_mech = {"auth_mech": server.auth_mech} if hasattr(
+        server, "auth_mech") else {}
     mongo = mongo_class.DB(
         server.name, server.user, server.japd, host=server.host,
         port=server.port, db="test", auth=server.auth,
         conf_file=server.conf_file, auth_db=server.auth_db,
-        use_arg=server.use_arg, use_uri=server.use_uri)
+        use_arg=server.use_arg, use_uri=server.use_uri, **auth_mech)
     state = mongo.connect()
 
     if not state[0]:
@@ -236,22 +259,46 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
         # Process passed databases and tables.
         else:
-
-            # Generator builds list of databases to process.
-            for dbn in (dbn for dbn in db_name if dbn in db_list):
-                mongo.chg_db(dbs=dbn)
-                tbl_list = mongo.get_tbl_list()
-                fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
-
-                if fnd_tbls:
-                    func_name(mongo, dbn, fnd_tbls, **kwargs)
-
-                else:
-                    print("Found no tables to process in: %s" % (dbn))
+            process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name,
+                             **kwargs)
 
         mongo_libs.disconnect([mongo])
 
     return err_flag, err_msg
+
+
+def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
+
+    """Function:  process_dbs_tbls
+
+    Description:  Process a list of databases and tables.
+
+    Arguments:
+        (input) mongo -> Database instance.
+        (input) func_name -> Name of a function.
+        (input) db_name -> List of database names to check.
+        (input) db_list -> List of all databases in Mongo database.
+        (input) tbl_name -> List of tables to check.
+        (input) **kwargs:
+            full -> Full validation table check option.
+
+    """
+
+    db_name = list(db_name)
+    db_list = list(db_list)
+    tbl_name = list(tbl_name)
+
+    # Generator builds list of databases to process.
+    for dbn in (dbn for dbn in db_name if dbn in db_list):
+        mongo.chg_db(dbs=dbn)
+        tbl_list = mongo.get_tbl_list()
+        fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
+
+        if fnd_tbls:
+            func_name(mongo, dbn, fnd_tbls, **kwargs)
+
+        else:
+            print("Found no tables to process in: %s" % (dbn))
 
 
 def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
@@ -335,11 +382,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """
 
-    if tbl_list is None:
-        tbl_list = []
-
-    else:
-        tbl_list = list(tbl_list)
+    tbl_list = list() if tbl_list is None else list(tbl_list)
 
     mongo.chg_db(dbs=db_name)
     print("Compacting for %s" % (mongo.db_name))
@@ -517,18 +560,36 @@ def status(server, args_array, **kwargs):
     elif ofile:
         gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
-    if mail and isinstance(outdata, dict):
-        mail.add_2_msg(json.dumps(outdata, indent=indent))
-        mail.send_mail()
-
-    elif mail:
-        mail.add_2_msg(outdata)
-        mail.send_mail()
+    if mail:
+        process_mail(mail, outdata, indent, args_array.get("-u", False))
 
     if not args_array.get("-z", False):
         gen_libs.display_data(outdata)
 
     return err_flag, err_msg
+
+
+def process_mail(mail, data, indent=4, use_mailx=False):
+
+    """Function:  process_mail
+
+    Description:  Add data to mail instance and send mail.
+
+    Arguments:
+        (input) mail -> Mail instance.
+        (input) data -> Email message data.
+        (input) indent -> Spacing for JSON document.
+        (input) use_mailx -> True|False - To use the mailx command.
+
+    """
+
+    if isinstance(data, dict):
+        mail.add_2_msg(json.dumps(data, indent=indent))
+
+    else:
+        mail.add_2_msg(data)
+
+    mail.send_mail(use_mailx=use_mailx)
 
 
 def rotate(server, args_array, **kwargs):
@@ -731,7 +792,7 @@ def main():
                  "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
     opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"],
-                        "-s": ["-e"]}
+                        "-s": ["-e"], "-u": ["-e"]}
     opt_def_dict = {"-C": [], "-D": [], "-R": [], "-G": "global",
                     "-i": "sysmon:mongo_db_status"}
     opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
