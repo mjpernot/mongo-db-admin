@@ -5,6 +5,12 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 
 ## [2.4.1] - 2022-06-28
+- Upgrade mongo-libs to v4.2.1
+- Upgrade python-lib to v2.9.2
+
+### Changed
+- config/mongo.py.TEMPLATE: Removed old entries.
+- Documentation updates.
 
 
 ## [2.4.0] - 2021-09-09
