@@ -535,9 +535,6 @@ def status(server, args_array, **kwargs):
     if args_array.get("-g", False):
         indent = None
 
-    if "-j" in args_array:
-        outdata = json.dumps(outdata, indent=indent)
-
     if mongo_cfg and db_tbl:
         dbn, tbl = db_tbl.split(":")
 
@@ -551,6 +548,9 @@ def status(server, args_array, **kwargs):
         if not state[0]:
             err_flag = True
             err_msg = "Inserting into Mongo database:  %s" % state[1]
+
+    if "-j" in args_array:
+        outdata = json.dumps(outdata, indent=indent)
 
     if ofile and "-j" in args_array:
         gen_libs.write_file(ofile, mode, outdata)
