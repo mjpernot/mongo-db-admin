@@ -232,8 +232,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     mongo = mongo_class.DB(
         server.name, server.user, server.japd, host=server.host,
         port=server.port, db="test", auth=server.auth,
-        conf_file=server.conf_file, auth_db=server.auth_db,
-        use_arg=server.use_arg, use_uri=server.use_uri, **auth_mech)
+        conf_file=server.conf_file, auth_db=server.auth_db, **auth_mech)
     state = mongo.connect()
 
     if not state[0]:
