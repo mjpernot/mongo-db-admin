@@ -508,42 +508,29 @@ def status(server, args_array, **kwargs):
 
     err_flag = False
     err_msg = None
-    mode = "w"
-    indent = 4
+    mode = "a" if args_array.get("-a", False) else "w"
+    indent = None if args_array.get("-g", False) else 4
     args_array = dict(args_array)
     server.upd_srv_stat()
-    outdata = {"Application": "MongoDB",
-               "Server": server.name,
-               "AsOf": datetime.datetime.strftime(datetime.datetime.now(),
-                                                  "%Y-%m-%d %H:%M:%S")}
-    outdata.update({"Memory": {"CurrentUsage": server.cur_mem,
-                               "MaxUsage": server.max_mem,
-                               "PercentUsed": server.prct_mem},
-                    "UpTime": server.days_up,
-                    "Connections": {"CurrentConnected": server.cur_conn,
-                                    "MaxConnections": server.max_conn,
-                                    "PercentUsed": server.prct_conn}})
-
     ofile = kwargs.get("ofile", None)
     mail = kwargs.get("mail", None)
     mongo_cfg = kwargs.get("class_cfg", None)
     db_tbl = kwargs.get("db_tbl", None)
-
-    if args_array.get("-a", False):
-        mode = "a"
-
-    if args_array.get("-g", False):
-        indent = None
+    outdata = {"Application": "MongoDB",
+               "Server": server.name,
+               "AsOf": datetime.datetime.strftime(
+                   datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
+               "Memory": {"CurrentUsage": server.cur_mem,
+                          "MaxUsage": server.max_mem,
+                          "PercentUsed": server.prct_mem},
+               "UpTime": server.days_up,
+               "Connections": {"CurrentConnected": server.cur_conn,
+                               "MaxConnections": server.max_conn,
+                               "PercentUsed": server.prct_conn}}
 
     if mongo_cfg and db_tbl:
         dbn, tbl = db_tbl.split(":")
-
-        if isinstance(outdata, dict):
-            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
-
-        else:
-            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl,
-                                       ast.literal_eval(outdata))
+        state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
 
         if not state[0]:
             err_flag = True
