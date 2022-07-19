@@ -5,8 +5,21 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 
 ## [2.4.2] - 2022-07-18
+- Removed the -R option as this option is not available in Mongo 4.2.
+
 ### Fixed
+- run_compact: System databases are non-compactable and are skipped.
 - status: Moved json.dumps call to after Mongo database insert as json.dumps was converting "none" to "null".
+
+### Added
+- compact: Runs the compact command and checks the status return.
+
+### Changed
+- status: Removed checks on data type for Mongo insertion and refactored function.
+- process_request: Removed "use_arg" and "use_uri" from mongo_class.DB instance call.
+
+### Removed
+- run_repair, repair_db: The "repairDatabase" command is longer available in Mongo 4.2.
 
 
 ## [2.4.1] - 2022-06-28
