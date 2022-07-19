@@ -4,16 +4,15 @@
 """Program:  mongo_db_admin.py
 
     Description:  A Mongo Database Administration program that can run a number
-        of different administration functions such as repairing a database,
-        compacting/defraging tables or entire database, or validating
-        tables in a database.  Can return the database's status to
-        include uptime, connection usage, and memory use and can also
-        retrieve the Mongo error log that currently resides in memory.
+        of different administration functions such as compacting/defraging
+        tables or entire database, or validating tables in a database.  Can
+        return the database's status to include uptime, connection usage, and
+        memory use and can also retrieve the Mongo error log that currently
+        resides in memory.
 
     Usage:
         mongo_db_admin.py -c file -d path
             {-L [-n dir_path [-p]]} |
-            {-R [db_name [db_name2 ...]]} |
             {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-f]} |
@@ -32,12 +31,6 @@
             -n dir path => Directory path to where the old mongo database
                 error log file will be moved to.
             -p Compress Mongo log after log rotation.
-
-        -R [database name(s)] => Repair database.
-            Note 1:  If no database name is provided, then all databases are
-                repaired.
-            Warning:  This option will not work with Mongo 4.2.0 and above and
-                will cause the node to stacktrace.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
@@ -152,11 +145,6 @@
         Configuration modules -> Name is runtime dependent as it can be used to
             connect to different databases with different names.
 
-    Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
-        "repairDatabase" command was removed from Mongodb.
-        Warning:  Do not run it on a 4.2.0 or better as it will cause the
-            database node to stacktrace.
-
     Example:
         mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
 
@@ -174,7 +162,6 @@ import os
 
 # Third party
 import json
-import ast
 
 # Local
 import lib.arg_parser as arg_parser
@@ -232,8 +219,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     mongo = mongo_class.DB(
         server.name, server.user, server.japd, host=server.host,
         port=server.port, db="test", auth=server.auth,
-        conf_file=server.conf_file, auth_db=server.auth_db,
-        use_arg=server.use_arg, use_uri=server.use_uri, **auth_mech)
+        conf_file=server.conf_file, auth_db=server.auth_db, **auth_mech)
     state = mongo.connect()
 
     if not state[0]:
@@ -366,27 +352,60 @@ def dbcc(server, args_array, **kwargs):
     return state[0], state[1]
 
 
+def compact(mongo, coll, tbl):
+
+    """Function:  compact
+
+    Description:  Runs the compact command and checks the status return.
+
+    Arguments:
+        (input) mongo -> Database instance
+        (input) coll -> Database collection instance
+        (input) tbl -> Table name
+
+    """
+
+    if coll.coll_options().get("capped", False):
+        print("\tCollection capped: not compacted")
+
+    else:
+
+        if mongo.db_cmd("compact", obj=tbl)["ok"] == 1:
+            print("\tDone")
+
+        else:
+            print("\tCommand Failed")
+
+
 def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_compact
 
-    Description:  Changes database instance to new database and executes
-        compact command within the class instance against a list of tables.
+    Description:   Determines whether the database is a system database and
+        changes database instance to new database before calling the compact
+        function.
 
     Arguments:
-        (input) mongo -> Database instance.
-        (input) db_name -> Database name.
-        (input) tbl_list -> List of tables.
+        (input) mongo -> Database instance
+        (input) db_name -> Database name
+        (input) tbl_list -> List of tables
 
     """
 
     tbl_list = list() if tbl_list is None else list(tbl_list)
 
-    mongo.chg_db(dbs=db_name)
-    print("Compacting for %s" % (mongo.db_name))
-
     if not tbl_list:
         tbl_list = mongo.get_tbl_list(False)
+
+    if db_name in ["admin", "config", "local"]:
+        print("System databases are non-compactable: %s" % (db_name))
+
+        # Sets the table list to empty to skip compacting
+        tbl_list = list()
+
+    else:
+        mongo.chg_db(dbs=db_name)
+        print("Compacting for %s" % (mongo.db_name))
 
     for item in tbl_list:
         print("\tCompacting: {0:50}".format(item + "..."), end="")
@@ -394,17 +413,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
         state = coll.connect()
 
         if state[0]:
-            if coll.coll_options().get("capped", False):
-                print("\tCollection capped: not compacted")
-
-            else:
-
-                if mongo.db_cmd("compact", obj=item)["ok"] == 1:
-                    print("\tDone")
-
-                else:
-                    print("\tCommand Failed")
-
+            compact(mongo, coll, item)
             mongo_libs.disconnect([coll])
 
         else:
@@ -441,50 +450,6 @@ def defrag(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def run_repair(mongo, db_name, **kwargs):
-
-    """Function:  run_repair
-
-    Description:  Changes database instance to new database and executes the
-        repairDatabase command within the class instance.
-
-    Arguments:
-        (input) mongo -> Database instance.
-        (input) db_name -> Database name.
-
-    """
-
-    mongo.chg_db(dbs=db_name)
-    print("Repairing Database: {0:20}".format(db_name + "..."), end="")
-
-    if mongo.db_cmd("repairDatabase")["ok"] == 1:
-        print("\tDone")
-
-    else:
-        print("\tCommand Failed")
-
-
-def repair_db(server, args_array, **kwargs):
-
-    """Function:  repair_db
-
-    Description:  Runs the repairDatabase command against one or more databases
-        which is determined by -R option from the command line.
-
-    Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) state[0] -> True|False - If an error has occurred.
-        (output) state[1] -> Error message.
-
-    """
-
-    args_array = dict(args_array)
-    state = process_request(server, run_repair, args_array["-R"], None)
-
-    return state[0], state[1]
-
-
 def status(server, args_array, **kwargs):
 
     """Function:  status
@@ -508,49 +473,36 @@ def status(server, args_array, **kwargs):
 
     err_flag = False
     err_msg = None
-    mode = "w"
-    indent = 4
+    mode = "a" if args_array.get("-a", False) else "w"
+    indent = None if args_array.get("-g", False) else 4
     args_array = dict(args_array)
     server.upd_srv_stat()
-    outdata = {"Application": "MongoDB",
-               "Server": server.name,
-               "AsOf": datetime.datetime.strftime(datetime.datetime.now(),
-                                                  "%Y-%m-%d %H:%M:%S")}
-    outdata.update({"Memory": {"CurrentUsage": server.cur_mem,
-                               "MaxUsage": server.max_mem,
-                               "PercentUsed": server.prct_mem},
-                    "UpTime": server.days_up,
-                    "Connections": {"CurrentConnected": server.cur_conn,
-                                    "MaxConnections": server.max_conn,
-                                    "PercentUsed": server.prct_conn}})
-
     ofile = kwargs.get("ofile", None)
     mail = kwargs.get("mail", None)
     mongo_cfg = kwargs.get("class_cfg", None)
     db_tbl = kwargs.get("db_tbl", None)
-
-    if args_array.get("-a", False):
-        mode = "a"
-
-    if args_array.get("-g", False):
-        indent = None
-
-    if "-j" in args_array:
-        outdata = json.dumps(outdata, indent=indent)
+    outdata = {"Application": "MongoDB",
+               "Server": server.name,
+               "AsOf": datetime.datetime.strftime(
+                   datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
+               "Memory": {"CurrentUsage": server.cur_mem,
+                          "MaxUsage": server.max_mem,
+                          "PercentUsed": server.prct_mem},
+               "UpTime": server.days_up,
+               "Connections": {"CurrentConnected": server.cur_conn,
+                               "MaxConnections": server.max_conn,
+                               "PercentUsed": server.prct_conn}}
 
     if mongo_cfg and db_tbl:
         dbn, tbl = db_tbl.split(":")
-
-        if isinstance(outdata, dict):
-            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
-
-        else:
-            state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl,
-                                       ast.literal_eval(outdata))
+        state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
 
         if not state[0]:
             err_flag = True
             err_msg = "Inserting into Mongo database:  %s" % state[1]
+
+    if "-j" in args_array:
+        outdata = json.dumps(outdata, indent=indent)
 
     if ofile and "-j" in args_array:
         gen_libs.write_file(ofile, mode, outdata)
@@ -786,21 +738,25 @@ def main():
     dir_chk_list = ["-d", "-n"]
     file_chk_list = ["-o"]
     file_crt_list = ["-o"]
-    func_dict = {"-C": defrag, "-D": dbcc, "-R": repair_db, "-M": status,
-                 "-L": rotate, "-G": get_log}
+    func_dict = {
+        "-C": defrag, "-D": dbcc, "-M": status, "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
-    opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"],
-                        "-s": ["-e"], "-u": ["-e"]}
-    opt_def_dict = {"-C": [], "-D": [], "-R": [], "-G": "global",
-                    "-i": "sysmon:mongo_db_status"}
+    opt_con_req_list = {
+        "-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"], "-s": ["-e"],
+        "-u": ["-e"]}
+    opt_def_dict = {
+        "-C": [], "-D": [], "-R": [], "-G": "global",
+        "-i": "sysmon:mongo_db_status"}
     opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
     opt_req_list = ["-c", "-d"]
-    opt_val_list = ["-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o",
-                    "-G", "-n", "-e", "-s", "-y"]
+    opt_val_list = [
+        "-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o", "-G", "-n", "-e",
+        "-s", "-y"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
-    opt_xor_dict = {"-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
-                    "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"],
-                    "-G": ["-M"], "-j": ["-l"], "-l": ["-j"]}
+    opt_xor_dict = {
+        "-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
+        "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"], "-G": ["-M"],
+        "-j": ["-l"], "-l": ["-j"]}
 
     # Process argument list from command line.
     args_array = arg_parser.arg_parse2(cmdline.argv, opt_val_list,

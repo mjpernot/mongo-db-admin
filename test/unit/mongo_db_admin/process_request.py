@@ -90,8 +90,6 @@ class Server(object):
         self.conf_file = "Config file name"
         self.db_list = ["DB1", "DB2"]
         self.auth_db = "admin"
-        self.use_arg = True
-        self.use_uri = False
 
     def fetch_dbs(self):
 
@@ -137,8 +135,6 @@ class Server2(object):
         self.conf_file = "Config file name2"
         self.db_list = ["DB3", "DB4"]
         self.auth_db = "admin"
-        self.use_arg = True
-        self.use_uri = False
         self.auth_mech = "MONGODB-CR"
 
     def fetch_dbs(self):
