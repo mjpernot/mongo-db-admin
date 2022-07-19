@@ -281,8 +281,7 @@ class UnitTest(unittest.TestCase):
             self.assertFalse(mongo_db_admin.compact(
                 self.mongo, self.coll2, self.tbl_name))
 
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
-    def test_coll_capped(self, mock_create):
+    def test_coll_capped(self):
 
         """Function:  test_coll_capped
 
