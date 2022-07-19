@@ -31,12 +31,10 @@ pipeline {
                 ./test/unit/mongo_db_admin/process_dbs_tbls.py
                 ./test/unit/mongo_db_admin/process_mail.py
                 ./test/unit/mongo_db_admin/process_request.py
-                ./test/unit/mongo_db_admin/repair_db.py
                 ./test/unit/mongo_db_admin/rotate.py
                 ./test/unit/mongo_db_admin/run_compact.py
                 ./test/unit/mongo_db_admin/run_dbcc.py
                 ./test/unit/mongo_db_admin/run_program.py
-                ./test/unit/mongo_db_admin/run_repair.py
                 ./test/unit/mongo_db_admin/status.py
                 deactivate
                 rm -rf test_env

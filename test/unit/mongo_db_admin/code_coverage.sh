@@ -16,12 +16,10 @@ coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/main.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/process_dbs_tbls.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/process_mail.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/process_request.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/repair_db.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/rotate.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_compact.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_dbcc.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_program.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_repair.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/status.py
 
 echo ""

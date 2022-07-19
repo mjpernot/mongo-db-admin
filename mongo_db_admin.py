@@ -4,16 +4,15 @@
 """Program:  mongo_db_admin.py
 
     Description:  A Mongo Database Administration program that can run a number
-        of different administration functions such as repairing a database,
-        compacting/defraging tables or entire database, or validating
-        tables in a database.  Can return the database's status to
-        include uptime, connection usage, and memory use and can also
-        retrieve the Mongo error log that currently resides in memory.
+        of different administration functions such as compacting/defraging
+        tables or entire database, or validating tables in a database.  Can
+        return the database's status to include uptime, connection usage, and
+        memory use and can also retrieve the Mongo error log that currently
+        resides in memory.
 
     Usage:
         mongo_db_admin.py -c file -d path
             {-L [-n dir_path [-p]]} |
-            {-R [db_name [db_name2 ...]]} |
             {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-f]} |
@@ -32,12 +31,6 @@
             -n dir path => Directory path to where the old mongo database
                 error log file will be moved to.
             -p Compress Mongo log after log rotation.
-
-        -R [database name(s)] => Repair database.
-            Note 1:  If no database name is provided, then all databases are
-                repaired.
-            Warning:  This option will not work with Mongo 4.2.0 and above and
-                will cause the node to stacktrace.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
@@ -151,11 +144,6 @@
 
         Configuration modules -> Name is runtime dependent as it can be used to
             connect to different databases with different names.
-
-    Version Issue:  The -R option will fail on Mongodb v4.2.0 and above.  The
-        "repairDatabase" command was removed from Mongodb.
-        Warning:  Do not run it on a 4.2.0 or better as it will cause the
-            database node to stacktrace.
 
     Example:
         mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
@@ -438,50 +426,6 @@ def defrag(server, args_array, **kwargs):
             server, run_compact, args_array["-C"], args_array.get("-t"))
 
     return err_flag, err_msg
-
-
-def run_repair(mongo, db_name, **kwargs):
-
-    """Function:  run_repair
-
-    Description:  Changes database instance to new database and executes the
-        repairDatabase command within the class instance.
-
-    Arguments:
-        (input) mongo -> Database instance.
-        (input) db_name -> Database name.
-
-    """
-
-    mongo.chg_db(dbs=db_name)
-    print("Repairing Database: {0:20}".format(db_name + "..."), end="")
-
-    if mongo.db_cmd("repairDatabase")["ok"] == 1:
-        print("\tDone")
-
-    else:
-        print("\tCommand Failed")
-
-
-def repair_db(server, args_array, **kwargs):
-
-    """Function:  repair_db
-
-    Description:  Runs the repairDatabase command against one or more databases
-        which is determined by -R option from the command line.
-
-    Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) state[0] -> True|False - If an error has occurred.
-        (output) state[1] -> Error message.
-
-    """
-
-    args_array = dict(args_array)
-    state = process_request(server, run_repair, args_array["-R"], None)
-
-    return state[0], state[1]
 
 
 def status(server, args_array, **kwargs):
@@ -772,21 +716,25 @@ def main():
     dir_chk_list = ["-d", "-n"]
     file_chk_list = ["-o"]
     file_crt_list = ["-o"]
-    func_dict = {"-C": defrag, "-D": dbcc, "-R": repair_db, "-M": status,
-                 "-L": rotate, "-G": get_log}
+    func_dict = {
+        "-C": defrag, "-D": dbcc, "-M": status, "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
-    opt_con_req_list = {"-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"],
-                        "-s": ["-e"], "-u": ["-e"]}
-    opt_def_dict = {"-C": [], "-D": [], "-R": [], "-G": "global",
-                    "-i": "sysmon:mongo_db_status"}
+    opt_con_req_list = {
+        "-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"], "-s": ["-e"],
+        "-u": ["-e"]}
+    opt_def_dict = {
+        "-C": [], "-D": [], "-R": [], "-G": "global",
+        "-i": "sysmon:mongo_db_status"}
     opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
     opt_req_list = ["-c", "-d"]
-    opt_val_list = ["-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o",
-                    "-G", "-n", "-e", "-s", "-y"]
+    opt_val_list = [
+        "-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o", "-G", "-n", "-e",
+        "-s", "-y"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
-    opt_xor_dict = {"-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
-                    "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"],
-                    "-G": ["-M"], "-j": ["-l"], "-l": ["-j"]}
+    opt_xor_dict = {
+        "-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
+        "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"], "-G": ["-M"],
+        "-j": ["-l"], "-l": ["-j"]}
 
     # Process argument list from command line.
     args_array = arg_parser.arg_parse2(cmdline.argv, opt_val_list,
