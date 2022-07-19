@@ -11,6 +11,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - run_compact: System databases are non-compactable and are skipped.
 - status: Moved json.dumps call to after Mongo database insert as json.dumps was converting "none" to "null".
 
+### Added
+- compact: Runs the compact command and checks the status return.
+
 ### Changed
 - status: Removed checks on data type for Mongo insertion and refactored function.
 - process_request: Removed "use_arg" and "use_uri" from mongo_class.DB instance call.

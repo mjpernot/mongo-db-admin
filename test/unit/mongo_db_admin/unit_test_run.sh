@@ -6,6 +6,7 @@
 
 echo ""
 echo "Unit test:"
+test/unit/mongo_db_admin/compact.py
 test/unit/mongo_db_admin/dbcc.py
 test/unit/mongo_db_admin/defrag.py
 test/unit/mongo_db_admin/get_log.py

@@ -353,17 +353,43 @@ def dbcc(server, args_array, **kwargs):
     return state[0], state[1]
 
 
+def compact(mongo, coll, tbl):
+
+    """Function:  compact
+
+    Description:  Runs the compact command and checks the status return.
+
+    Arguments:
+        (input) mongo -> Database instance
+        (input) coll -> Database collection instance
+        (input) tbl -> Table name
+
+    """
+
+    if coll.coll_options().get("capped", False):
+        print("\tCollection capped: not compacted")
+
+    else:
+
+        if mongo.db_cmd("compact", obj=tbl)["ok"] == 1:
+            print("\tDone")
+
+        else:
+            print("\tCommand Failed")
+
+
 def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_compact
 
-    Description:  Changes database instance to new database and executes
-        compact command within the class instance against a list of tables.
+    Description:   Determines whether the database is a system database and
+        changes database instance to new database before calling the compact
+        function.
 
     Arguments:
-        (input) mongo -> Database instance.
-        (input) db_name -> Database name.
-        (input) tbl_list -> List of tables.
+        (input) mongo -> Database instance
+        (input) db_name -> Database name
+        (input) tbl_list -> List of tables
 
     """
 
@@ -374,6 +400,8 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     if db_name in ["admin", "config", "local"]:
         print("System databases are non-compactable: %s" % (db_name))
+
+        # Sets the table list to empty to skip compacting
         tbl_list = list()
 
     else:
@@ -386,17 +414,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
         state = coll.connect()
 
         if state[0]:
-            if coll.coll_options().get("capped", False):
-                print("\tCollection capped: not compacted")
-
-            else:
-
-                if mongo.db_cmd("compact", obj=item)["ok"] == 1:
-                    print("\tDone")
-
-                else:
-                    print("\tCommand Failed")
-
+            compact(mongo, coll, item)
             mongo_libs.disconnect([coll])
 
         else:
