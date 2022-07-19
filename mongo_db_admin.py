@@ -162,7 +162,6 @@ import os
 
 # Third party
 import json
-import ast
 
 # Local
 import lib.arg_parser as arg_parser
