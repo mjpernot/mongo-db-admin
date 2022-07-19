@@ -229,6 +229,7 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
+        test_system_database
         test_failed_connection
         test_successful_connection
         test_compact_failure
@@ -250,7 +251,22 @@ class UnitTest(unittest.TestCase):
 
         self.mongo = Mongo()
         self.db_name = "DatabaseName"
+        self.db_name2 = "config"
         self.tbl_name = ["Table3", "Table4"]
+
+    def test_system_database(self):
+
+        """Function:  test_system_database
+
+        Description:  Test of trying to compact a system database.
+
+        Arguments:
+
+        """
+
+        with gen_libs.no_std_out():
+            self.assertFalse(mongo_db_admin.run_compact(
+                self.mongo, self.db_name2, self.tbl_name))
 
     @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
     @mock.patch("mongo_db_admin.mongo_libs.disconnect")

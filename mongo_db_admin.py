@@ -369,11 +369,16 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     tbl_list = list() if tbl_list is None else list(tbl_list)
 
-    mongo.chg_db(dbs=db_name)
-    print("Compacting for %s" % (mongo.db_name))
-
     if not tbl_list:
         tbl_list = mongo.get_tbl_list(False)
+
+    if db_name in ["admin", "config", "local"]:
+        print("System databases are non-compactable: %s" % (db_name))
+        tbl_list = list()
+
+    else:
+        mongo.chg_db(dbs=db_name)
+        print("Compacting for %s" % (mongo.db_name))
 
     for item in tbl_list:
         print("\tCompacting: {0:50}".format(item + "..."), end="")

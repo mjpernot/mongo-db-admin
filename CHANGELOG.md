@@ -8,6 +8,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - Removed the -R option as this option is not available in Mongo 4.2.
 
 ### Fixed
+- run_compact: System databases are non-compactable and are skipped.
 - status: Moved json.dumps call to after Mongo database insert as json.dumps was converting "none" to "null".
 
 ### Changed
