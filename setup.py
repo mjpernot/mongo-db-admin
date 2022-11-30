@@ -46,9 +46,9 @@ setuptools.setup(
         "Operating System :: Linux :: Centos",
         "Operating System :: Linux :: Ubuntu",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
         "Topic :: Database",
         "Topic :: Database :: Mongodb",
-        "Topic :: Database :: Mongodb :: 3.4.2",
-        "Topic :: Database :: Mongodb :: 4.2.14"])
+        "Topic :: Database :: Mongodb :: 3.4",
+        "Topic :: Database :: Mongodb :: 4.2"])
