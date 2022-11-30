@@ -137,7 +137,7 @@ class UnitTest(unittest.TestCase):
         """
 
         self.mongo = Mongo()
-        self.func_name = func_name
+        self.func_names = func_name
         self.db_name = []
         self.db_name2 = ["DB1"]
         self.db_name3 = ["DB1", "DB2"]
@@ -162,7 +162,7 @@ class UnitTest(unittest.TestCase):
         with gen_libs.no_std_out():
             self.assertFalse(
                 mongo_db_admin.process_dbs_tbls(
-                    self.mongo, self.func_name, self.db_name3, self.db_list,
+                    self.mongo, self.func_names, self.db_name3, self.db_list,
                     self.tbl_name4))
 
     def test_not_found_db(self):
@@ -177,7 +177,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertFalse(
             mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name4, self.db_list,
+                self.mongo, self.func_names, self.db_name4, self.db_list,
                 self.tbl_name2))
 
     def test_multiple_tbl_list(self):
@@ -192,7 +192,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertFalse(
             mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name2, self.db_list,
+                self.mongo, self.func_names, self.db_name2, self.db_list,
                 self.tbl_name3))
 
     def test_multiple_db_list(self):
@@ -207,7 +207,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertFalse(
             mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name3, self.db_list,
+                self.mongo, self.func_names, self.db_name3, self.db_list,
                 self.tbl_name2))
 
     def test_single_tbl_list(self):
@@ -222,7 +222,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertFalse(
             mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name2, self.db_list,
+                self.mongo, self.func_names, self.db_name2, self.db_list,
                 self.tbl_name2))
 
     def test_single_db_list(self):
@@ -237,7 +237,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertFalse(
             mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name2, self.db_list,
+                self.mongo, self.func_names, self.db_name2, self.db_list,
                 self.tbl_name2))
 
     def test_no_tbl_list(self):
@@ -253,7 +253,7 @@ class UnitTest(unittest.TestCase):
         with gen_libs.no_std_out():
             self.assertFalse(
                 mongo_db_admin.process_dbs_tbls(
-                    self.mongo, self.func_name, self.db_name2, self.db_list,
+                    self.mongo, self.func_names, self.db_name2, self.db_list,
                     self.tbl_name))
 
     def test_no_db_list(self):
@@ -268,7 +268,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertFalse(
             mongo_db_admin.process_dbs_tbls(
-                self.mongo, self.func_name, self.db_name, self.db_list,
+                self.mongo, self.func_names, self.db_name, self.db_list,
                 self.tbl_name2))
 
 

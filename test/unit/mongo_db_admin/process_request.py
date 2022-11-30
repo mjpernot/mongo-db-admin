@@ -247,7 +247,7 @@ class UnitTest(unittest.TestCase):
         self.server = Server()
         self.server2 = Server2()
         self.mongo = Mongo()
-        self.func_name = func_name
+        self.func_names = func_name
         self.db_name = ["DB1"]
         self.tbl_name = ["Table1", "Table2"]
         self.tbl_name2 = ["Table2"]
@@ -275,7 +275,7 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = self.mongo
 
         self.assertEqual(
-            mongo_db_admin.process_request(self.server2, self.func_name),
+            mongo_db_admin.process_request(self.server2, self.func_names),
             (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
@@ -296,8 +296,8 @@ class UnitTest(unittest.TestCase):
         with gen_libs.no_std_out():
             self.assertEqual(
                 mongo_db_admin.process_request(
-                    self.server, self.func_name, self.db_name, self.tbl_name4),
-                (self.err_flag, self.err_msg))
+                    self.server, self.func_names, self.db_name,
+                    self.tbl_name4), (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.mongo_libs.disconnect")
@@ -316,7 +316,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertEqual(
             mongo_db_admin.process_request(
-                self.server, self.func_name, self.db_name, self.tbl_name3),
+                self.server, self.func_names, self.db_name, self.tbl_name3),
             (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
@@ -336,7 +336,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertEqual(
             mongo_db_admin.process_request(
-                self.server, self.func_name, self.db_name, self.tbl_name2),
+                self.server, self.func_names, self.db_name, self.tbl_name2),
             (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
@@ -358,7 +358,7 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = self.mongo
 
         self.assertEqual(
-            mongo_db_admin.process_request(self.server, self.func_name),
+            mongo_db_admin.process_request(self.server, self.func_names),
             (self.err_flag2, self.err_msg2))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
@@ -377,7 +377,7 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = self.mongo
 
         self.assertEqual(
-            mongo_db_admin.process_request(self.server, self.func_name),
+            mongo_db_admin.process_request(self.server, self.func_names),
             (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
@@ -397,7 +397,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertEqual(
             mongo_db_admin.process_request(
-                self.server, self.func_name, self.db_name, self.tbl_name),
+                self.server, self.func_names, self.db_name, self.tbl_name),
             (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
@@ -417,7 +417,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertEqual(
             mongo_db_admin.process_request(
-                self.server, self.func_name, self.db_name),
+                self.server, self.func_names, self.db_name),
             (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
@@ -436,7 +436,7 @@ class UnitTest(unittest.TestCase):
         mock_db.return_value = self.mongo
 
         self.assertEqual(
-            mongo_db_admin.process_request(self.server, self.func_name),
+            mongo_db_admin.process_request(self.server, self.func_names),
             (self.err_flag, self.err_msg))
 
 
