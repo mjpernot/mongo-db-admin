@@ -152,24 +152,31 @@
 
 
 # Libraries and Global Variables
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Standard
-# For Python 2.6/2.7: Redirection of stdout in a print command.
-from __future__ import print_function
 import sys
 import datetime
 import os
-
-# Third party
 import json
 
 # Local
-import lib.arg_parser as arg_parser
-import lib.gen_libs as gen_libs
-import lib.gen_class as gen_class
-import mongo_lib.mongo_libs as mongo_libs
-import mongo_lib.mongo_class as mongo_class
-import version
+try:
+    from .lib import arg_parser
+    from .lib import gen_libs
+    from .lib import gen_class
+    from .mongo_lib import mongo_libs
+    from .mongo_lib import mongo_class
+    from . import version
+
+except (ValueError, ImportError) as err:
+    import lib.arg_parser as arg_parser
+    import lib.gen_libs as gen_libs
+    import lib.gen_class as gen_class
+    import mongo_lib.mongo_libs as mongo_libs
+    import mongo_lib.mongo_class as mongo_class
+    import version
 
 __version__ = version.__version__
 
@@ -213,13 +220,14 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
     tbl_name = list() if tbl_name is None else list(tbl_name)
     db_list = server.fetch_dbs()
 
-    # Only pass authorization mechanism if present.
-    auth_mech = {"auth_mech": server.auth_mech} if hasattr(
-        server, "auth_mech") else {}
     mongo = mongo_class.DB(
         server.name, server.user, server.japd, host=server.host,
         port=server.port, db="test", auth=server.auth,
-        conf_file=server.conf_file, auth_db=server.auth_db, **auth_mech)
+        conf_file=server.conf_file, auth_db=server.auth_db,
+        auth_mech=server.auth_mech, ssl_client_ca=server.ssl_client_ca,
+        ssl_client_cert=server.ssl_client_cert,
+        ssl_client_key=server.ssl_client_key,
+        ssl_client_phrase=server.ssl_client_phrase)
     state = mongo.connect()
 
     if not state[0]:
