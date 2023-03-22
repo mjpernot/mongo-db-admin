@@ -9,7 +9,11 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - Upgraded python-lib to v2.9.4
 - Upgraded mongo-lib to v4.2.2
  
+### Fixed:
+- process_request: Added SSL entries to the mongo_class instance calls.
+
 ### Changed
+- process_request: Made auth_mech a required parameter, cannot be passed as an empty argument anymore.
 - Converted imports to use Python 2.7 or Python 3.
 
 

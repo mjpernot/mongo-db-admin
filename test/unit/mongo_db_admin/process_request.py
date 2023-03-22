@@ -83,52 +83,11 @@ class Server(object):
         self.conf_file = "Config file name"
         self.db_list = ["DB1", "DB2"]
         self.auth_db = "admin"
-
-    def fetch_dbs(self):
-
-        """Method:  fetch_dbs
-
-        Description:  Stub holder for mongo_class.Server.fetch_dbs method.
-
-        Arguments:
-
-        """
-
-        return self.db_list
-
-
-class Server2(object):
-
-    """Class:  Server2
-
-    Description:  Class stub holder for mongo_class.Server class.
-
-    Methods:
-        __init__
-        fetch_dbs
-
-    """
-
-    def __init__(self):
-
-        """Method:  __init__
-
-        Description:  Class initialization.
-
-        Arguments:
-
-        """
-
-        self.name = "Server name2"
-        self.user = "User name2"
-        self.japd = "User pwd2"
-        self.host = "Host name2"
-        self.port = 27017
-        self.auth = "Auth type2"
-        self.conf_file = "Config file name2"
-        self.db_list = ["DB3", "DB4"]
-        self.auth_db = "admin"
-        self.auth_mech = "MONGODB-CR"
+        self.auth_mech = "SCRAM-SHA-1"
+        self.ssl_client_ca = None
+        self.ssl_client_cert = None
+        self.ssl_client_key = None
+        self.ssl_client_phrase = None
 
     def fetch_dbs(self):
 
@@ -220,7 +179,6 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
-        test_auth_mech
         test_tbl_list4
         test_tbl_list3
         test_tbl_list2
@@ -243,7 +201,6 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.server2 = Server2()
         self.mongo = Mongo()
         self.func_names = func_name
         self.db_name = ["DB1"]
@@ -256,25 +213,6 @@ class UnitTest(unittest.TestCase):
         self.err_msg = None
         msg = "Connection Error"
         self.err_msg2 = "Connection to Mongo DB:  %s" % msg
-
-    @mock.patch("mongo_db_admin.mongo_class.DB")
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect")
-    def test_auth_mech(self, mock_conn, mock_db):
-
-        """Function:  test_auth_mech
-
-        Description:  Test with auth_mech attribute present.
-
-        Arguments:
-
-        """
-
-        mock_conn.return_value = True
-        mock_db.return_value = self.mongo
-
-        self.assertEqual(
-            mongo_db_admin.process_request(self.server2, self.func_names),
-            (self.err_flag, self.err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.DB")
     @mock.patch("mongo_db_admin.mongo_libs.disconnect")
