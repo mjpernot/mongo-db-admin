@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [2.4.3] - 2022-11-30
+- Updated to work in Python 3 too
+- Upgraded python-lib to v2.9.4
+- Upgraded mongo-lib to v4.2.2
+ 
+### Fixed:
+- process_request: Added SSL entries to the mongo_class instance calls.
+
+### Changed
+- process_request: Made auth_mech a required parameter, cannot be passed as an empty argument anymore.
+- Converted imports to use Python 2.7 or Python 3.
+
+
 ## [2.4.2] - 2022-07-18
 - Removed the -R option as this option is not available in Mongo 4.2.
 
