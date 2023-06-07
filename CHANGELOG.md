@@ -8,7 +8,11 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - Updated mongo-lib to v4.2.4
 
 ### Fixed
+- main: Removed remnants of the -R option and added -L option as one of the main XOR options.
 - Fixed -M option which produced incorrect results.
+
+### Changed
+- Updated documentation.
 
 
 ## [2.4.3] - 2022-11-30

@@ -28,9 +28,10 @@
         -c file => Server configuration file.  Required arg.
         -d dir path => Directory path to config file (-c). Required arg.
         -L => Run a log rotate on the mongo database error log.
+            Default:  Truncate the log without copying it.
             -n dir path => Directory path to where the old mongo database
-                error log file will be moved to.
-            -p Compress Mongo log after log rotation.
+                error log file will be copied to before being truncated.
+                `-p Compress Mongo log after log rotation.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
@@ -81,7 +82,7 @@
         -v => Display version of this program.
         -h => Help and usage message.
 
-        NOTE 1:  Options -R, -C, -D, and -M are Xor.
+        NOTE 1:  Options -L, -C, -D, and -M are Xor.
         NOTE 2:  Options -M and -G are Xor.
         NOTE 3:  -v and -h overrides all other options.
 
@@ -753,17 +754,16 @@ def main():
         "-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"], "-s": ["-e"],
         "-u": ["-e"]}
     opt_def_dict = {
-        "-C": [], "-D": [], "-R": [], "-G": "global",
-        "-i": "sysmon:mongo_db_status"}
-    opt_multi_list = ["-C", "-D", "-R", "-t", "-e", "-s"]
+        "-C": [], "-D": [], "-G": "global", "-i": "sysmon:mongo_db_status"}
+    opt_multi_list = ["-C", "-D", "-t", "-e", "-s"]
     opt_req_list = ["-c", "-d"]
     opt_val_list = [
-        "-c", "-d", "-t", "-C", "-D", "-R", "-i", "-m", "-o", "-G", "-n", "-e",
-        "-s", "-y"]
+        "-c", "-d", "-t", "-C", "-D", "-i", "-m", "-o", "-G", "-n", "-e", "-s",
+        "-y"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
     opt_xor_dict = {
-        "-R": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-R"],
-        "-D": ["-C", "-M", "-R"], "-M": ["-C", "-D", "-R", "-G"], "-G": ["-M"],
+        "-L": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-L"],
+        "-D": ["-C", "-M", "-L"], "-M": ["-C", "-D", "-L", "-G"], "-G": ["-M"],
         "-j": ["-l"], "-l": ["-j"]}
 
     # Process argument list from command line.
