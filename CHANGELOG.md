@@ -5,6 +5,10 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 
 
 ## [2.4.4] - 2023-06-07
+- Updated mongo-lib to v4.2.4
+
+### Fixed
+- Fixed -M option which produced incorrect results.
 
 
 ## [2.4.3] - 2022-11-30
