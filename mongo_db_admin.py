@@ -31,7 +31,7 @@
             Default:  Truncate the log without copying it.
             -n dir path => Directory path to where the old mongo database
                 error log file will be copied to before being truncated.
-                `-p Compress Mongo log after log rotation.
+            -p => Compress Mongo log after log rotation.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
@@ -722,9 +722,9 @@ def main():
         line arguments and values.
 
     Variables:
-        dir_chk_list -> contains options which will be directories
-        file_chk_list -> contains the options which will have files included
-        file_crt_list -> contains options which require files to be created
+        dir_perms_chk -> contains directories and their octal permissions
+        file_perm_chk -> file check options with their perms in octal
+        file_crt -> contains options which require files to be created
         func_dict -> dictionary list for the function calls or other options
         opt_arg_list -> contains optional arguments for the command line
         opt_con_req_dict -> contains options requiring one or more options
@@ -741,10 +741,9 @@ def main():
 
     """
 
-    cmdline = gen_libs.get_inst(sys)
-    dir_chk_list = ["-d", "-n"]
-    file_chk_list = ["-o"]
-    file_crt_list = ["-o"]
+    dir_perms_chk = {"-d": 5, "-n": 7}
+    file_perm_chk = {"-o": 6}
+    file_crt = ["-o"]
     func_dict = {
         "-C": defrag, "-D": dbcc, "-M": status, "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
@@ -765,28 +764,37 @@ def main():
         "-j": ["-l"], "-l": ["-j"]}
 
     # Process argument list from command line.
-    args_array = arg_parser.arg_parse2(cmdline.argv, opt_val_list,
-                                       opt_def_dict, multi_val=opt_multi_list)
+    args = gen_class.ArgParser(
+        sys.argv, opt_val=opt_val_list, opt_def=opt_def_dict,
+        multi_val=opt_multi_list, do_parse=True)
 
-    if not gen_libs.help_func(args_array, __version__, help_message) \
-       and not arg_parser.arg_require(args_array, opt_req_list) \
-       and arg_parser.arg_valid_val(args_array, opt_valid_val) \
-       and arg_parser.arg_xor_dict(args_array, opt_xor_dict) \
-       and arg_parser.arg_cond_req_or(args_array, opt_con_req_dict) \
-       and arg_parser.arg_cond_req(args_array, opt_con_req_list) \
-       and not arg_parser.arg_dir_chk_crt(args_array, dir_chk_list) \
-       and not arg_parser.arg_file_chk(args_array, file_chk_list,
-                                       file_crt_list):
+    if not gen_libs.help_func(args, __version__, help_message)              \
+       and args.arg_require(opt_req=opt_req_list)                           \
+       and args.arg_valid_val(opt_valid_val=opt_valid_val)                  \
+       and args.arg_xor_dict(opt_xor_val=opt_xor_dict)                      \
+       and args.arg_cond_req_or(opt_con_or=opt_con_req_dict)                \
+       and args.arg_cond_req(opt_con_req=opt_con_req_list)                  \
+       and args.arg_dir_chk(dir_perms_chk=dir_perms_chk)                    \
+       and args.arg_file_chk(file_perm_chk=file_perm_chk, file_crt=file_crt):
+
+#    if not gen_libs.help_func(args_array, __version__, help_message) \
+#       and not arg_parser.arg_require(args_array, opt_req_list) \
+#       and arg_parser.arg_valid_val(args_array, opt_valid_val) \
+#       and arg_parser.arg_xor_dict(args_array, opt_xor_dict) \
+#       and arg_parser.arg_cond_req_or(args_array, opt_con_req_dict) \
+#       and arg_parser.arg_cond_req(args_array, opt_con_req_list) \
+#       and not arg_parser.arg_dir_chk_crt(args_array, dir_chk_list) \
+#       and not arg_parser.arg_file_chk(args_array, file_chk_list, file_crt_list):
 
         try:
-            prog_lock = gen_class.ProgramLock(cmdline.argv,
-                                              args_array.get("-y", ""))
-            run_program(args_array, func_dict)
+            prog_lock = gen_class.ProgramLock(
+                sys.argv, args.get_val("-y", def_val=""))
+            run_program(args, func_dict)
             del prog_lock
 
         except gen_class.SingleInstanceException:
             print("WARNING:  lock in place for mongo_db_admin with id of: %s"
-                  % (args_array.get("-y", "")))
+                  % (args.get_val("-y", def_val="")))
 
 
 if __name__ == "__main__":
