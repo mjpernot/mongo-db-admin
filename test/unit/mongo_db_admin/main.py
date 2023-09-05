@@ -261,7 +261,7 @@ class UnitTest(unittest.TestCase):
         self.args2.args_array2 = {
             "-c": "CfgFile", "-d": "CfgDir", "-y": "Flavor"}
         self.proglock = ProgramLock(["cmdline"], "FlavorID")
-
+STOPPED HERE
     @mock.patch("mongo_db_admin.gen_libs.help_func")
     @mock.patch("mongo_db_admin.arg_parser.arg_parse2")
     def test_help_true(self, mock_arg, mock_help):
