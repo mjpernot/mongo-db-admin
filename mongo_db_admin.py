@@ -164,7 +164,6 @@ import json
 
 # Local
 try:
-    from .lib import arg_parser
     from .lib import gen_libs
     from .lib import gen_class
     from .mongo_lib import mongo_libs
@@ -172,7 +171,6 @@ try:
     from . import version
 
 except (ValueError, ImportError) as err:
-    import lib.arg_parser as arg_parser
     import lib.gen_libs as gen_libs
     import lib.gen_class as gen_class
     import mongo_lib.mongo_libs as mongo_libs
@@ -204,14 +202,14 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         to the function and then calls the "func_name" function.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) func_name -> Name of a function.
-        (input) db_name -> List of database names.
-        (input) tbl_name -> List of table names.
+        (input) server -> Database server instance
+        (input) func_name -> Name of a function
+        (input) db_name -> List of database names
+        (input) tbl_name -> List of table names
         (input) **kwargs:
-            full -> Full validation table check option.
-        (output) err_flag -> True|False - If an error has occurred.
-        (output) err_msg -> Error message.
+            full -> Full validation table check option
+        (output) err_flag -> True|False - If an error has occurred
+        (output) err_msg -> Error message
 
     """
 
@@ -267,13 +265,13 @@ def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
     Description:  Process a list of databases and tables.
 
     Arguments:
-        (input) mongo -> Database instance.
-        (input) func_name -> Name of a function.
-        (input) db_name -> List of database names to check.
-        (input) db_list -> List of all databases in Mongo database.
-        (input) tbl_name -> List of tables to check.
+        (input) mongo -> Database instance
+        (input) func_name -> Name of a function
+        (input) db_name -> List of database names to check
+        (input) db_list -> List of all databases in Mongo database
+        (input) tbl_name -> List of tables to check
         (input) **kwargs:
-            full -> Full validation table check option.
+            full -> Full validation table check option
 
     """
 
@@ -302,11 +300,11 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
         validate command against the list of tables.
 
     Arguments:
-        (input) mongo -> Database instance.
-        (input) db_name -> Database name.
-        (input) tbl_list -> List of tables.
+        (input) mongo -> Database instance
+        (input) db_name -> Database name
+        (input) tbl_list -> List of tables
         (input) **kwargs:
-            full -> Full validation table check option.
+            full -> Full validation table check option
 
     """
 
@@ -346,10 +344,10 @@ def dbcc(server, args_array, **kwargs):
         options will determine which databases and tables are done.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) state[0] -> True|False - If an error has occurred.
-        (output) state[1] -> Error message.
+        (input) server -> Database server instance
+        (input) args_array -> Array of command line options and values
+        (output) state[0] -> True|False - If an error has occurred
+        (output) state[1] -> Error message
 
     """
 
@@ -438,10 +436,10 @@ def defrag(server, args_array, **kwargs):
         will determine which databases and tables are done.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) err_flag -> True|False - If an error has occurred.
-        (output) err_msg -> Error message.
+        (input) server -> Database server instance
+        (input) args_array -> Array of command line options and values
+        (output) err_flag -> True|False - If an error has occurred
+        (output) err_msg -> Error message
 
     """
 
@@ -468,15 +466,15 @@ def status(server, args_array, **kwargs):
         is printed and/or insert into the database.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
+        (input) server -> Database server instance
+        (input) args_array -> Array of command line options and values
         (input) **kwargs:
-            ofile -> file name - Name of output file.
-            db_tbl database:table_name -> Mongo database and table name.
-            class_cfg -> Mongo Rep Set server configuration.
-            mail -> Mail instance.
-        (output) err_flag -> True|False - If an error has occurred.
-        (output) err_msg -> Error message.
+            ofile -> file name - Name of output file
+            db_tbl database:table_name -> Mongo database and table name
+            class_cfg -> Mongo Rep Set server configuration
+            mail -> Mail instance
+        (output) err_flag -> True|False - If an error has occurred
+        (output) err_msg -> Error message
 
     """
 
@@ -535,10 +533,10 @@ def process_mail(mail, data, indent=4, use_mailx=False):
     Description:  Add data to mail instance and send mail.
 
     Arguments:
-        (input) mail -> Mail instance.
-        (input) data -> Email message data.
-        (input) indent -> Spacing for JSON document.
-        (input) use_mailx -> True|False - To use the mailx command.
+        (input) mail -> Mail instance
+        (input) data -> Email message data
+        (input) indent -> Spacing for JSON document
+        (input) use_mailx -> True|False - To use the mailx command
 
     """
 
@@ -559,10 +557,10 @@ def rotate(server, args_array, **kwargs):
         directory if requested.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) err_flag -> True|False - if an error has occurred.
-        (output) err_msg -> Error message.
+        (input) server -> Database server instance
+        (input) args_array -> Array of command line options and values
+        (output) err_flag -> True|False - if an error has occurred
+        (output) err_msg -> Error message
 
     """
 
@@ -620,12 +618,12 @@ def get_log(server, args_array, **kwargs):
         and send to output.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
+        (input) server -> Database server instance
+        (input) args_array -> Array of command line options and values
         (input) **kwargs:
-            ofile -> file name - Name of output file.
-        (output) err_flag -> True|False - if an error has occurred.
-        (output) err_msg -> Error message.
+            ofile -> file name - Name of output file
+        (output) err_flag -> True|False - if an error has occurred
+        (output) err_msg -> Error message
 
     """
 
@@ -676,8 +674,8 @@ def run_program(args_array, func_dict, **kwargs):
     Description:  Creates class instance(s) and controls flow of the program.
 
     Arguments:
-        (input) args_array -> Dict of command line options and values.
-        (input) func_dict -> Dictionary list of functions and options.
+        (input) args_array -> Dict of command line options and values
+        (input) func_dict -> Dictionary list of functions and options
 
     """
 
@@ -724,22 +722,22 @@ def main():
         line arguments and values.
 
     Variables:
-        dir_chk_list -> contains options which will be directories.
-        file_chk_list -> contains the options which will have files included.
-        file_crt_list -> contains options which require files to be created.
-        func_dict -> dictionary list for the function calls or other options.
-        opt_arg_list -> contains optional arguments for the command line.
-        opt_con_req_dict -> contains options requiring one or more options.
-        opt_con_req_list -> contains the options that require other options.
-        opt_def_dict -> contains options with their default values.
-        opt_multi_list -> contains the options that will have multiple values.
-        opt_req_list -> contains the options that are required for the program.
-        opt_val_list -> contains options which require values.
-        opt_valid_val -> contains a list of valid values for options.
-        opt_xor_dict -> contains dict with key that is xor with it's values.
+        dir_chk_list -> contains options which will be directories
+        file_chk_list -> contains the options which will have files included
+        file_crt_list -> contains options which require files to be created
+        func_dict -> dictionary list for the function calls or other options
+        opt_arg_list -> contains optional arguments for the command line
+        opt_con_req_dict -> contains options requiring one or more options
+        opt_con_req_list -> contains the options that require other options
+        opt_def_dict -> contains options with their default values
+        opt_multi_list -> contains the options that will have multiple values
+        opt_req_list -> contains the options that are required for the program
+        opt_val_list -> contains options which require values
+        opt_valid_val -> contains a list of valid values for options
+        opt_xor_dict -> contains dict with key that is xor with it's values
 
     Arguments:
-        (input) argv -> Arguments from the command line.
+        (input) argv -> Arguments from the command line
 
     """
 
