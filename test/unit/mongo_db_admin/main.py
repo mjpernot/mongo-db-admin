@@ -226,8 +226,8 @@ class UnitTest(unittest.TestCase):
         setUp
         test_help_true
         test_help_false
-        test_arg_req_true
         test_arg_req_false
+        test_arg_req_true
         test_arg_valid_false
         test_arg_valid_true
         test_arg_xor_false
@@ -236,10 +236,10 @@ class UnitTest(unittest.TestCase):
         test_arg_cond_or_true
         test_arg_cond_false
         test_arg_cond_true
-        test_arg_dir_true
         test_arg_dir_false
-        test_arg_file_true
+        test_arg_dir_true
         test_arg_file_false
+        test_arg_file_true
         test_run_program
         test_programlock_id
 
@@ -261,9 +261,9 @@ class UnitTest(unittest.TestCase):
         self.args2.args_array2 = {
             "-c": "CfgFile", "-d": "CfgDir", "-y": "Flavor"}
         self.proglock = ProgramLock(["cmdline"], "FlavorID")
-STOPPED HERE
+
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser.arg_parse2")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_help_true(self, mock_arg, mock_help):
 
         """Function:  test_help_true
@@ -274,13 +274,13 @@ STOPPED HERE
 
         """
 
-        mock_arg.return_value = self.args_array
+        mock_arg.return_value = self.args
         mock_help.return_value = True
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_help_false(self, mock_arg, mock_help):
 
         """Function:  test_help_false
@@ -291,32 +291,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.opt_req2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = True
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
-    def test_arg_req_true(self, mock_arg, mock_help):
-
-        """Function:  test_arg_req_true
-
-        Description:  Test arg_require if returns true.
-
-        Arguments:
-
-        """
-
-        mock_arg.arg_parse2.return_value = self.args_array
-        mock_help.return_value = False
-        mock_arg.arg_require.return_value = True
-
-        self.assertFalse(mongo_db_admin.main())
-
-    @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_req_false(self, mock_arg, mock_help):
 
         """Function:  test_arg_req_false
@@ -327,15 +310,34 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.opt_req2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = False
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
+    def test_arg_req_true(self, mock_arg, mock_help):
+
+        """Function:  test_arg_req_true
+
+        Description:  Test arg_require if returns true.
+
+        Arguments:
+
+        """
+
+        self.args.arg_valid_val2 = False
+
+        mock_arg.return_value = self.args
+        mock_help.return_value = False
+
+        self.assertFalse(mongo_db_admin.main())
+
+    @mock.patch("mongo_db_admin.gen_libs.help_func")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_valid_false(self, mock_arg, mock_help):
 
         """Function:  test_arg_valid_false
@@ -346,15 +348,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.arg_valid_val2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = False
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_valid_true(self, mock_arg, mock_help):
 
         """Function:  test_arg_valid_true
@@ -365,16 +367,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.opt_xor_val2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = False
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_xor_false(self, mock_arg, mock_help):
 
         """Function:  test_arg_xor_false
@@ -385,16 +386,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.opt_xor_val2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = False
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_xor_true(self, mock_arg, mock_help):
 
         """Function:  test_arg_xor_true
@@ -405,17 +405,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.opt_con_or2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = False
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_cond_or_false(self, mock_arg, mock_help):
 
         """Function:  test_arg_cond_or_false
@@ -426,17 +424,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.opt_con_or2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = False
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_cond_or_true(self, mock_arg, mock_help):
 
         """Function:  test_arg_cond_or_true
@@ -447,18 +443,13 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
-        mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = False
+        self.args.opt_con_req2 = False
 
-        self.assertFalse(mongo_db_admin.main())
+        mock_arg.return_value = self.args
+        mock_help.return_value = False
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_cond_false(self, mock_arg, mock_help):
 
         """Function:  test_arg_cond_false
@@ -469,18 +460,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.opt_con_req2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = False
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_cond_true(self, mock_arg, mock_help):
 
         """Function:  test_arg_cond_true
@@ -491,42 +479,15 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.dir_perms_chk2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = True
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
-    def test_arg_dir_true(self, mock_arg, mock_help):
-
-        """Function:  test_arg_dir_true
-
-        Description:  Test arg_dir_chk_crt if returns true.
-
-        Arguments:
-
-        """
-
-        mock_arg.arg_parse2.return_value = self.args_array
-        mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = True
-
-        self.assertFalse(mongo_db_admin.main())
-
-    @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_arg_dir_false(self, mock_arg, mock_help):
 
         """Function:  test_arg_dir_false
@@ -537,47 +498,35 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.dir_perms_chk2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = False
-        mock_arg.arg_file_chk.return_value = True
 
         self.assertFalse(mongo_db_admin.main())
 
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
-    def test_arg_file_true(self, mock_arg, mock_help):
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
+    def test_arg_dir_true(self, mock_arg, mock_help):
 
-        """Function:  test_arg_file_true
+        """Function:  test_arg_dir_true
 
-        Description:  Test arg_file_chk if returns true.
+        Description:  Test arg_dir_chk_crt if returns true.
 
         Arguments:
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.arg_file_chk2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = False
-        mock_arg.arg_file_chk.return_value = True
 
         self.assertFalse(mongo_db_admin.main())
 
-    @mock.patch("mongo_db_admin.gen_class.ProgramLock")
-    @mock.patch("mongo_db_admin.run_program")
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
-    def test_arg_file_false(self, mock_arg, mock_help, mock_run, mock_lock):
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
+    def test_arg_file_false(self, mock_arg, mock_help):
 
         """Function:  test_arg_file_false
 
@@ -587,15 +536,29 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        self.args.arg_file_chk2 = False
+
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = False
-        mock_arg.arg_file_chk.return_value = False
+
+        self.assertFalse(mongo_db_admin.main())
+
+    @mock.patch("mongo_db_admin.gen_class.ProgramLock")
+    @mock.patch("mongo_db_admin.run_program")
+    @mock.patch("mongo_db_admin.gen_libs.help_func")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
+    def test_arg_file_true(self, mock_arg, mock_help, mock_run, mock_lock):
+
+        """Function:  test_arg_file_true
+
+        Description:  Test arg_file_chk if returns true.
+
+        Arguments:
+
+        """
+
+        mock_arg.return_value = self.args
+        mock_help.return_value = False
         mock_run.return_value = True
         mock_lock.return_value = self.proglock
 
@@ -604,7 +567,7 @@ STOPPED HERE
     @mock.patch("mongo_db_admin.gen_class.ProgramLock")
     @mock.patch("mongo_db_admin.run_program")
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_run_program(self, mock_arg, mock_help, mock_run, mock_lock):
 
         """Function:  test_run_program
@@ -615,15 +578,8 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = False
-        mock_arg.arg_file_chk.return_value = False
         mock_run.return_value = True
         mock_lock.return_value = self.proglock
 
@@ -632,7 +588,7 @@ STOPPED HERE
     @mock.patch("mongo_db_admin.gen_class.ProgramLock")
     @mock.patch("mongo_db_admin.run_program")
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_programlock_id(self, mock_arg, mock_help, mock_run, mock_lock):
 
         """Function:  test_programlock_id
@@ -643,15 +599,8 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array2
+        mock_arg.return_value = self.args2
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = False
-        mock_arg.arg_file_chk.return_value = False
         mock_run.return_value = True
         mock_lock.return_value = self.proglock
 
@@ -659,7 +608,7 @@ STOPPED HERE
 
     @mock.patch("mongo_db_admin.gen_class.ProgramLock")
     @mock.patch("mongo_db_admin.gen_libs.help_func")
-    @mock.patch("mongo_db_admin.arg_parser")
+    @mock.patch("mongo_db_admin.gen_class.ArgParser")
     def test_programlock_fail(self, mock_arg, mock_help, mock_lock):
 
         """Function:  test_programlock_fail
@@ -670,15 +619,8 @@ STOPPED HERE
 
         """
 
-        mock_arg.arg_parse2.return_value = self.args_array
+        mock_arg.return_value = self.args
         mock_help.return_value = False
-        mock_arg.arg_require.return_value = False
-        mock_arg.arg_valid_val.return_value = True
-        mock_arg.arg_xor_dict.return_value = True
-        mock_arg.arg_cond_req_or.return_value = True
-        mock_arg.arg_cond_req.return_value = True
-        mock_arg.arg_dir_chk_crt.return_value = False
-        mock_arg.arg_file_chk.return_value = False
         mock_lock.side_effect = \
             mongo_db_admin.gen_class.SingleInstanceException
 

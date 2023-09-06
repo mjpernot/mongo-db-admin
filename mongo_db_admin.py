@@ -777,15 +777,6 @@ def main():
        and args.arg_dir_chk(dir_perms_chk=dir_perms_chk)                    \
        and args.arg_file_chk(file_perm_chk=file_perm_chk, file_crt=file_crt):
 
-#    if not gen_libs.help_func(args_array, __version__, help_message) \
-#       and not arg_parser.arg_require(args_array, opt_req_list) \
-#       and arg_parser.arg_valid_val(args_array, opt_valid_val) \
-#       and arg_parser.arg_xor_dict(args_array, opt_xor_dict) \
-#       and arg_parser.arg_cond_req_or(args_array, opt_con_req_dict) \
-#       and arg_parser.arg_cond_req(args_array, opt_con_req_list) \
-#       and not arg_parser.arg_dir_chk_crt(args_array, dir_chk_list) \
-#       and not arg_parser.arg_file_chk(args_array, file_chk_list, file_crt_list):
-
         try:
             prog_lock = gen_class.ProgramLock(
                 sys.argv, args.get_val("-y", def_val=""))
