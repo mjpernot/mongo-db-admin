@@ -667,42 +667,42 @@ def get_log(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def run_program(args_array, func_dict, **kwargs):
+def run_program(args, func_dict, **kwargs):
 
     """Function:  run_program
 
     Description:  Creates class instance(s) and controls flow of the program.
 
     Arguments:
-        (input) args_array -> Dict of command line options and values
+        (input) args -> ArgParser class instance
         (input) func_dict -> Dictionary list of functions and options
 
     """
 
-    args_array = dict(args_array)
     func_dict = dict(func_dict)
-    server = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
-                                        mongo_class.Server)
+    server = mongo_libs.create_instance(
+        args.get_val("-c"), args.get_val("-d"), mongo_class.Server)
     state = server.connect()
 
     if state[0]:
-        outfile = args_array.get("-o", None)
-        db_tbl = args_array.get("-i", None)
+        outfile = args.get_val("-o")
+        db_tbl = args.get_val("-i")
         repcfg = None
         mail = None
 
-        if args_array.get("-m", None):
-            repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
+        if args.arg_exist("-m"):
+            repcfg = gen_libs.load_module(
+                args.get_val("-m"), args.get_val("-d"))
 
-        if args_array.get("-e", None):
-            mail = gen_class.setup_mail(args_array.get("-e"),
-                                        subj=args_array.get("-s", None))
+        if args.arg_exist("-e"):
+            mail = gen_class.setup_mail(
+                args.get_val("-e"), subj=args.get_val("-s"))
 
         # Call function(s) - intersection of command line and function dict.
-        for item in set(args_array.keys()) & set(func_dict.keys()):
+        for item in set(args.get_args_keys()) & set(func_dict.keys()):
             err_flag, err_msg = func_dict[item](
-                server, args_array, ofile=outfile, db_tbl=db_tbl,
-                class_cfg=repcfg, mail=mail, **kwargs)
+                server, args, ofile=outfile, db_tbl=db_tbl, class_cfg=repcfg,
+                mail=mail, **kwargs)
 
             if err_flag:
                 print("Error:  %s" % (err_msg))
