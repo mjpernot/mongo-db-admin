@@ -27,6 +27,56 @@ import version
 __version__ = version.__version__
 
 
+class ArgParser(object):
+
+    """Class:  ArgParser
+
+    Description:  Class stub holder for gen_class.ArgParser class.
+
+    Methods:
+        __init__
+        arg_exist
+        get_val
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+
+    def arg_exist(self, arg):
+
+        """Method:  arg_exist
+
+        Description:  Method stub holder for gen_class.ArgParser.arg_exist.
+
+        Arguments:
+
+        """
+
+        return True if arg in self.args_array else False
+
+    def get_val(self, skey, def_val=None):
+
+        """Method:  get_val
+
+        Description:  Method stub holder for gen_class.ArgParser.get_val.
+
+        Arguments:
+
+        """
+
+        return self.args_array.get(skey, def_val)
+
+
 class Server(object):
 
     """Class:  Server
@@ -94,9 +144,12 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.args_array = {}
-        self.args_array2 = {"-n": "/path"}
-        self.args_array3 = {"-n": "/path", "-p": True}
+        self.args = ArgParser()
+        self.args2 = ArgParser()
+        self.args3 = ArgParser()
+        self.args.args_array = {}
+        self.args2.args_array = {"-n": "/path"}
+        self.args3.args_array = {"-n": "/path", "-p": True}
         self.filepath = "/dir/path/filename"
 
     @mock.patch("mongo_db_admin.mongo_class.fetch_cmd_line")
@@ -117,11 +170,11 @@ class UnitTest(unittest.TestCase):
         mock_lib.mv_file.return_value = True
         mock_lib.is_missing_lists.return_value = ["File1"]
         mock_lib.compress.return_value = True
-        mock_fetch.return_value = {"parsed": {"systemLog":
-                                              {"path": self.filepath}}}
+        mock_fetch.return_value = {
+            "parsed": {"systemLog": {"path": self.filepath}}}
 
-        self.assertEqual(mongo_db_admin.rotate(self.server, self.args_array3),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.rotate(self.server, self.args3), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.is_missing_lists")
     @mock.patch("mongo_db_admin.gen_libs.dir_file_match")
@@ -140,13 +193,13 @@ class UnitTest(unittest.TestCase):
 
         err_msg = "Error:  Too many files to move: ['File1', 'File2']"
         mock_check.return_value = (True, None)
-        mock_fetch.return_value = {"parsed": {"systemLog":
-                                              {"path": self.filepath}}}
+        mock_fetch.return_value = {
+            "parsed": {"systemLog": {"path": self.filepath}}}
         mock_match.side_effect = [["File1", "File2"], ["File1"]]
         mock_diff.return_value = ["File1", "File2"]
 
-        self.assertEqual(mongo_db_admin.rotate(self.server, self.args_array2),
-                         (True, err_msg))
+        self.assertEqual(
+            mongo_db_admin.rotate(self.server, self.args2), (True, err_msg))
 
     @mock.patch("mongo_db_admin.gen_libs.is_missing_lists")
     @mock.patch("mongo_db_admin.gen_libs.mv_file")
@@ -165,14 +218,14 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_check.return_value = (True, None)
-        mock_fetch.return_value = {"parsed": {"systemLog":
-                                              {"path": self.filepath}}}
+        mock_fetch.return_value = {
+            "parsed": {"systemLog": {"path": self.filepath}}}
         mock_match.side_effect = [["File1", "File2"], ["File1", "File2"]]
         mock_mv.return_value = True
         mock_diff.return_value = ["File1"]
 
-        self.assertEqual(mongo_db_admin.rotate(self.server, self.args_array2),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.rotate(self.server, self.args2), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.chk_crt_dir")
     def test_file_chk_fail(self, mock_check):
@@ -187,8 +240,8 @@ class UnitTest(unittest.TestCase):
 
         mock_check.return_value = (False, "ErrorMsg")
 
-        self.assertEqual(mongo_db_admin.rotate(self.server, self.args_array2),
-                         (True, "ErrorMsg"))
+        self.assertEqual(
+            mongo_db_admin.rotate(self.server, self.args2), (True, "ErrorMsg"))
 
     def test_no_log_dir(self):
 
@@ -200,8 +253,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertEqual(mongo_db_admin.rotate(self.server, self.args_array),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.rotate(self.server, self.args), (False, None))
 
 
 if __name__ == "__main__":

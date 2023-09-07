@@ -27,6 +27,56 @@ import version
 __version__ = version.__version__
 
 
+class ArgParser(object):
+
+    """Class:  ArgParser
+
+    Description:  Class stub holder for gen_class.ArgParser class.
+
+    Methods:
+        __init__
+        arg_exist
+        get_val
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+
+    def arg_exist(self, arg):
+
+        """Method:  arg_exist
+
+        Description:  Method stub holder for gen_class.ArgParser.arg_exist.
+
+        Arguments:
+
+        """
+
+        return True if arg in self.args_array else False
+
+    def get_val(self, skey, def_val=None):
+
+        """Method:  get_val
+
+        Description:  Method stub holder for gen_class.ArgParser.get_val.
+
+        Arguments:
+
+        """
+
+        return self.args_array.get(skey, def_val)
+
+
 class Server(object):
 
     """Class:  Server
@@ -100,11 +150,16 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.args_array = {"-j": True, "-G": True}
-        self.args_array2 = {"-l": True, "-G": True}
-        self.args_array3 = {"-G": True}
-        self.args_array4 = {"-G": True, "-a": True}
-        self.args_array5 = {"-j": True, "-G": True, "-g": True}
+        self.args = ArgParser()
+        self.args2 = ArgParser()
+        self.args3 = ArgParser()
+        self.args4 = ArgParser()
+        self.args5 = ArgParser()
+        self.args.args_array = {"-j": True, "-G": True}
+        self.args2.args_array = {"-l": True, "-G": True}
+        self.args3.args_array = {"-G": True}
+        self.args4.args_array = {"-G": True, "-a": True}
+        self.args5.args_array = {"-j": True, "-G": True, "-g": True}
         self.ofile = "./test/unit/mongo_db_admin/tmp/get_log.txt"
 
     @mock.patch("mongo_db_admin.gen_libs.print_data")
@@ -120,8 +175,8 @@ class UnitTest(unittest.TestCase):
 
         mock_print.return_value = True
 
-        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array5),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.get_log(self.server, self.args5), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.print_data")
     def test_to_json(self, mock_print):
@@ -136,8 +191,8 @@ class UnitTest(unittest.TestCase):
 
         mock_print.return_value = True
 
-        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.get_log(self.server, self.args), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.print_data")
     def test_to_list(self, mock_print):
@@ -152,8 +207,8 @@ class UnitTest(unittest.TestCase):
 
         mock_print.return_value = True
 
-        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array2),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.get_log(self.server, self.args2), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file2")
     def test_append_to_file(self, mock_print):
@@ -168,9 +223,9 @@ class UnitTest(unittest.TestCase):
 
         mock_print.return_value = True
 
-        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array4,
-                                                ofile=self.ofile),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.get_log(
+                self.server, self.args4, ofile=self.ofile), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file2")
     def test_to_file(self, mock_print):
@@ -185,9 +240,9 @@ class UnitTest(unittest.TestCase):
 
         mock_print.return_value = True
 
-        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array3,
-                                                ofile=self.ofile),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.get_log(
+                self.server, self.args3, ofile=self.ofile), (False, None))
 
     @mock.patch("mongo_db_admin.gen_libs.write_file2")
     def test_to_standard(self, mock_print):
@@ -202,8 +257,8 @@ class UnitTest(unittest.TestCase):
 
         mock_print.return_value = True
 
-        self.assertEqual(mongo_db_admin.get_log(self.server, self.args_array3),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.get_log(self.server, self.args3), (False, None))
 
     def tearDown(self):
 

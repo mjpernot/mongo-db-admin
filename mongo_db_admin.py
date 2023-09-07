@@ -335,7 +335,7 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
             print("\t\tError: %s" % (data))
 
 
-def dbcc(server, args_array, **kwargs):
+def dbcc(server, args, **kwargs):
 
     """Function:  dbcc
 
@@ -345,16 +345,15 @@ def dbcc(server, args_array, **kwargs):
 
     Arguments:
         (input) server -> Database server instance
-        (input) args_array -> Array of command line options and values
+        (input) args -> ArgParser class instance
         (output) state[0] -> True|False - If an error has occurred
         (output) state[1] -> Error message
 
     """
 
-    args_array = dict(args_array)
     state = process_request(
-        server, run_dbcc, args_array["-D"], args_array.get("-t"),
-        full=args_array.get("-f", False))
+        server, run_dbcc, args.get_val("-D"), args.get_val("-t"),
+        full=args.arg_exist("-f"))
 
     return state[0], state[1]
 
@@ -427,7 +426,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
             print("\tError encountered:  %s" % (state[1]))
 
 
-def defrag(server, args_array, **kwargs):
+def defrag(server, args, **kwargs):
 
     """Function:  defrag
 
@@ -437,13 +436,12 @@ def defrag(server, args_array, **kwargs):
 
     Arguments:
         (input) server -> Database server instance
-        (input) args_array -> Array of command line options and values
+        (input) args -> ArgParser class instance
         (output) err_flag -> True|False - If an error has occurred
         (output) err_msg -> Error message
 
     """
 
-    args_array = dict(args_array)
     data = mongo_class.fetch_ismaster(server)
 
     if data["ismaster"] and "setName" in data:
@@ -452,12 +450,12 @@ def defrag(server, args_array, **kwargs):
 
     else:
         err_flag, err_msg = process_request(
-            server, run_compact, args_array["-C"], args_array.get("-t"))
+            server, run_compact, args.get_val("-C"), args.get_val("-t"))
 
     return err_flag, err_msg
 
 
-def status(server, args_array, **kwargs):
+def status(server, args, **kwargs):
 
     """Function:  status
 
@@ -467,7 +465,7 @@ def status(server, args_array, **kwargs):
 
     Arguments:
         (input) server -> Database server instance
-        (input) args_array -> Array of command line options and values
+        (input) args -> ArgParser class instance
         (input) **kwargs:
             ofile -> file name - Name of output file
             db_tbl database:table_name -> Mongo database and table name
@@ -480,25 +478,25 @@ def status(server, args_array, **kwargs):
 
     err_flag = False
     err_msg = None
-    mode = "a" if args_array.get("-a", False) else "w"
-    indent = None if args_array.get("-g", False) else 4
-    args_array = dict(args_array)
+    mode = "a" if args.arg_exist("-a") else "w"
+    indent = None if args.arg_exist("-g") else 4
     server.upd_srv_stat()
     ofile = kwargs.get("ofile", None)
     mail = kwargs.get("mail", None)
     mongo_cfg = kwargs.get("class_cfg", None)
     db_tbl = kwargs.get("db_tbl", None)
-    outdata = {"Application": "MongoDB",
-               "Server": server.name,
-               "AsOf": datetime.datetime.strftime(
-                   datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
-               "Memory": {"CurrentUsage": server.cur_mem,
-                          "MaxUsage": server.max_mem,
-                          "PercentUsed": server.prct_mem},
-               "UpTime": server.days_up,
-               "Connections": {"CurrentConnected": server.cur_conn,
-                               "MaxConnections": server.max_conn,
-                               "PercentUsed": server.prct_conn}}
+    outdata = {
+        "Application": "MongoDB", "Server": server.name,
+        "AsOf": datetime.datetime.strftime(
+            datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
+        "Memory": {
+            "CurrentUsage": server.cur_mem, "MaxUsage": server.max_mem,
+            "PercentUsed": server.prct_mem},
+        "UpTime": server.days_up,
+        "Connections": {
+            "CurrentConnected": server.cur_conn,
+            "MaxConnections": server.max_conn,
+            "PercentUsed": server.prct_conn}}
 
     if mongo_cfg and db_tbl:
         dbn, tbl = db_tbl.split(":")
@@ -508,19 +506,19 @@ def status(server, args_array, **kwargs):
             err_flag = True
             err_msg = "Inserting into Mongo database:  %s" % state[1]
 
-    if "-j" in args_array:
+    if args.arg_exist("-j"):
         outdata = json.dumps(outdata, indent=indent)
 
-    if ofile and "-j" in args_array:
+    if ofile and args.arg_exist("-j"):
         gen_libs.write_file(ofile, mode, outdata)
 
     elif ofile:
         gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
     if mail:
-        process_mail(mail, outdata, indent, args_array.get("-u", False))
+        process_mail(mail, outdata, indent, args.get_val("-u", def_val=False))
 
-    if not args_array.get("-z", False):
+    if not args.arg_exist("-z"):
         gen_libs.display_data(outdata)
 
     return err_flag, err_msg
@@ -549,7 +547,7 @@ def process_mail(mail, data, indent=4, use_mailx=False):
     mail.send_mail(use_mailx=use_mailx)
 
 
-def rotate(server, args_array, **kwargs):
+def rotate(server, args, **kwargs):
 
     """Function:  rotate
 
@@ -558,19 +556,18 @@ def rotate(server, args_array, **kwargs):
 
     Arguments:
         (input) server -> Database server instance
-        (input) args_array -> Array of command line options and values
+        (input) args -> ArgParser class instance
         (output) err_flag -> True|False - if an error has occurred
         (output) err_msg -> Error message
 
     """
 
-    args_array = dict(args_array)
     err_flag = False
     err_msg = None
 
-    if "-n" in args_array:
+    if args.arg_exist("-n"):
 
-        status_flag, msg = gen_libs.chk_crt_dir(args_array["-n"], write=True)
+        status_flag, msg = gen_libs.chk_crt_dir(args.get_val("-n"), write=True)
 
         if status_flag:
 
@@ -594,11 +591,11 @@ def rotate(server, args_array, **kwargs):
                 err_msg = ("Error:  Too many files to move: %s" % (diff_list))
 
             else:
-                gen_libs.mv_file(diff_list[0], dir_path, args_array["-n"])
+                gen_libs.mv_file(diff_list[0], dir_path, args.get_val("-n"))
 
-                if "-p" in args_array:
-                    gen_libs.compress(os.path.join(args_array["-n"],
-                                                   diff_list[0]))
+                if args.arg_exist("-p"):
+                    gen_libs.compress(
+                        os.path.join(args.get_val("-n"), diff_list[0]))
 
         else:
             err_flag = True
@@ -610,7 +607,7 @@ def rotate(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def get_log(server, args_array, **kwargs):
+def get_log(server, args, **kwargs):
 
     """Function:  get_log
 
@@ -619,7 +616,7 @@ def get_log(server, args_array, **kwargs):
 
     Arguments:
         (input) server -> Database server instance
-        (input) args_array -> Array of command line options and values
+        (input) args -> ArgParser class instance
         (input) **kwargs:
             ofile -> file name - Name of output file
         (output) err_flag -> True|False - if an error has occurred
@@ -629,26 +626,19 @@ def get_log(server, args_array, **kwargs):
 
     err_flag = False
     err_msg = None
-    mode = "w"
-    indent = 4
-    args_array = dict(args_array)
-
-    if args_array.get("-a", False):
-        mode = "a"
-
-    if args_array.get("-g", False):
-        indent = None
+    mode = "a" if args.arg_exist("-a") else "w"
+    indent = None if args.arg_exist("-g") else 4
 
     # Get log data from mongodb.
-    data = server.adm_cmd("getLog", arg1=args_array["-G"])
+    data = server.adm_cmd("getLog", arg1=args.get_val("-G"))
     data["Server"] = server.name
     data["AsOf"] = gen_libs.get_date() + " " + gen_libs.get_time()
 
-    if "-j" in args_array:
-        gen_libs.print_data(json.dumps(data, indent=indent), mode=mode,
-                            **kwargs)
+    if args.arg_exist("-j"):
+        gen_libs.print_data(
+            json.dumps(data, indent=indent), mode=mode, **kwargs)
 
-    elif "-l" in args_array:
+    elif args.arg_exist("-l"):
         gen_libs.print_data(data["log"], mode=mode, **kwargs)
 
     else:
