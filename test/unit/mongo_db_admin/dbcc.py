@@ -40,6 +40,56 @@ def run_dbcc():
     return True
 
 
+class ArgParser(object):
+
+    """Class:  ArgParser
+
+    Description:  Class stub holder for gen_class.ArgParser class.
+
+    Methods:
+        __init__
+        arg_exist
+        get_val
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+
+    def arg_exist(self, arg):
+
+        """Method:  arg_exist
+
+        Description:  Method stub holder for gen_class.ArgParser.arg_exist.
+
+        Arguments:
+
+        """
+
+        return True if arg in self.args_array else False
+
+    def get_val(self, skey, def_val=None):
+
+        """Method:  get_val
+
+        Description:  Method stub holder for gen_class.ArgParser.get_val.
+
+        Arguments:
+
+        """
+
+        return self.args_array.get(skey, def_val)
+
+
 class Server(object):
 
     """Class:  Server
@@ -88,7 +138,8 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.args_array = {"-D": "Optionsetting", "-t": "option"}
+        self.args = ArgParser()
+        self.args.args_array = {"-D": "Optionsetting", "-t": "option"}
 
     @mock.patch("mongo_db_admin.process_request")
     def test_dbcc2(self, mock_process):
@@ -103,8 +154,9 @@ class UnitTest(unittest.TestCase):
 
         mock_process.return_value = (True, "Error Message")
 
-        self.assertEqual(mongo_db_admin.dbcc(self.server, self.args_array),
-                         (True, "Error Message"))
+        self.assertEqual(
+            mongo_db_admin.dbcc(
+                self.server, self.args), (True, "Error Message"))
 
     @mock.patch("mongo_db_admin.process_request")
     def test_dbcc(self, mock_process):
@@ -119,8 +171,8 @@ class UnitTest(unittest.TestCase):
 
         mock_process.return_value = (False, None)
 
-        self.assertEqual(mongo_db_admin.dbcc(self.server, self.args_array),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.dbcc(self.server, self.args), (False, None))
 
 
 if __name__ == "__main__":

@@ -40,6 +40,43 @@ def run_compact():
     return True
 
 
+class ArgParser(object):
+
+    """Class:  ArgParser
+
+    Description:  Class stub holder for gen_class.ArgParser class.
+
+    Methods:
+        __init__
+        get_val
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+
+    def get_val(self, skey, def_val=None):
+
+        """Method:  get_val
+
+        Description:  Method stub holder for gen_class.ArgParser.get_val.
+
+        Arguments:
+
+        """
+
+        return self.args_array.get(skey, def_val)
+
+
 class Server(object):
 
     """Class:  Server
@@ -89,7 +126,8 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.args_array = {"-C": "Optionsetting", "-t": "option"}
+        self.args = ArgParser()
+        self.args.args_array = {"-C": "Optionsetting", "-t": "option"}
 
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
     @mock.patch("mongo_db_admin.process_request")
@@ -106,8 +144,9 @@ class UnitTest(unittest.TestCase):
         mock_process.return_value = (True, "Error Message")
         mock_fetch.return_value = {"ismaster": False}
 
-        self.assertEqual(mongo_db_admin.defrag(self.server, self.args_array),
-                         (True, "Error Message"))
+        self.assertEqual(
+            mongo_db_admin.defrag(
+                self.server, self.args), (True, "Error Message"))
 
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
     def test_is_master(self, mock_fetch):
@@ -123,8 +162,8 @@ class UnitTest(unittest.TestCase):
         mock_fetch.return_value = {"ismaster": True, "setName": True}
         err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
 
-        self.assertEqual(mongo_db_admin.defrag(self.server, self.args_array),
-                         (True, err_msg))
+        self.assertEqual(
+            mongo_db_admin.defrag(self.server, self.args), (True, err_msg))
 
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
     @mock.patch("mongo_db_admin.process_request")
@@ -141,8 +180,8 @@ class UnitTest(unittest.TestCase):
         mock_process.return_value = (False, None)
         mock_fetch.return_value = {"ismaster": False}
 
-        self.assertEqual(mongo_db_admin.defrag(self.server, self.args_array),
-                         (False, None))
+        self.assertEqual(
+            mongo_db_admin.defrag(self.server, self.args), (False, None))
 
 
 if __name__ == "__main__":
