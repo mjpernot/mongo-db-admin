@@ -82,6 +82,69 @@ def defrag(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
     return flag, errmsg
 
 
+class ArgParser(object):
+
+    """Class:  ArgParser
+
+    Description:  Class stub holder for gen_class.ArgParser class.
+
+    Methods:
+        __init__
+        arg_exist
+        get_val
+        get_args_keys
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+
+    def arg_exist(self, arg):
+
+        """Method:  arg_exist
+
+        Description:  Method stub holder for gen_class.ArgParser.arg_exist.
+
+        Arguments:
+
+        """
+
+        return True if arg in self.args_array else False
+
+    def get_val(self, skey, def_val=None):
+
+        """Method:  get_val
+
+        Description:  Method stub holder for gen_class.ArgParser.get_val.
+
+        Arguments:
+
+        """
+
+        return self.args_array.get(skey, def_val)
+
+    def get_args_keys(self):
+
+        """Method:  get_args_keys
+
+        Description:  Method stub holder for gen_class.ArgParser.get_args_keys.
+
+        Arguments:
+
+        """
+
+        return list(self.args_array.keys())
+
+
 class Server(object):
 
     """Class:  Server
@@ -148,10 +211,15 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.args_array = {"-c": True, "-d": True, "-C": True}
-        self.args_array2 = {"-c": True, "-d": True, "-C": True, "-m": True}
-        self.args_array3 = {"-c": True, "-d": True, "-C": True, "-m": True,
-                            "-e": "ToEmail", "-s": "SubjectLine"}
+        self.args = ArgParser()
+        self.args2 = ArgParser()
+        self.args3 = ArgParser()
+        self.args.args_array = {"-c": True, "-d": True, "-C": True}
+        self.args2.args_array = {
+            "-c": True, "-d": True, "-C": True, "-m": True}
+        self.args3.args_array = {
+            "-c": True, "-d": True, "-C": True, "-m": True, "-e": "ToEmail",
+            "-s": "SubjectLine"}
         self.func_names = {"-C": defrag}
         self.func_names2 = {"-C": dbcc}
 
@@ -173,8 +241,8 @@ class UnitTest(unittest.TestCase):
         mock_mongo.return_value = self.server
 
         with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.run_program(self.args_array,
-                                                        self.func_names))
+            self.assertFalse(
+                mongo_db_admin.run_program(self.args, self.func_names))
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
@@ -191,8 +259,8 @@ class UnitTest(unittest.TestCase):
 
         mock_mongo.return_value = self.server
 
-        self.assertFalse(mongo_db_admin.run_program(self.args_array,
-                                                    self.func_names))
+        self.assertFalse(
+            mongo_db_admin.run_program(self.args, self.func_names))
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
@@ -212,8 +280,8 @@ class UnitTest(unittest.TestCase):
         mock_load.return_value = "RepConfig"
 
         with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.run_program(self.args_array2,
-                                                        self.func_names2))
+            self.assertFalse(
+                mongo_db_admin.run_program(self.args2, self.func_names2))
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
@@ -234,8 +302,8 @@ class UnitTest(unittest.TestCase):
         mock_load.return_value = "RepConfig"
         mock_mail.return_value = "EmailInstance"
 
-        self.assertFalse(mongo_db_admin.run_program(self.args_array3,
-                                                    self.func_names))
+        self.assertFalse(
+            mongo_db_admin.run_program(self.args3, self.func_names))
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
@@ -254,8 +322,8 @@ class UnitTest(unittest.TestCase):
         mock_mongo.return_value = self.server
         mock_load.return_value = "RepConfig"
 
-        self.assertFalse(mongo_db_admin.run_program(self.args_array2,
-                                                    self.func_names))
+        self.assertFalse(
+            mongo_db_admin.run_program(self.args2, self.func_names))
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
@@ -272,8 +340,8 @@ class UnitTest(unittest.TestCase):
 
         mock_mongo.return_value = self.server
 
-        self.assertFalse(mongo_db_admin.run_program(self.args_array,
-                                                    self.func_names))
+        self.assertFalse(
+            mongo_db_admin.run_program(self.args, self.func_names))
 
 
 if __name__ == "__main__":

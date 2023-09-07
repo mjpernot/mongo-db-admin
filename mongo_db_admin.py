@@ -31,7 +31,7 @@
             Default:  Truncate the log without copying it.
             -n dir path => Directory path to where the old mongo database
                 error log file will be copied to before being truncated.
-                `-p Compress Mongo log after log rotation.
+            -p => Compress Mongo log after log rotation.
 
         -C [database name(s)] => Defrag tables.
             Note: If no db_name is provided, then all database are processed.
@@ -164,7 +164,6 @@ import json
 
 # Local
 try:
-    from .lib import arg_parser
     from .lib import gen_libs
     from .lib import gen_class
     from .mongo_lib import mongo_libs
@@ -172,7 +171,6 @@ try:
     from . import version
 
 except (ValueError, ImportError) as err:
-    import lib.arg_parser as arg_parser
     import lib.gen_libs as gen_libs
     import lib.gen_class as gen_class
     import mongo_lib.mongo_libs as mongo_libs
@@ -204,14 +202,14 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         to the function and then calls the "func_name" function.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) func_name -> Name of a function.
-        (input) db_name -> List of database names.
-        (input) tbl_name -> List of table names.
+        (input) server -> Database server instance
+        (input) func_name -> Name of a function
+        (input) db_name -> List of database names
+        (input) tbl_name -> List of table names
         (input) **kwargs:
-            full -> Full validation table check option.
-        (output) err_flag -> True|False - If an error has occurred.
-        (output) err_msg -> Error message.
+            full -> Full validation table check option
+        (output) err_flag -> True|False - If an error has occurred
+        (output) err_msg -> Error message
 
     """
 
@@ -267,13 +265,13 @@ def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
     Description:  Process a list of databases and tables.
 
     Arguments:
-        (input) mongo -> Database instance.
-        (input) func_name -> Name of a function.
-        (input) db_name -> List of database names to check.
-        (input) db_list -> List of all databases in Mongo database.
-        (input) tbl_name -> List of tables to check.
+        (input) mongo -> Database instance
+        (input) func_name -> Name of a function
+        (input) db_name -> List of database names to check
+        (input) db_list -> List of all databases in Mongo database
+        (input) tbl_name -> List of tables to check
         (input) **kwargs:
-            full -> Full validation table check option.
+            full -> Full validation table check option
 
     """
 
@@ -302,11 +300,11 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
         validate command against the list of tables.
 
     Arguments:
-        (input) mongo -> Database instance.
-        (input) db_name -> Database name.
-        (input) tbl_list -> List of tables.
+        (input) mongo -> Database instance
+        (input) db_name -> Database name
+        (input) tbl_list -> List of tables
         (input) **kwargs:
-            full -> Full validation table check option.
+            full -> Full validation table check option
 
     """
 
@@ -337,7 +335,7 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
             print("\t\tError: %s" % (data))
 
 
-def dbcc(server, args_array, **kwargs):
+def dbcc(server, args, **kwargs):
 
     """Function:  dbcc
 
@@ -346,17 +344,16 @@ def dbcc(server, args_array, **kwargs):
         options will determine which databases and tables are done.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) state[0] -> True|False - If an error has occurred.
-        (output) state[1] -> Error message.
+        (input) server -> Database server instance
+        (input) args -> ArgParser class instance
+        (output) state[0] -> True|False - If an error has occurred
+        (output) state[1] -> Error message
 
     """
 
-    args_array = dict(args_array)
     state = process_request(
-        server, run_dbcc, args_array["-D"], args_array.get("-t"),
-        full=args_array.get("-f", False))
+        server, run_dbcc, args.get_val("-D"), args.get_val("-t"),
+        full=args.arg_exist("-f"))
 
     return state[0], state[1]
 
@@ -429,7 +426,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
             print("\tError encountered:  %s" % (state[1]))
 
 
-def defrag(server, args_array, **kwargs):
+def defrag(server, args, **kwargs):
 
     """Function:  defrag
 
@@ -438,14 +435,13 @@ def defrag(server, args_array, **kwargs):
         will determine which databases and tables are done.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) err_flag -> True|False - If an error has occurred.
-        (output) err_msg -> Error message.
+        (input) server -> Database server instance
+        (input) args -> ArgParser class instance
+        (output) err_flag -> True|False - If an error has occurred
+        (output) err_msg -> Error message
 
     """
 
-    args_array = dict(args_array)
     data = mongo_class.fetch_ismaster(server)
 
     if data["ismaster"] and "setName" in data:
@@ -454,12 +450,12 @@ def defrag(server, args_array, **kwargs):
 
     else:
         err_flag, err_msg = process_request(
-            server, run_compact, args_array["-C"], args_array.get("-t"))
+            server, run_compact, args.get_val("-C"), args.get_val("-t"))
 
     return err_flag, err_msg
 
 
-def status(server, args_array, **kwargs):
+def status(server, args, **kwargs):
 
     """Function:  status
 
@@ -468,39 +464,39 @@ def status(server, args_array, **kwargs):
         is printed and/or insert into the database.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
+        (input) server -> Database server instance
+        (input) args -> ArgParser class instance
         (input) **kwargs:
-            ofile -> file name - Name of output file.
-            db_tbl database:table_name -> Mongo database and table name.
-            class_cfg -> Mongo Rep Set server configuration.
-            mail -> Mail instance.
-        (output) err_flag -> True|False - If an error has occurred.
-        (output) err_msg -> Error message.
+            ofile -> file name - Name of output file
+            db_tbl database:table_name -> Mongo database and table name
+            class_cfg -> Mongo Rep Set server configuration
+            mail -> Mail instance
+        (output) err_flag -> True|False - If an error has occurred
+        (output) err_msg -> Error message
 
     """
 
     err_flag = False
     err_msg = None
-    mode = "a" if args_array.get("-a", False) else "w"
-    indent = None if args_array.get("-g", False) else 4
-    args_array = dict(args_array)
+    mode = "a" if args.arg_exist("-a") else "w"
+    indent = None if args.arg_exist("-g") else 4
     server.upd_srv_stat()
     ofile = kwargs.get("ofile", None)
     mail = kwargs.get("mail", None)
     mongo_cfg = kwargs.get("class_cfg", None)
     db_tbl = kwargs.get("db_tbl", None)
-    outdata = {"Application": "MongoDB",
-               "Server": server.name,
-               "AsOf": datetime.datetime.strftime(
-                   datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
-               "Memory": {"CurrentUsage": server.cur_mem,
-                          "MaxUsage": server.max_mem,
-                          "PercentUsed": server.prct_mem},
-               "UpTime": server.days_up,
-               "Connections": {"CurrentConnected": server.cur_conn,
-                               "MaxConnections": server.max_conn,
-                               "PercentUsed": server.prct_conn}}
+    outdata = {
+        "Application": "MongoDB", "Server": server.name,
+        "AsOf": datetime.datetime.strftime(
+            datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
+        "Memory": {
+            "CurrentUsage": server.cur_mem, "MaxUsage": server.max_mem,
+            "PercentUsed": server.prct_mem},
+        "UpTime": server.days_up,
+        "Connections": {
+            "CurrentConnected": server.cur_conn,
+            "MaxConnections": server.max_conn,
+            "PercentUsed": server.prct_conn}}
 
     if mongo_cfg and db_tbl:
         dbn, tbl = db_tbl.split(":")
@@ -510,19 +506,19 @@ def status(server, args_array, **kwargs):
             err_flag = True
             err_msg = "Inserting into Mongo database:  %s" % state[1]
 
-    if "-j" in args_array:
+    if args.arg_exist("-j"):
         outdata = json.dumps(outdata, indent=indent)
 
-    if ofile and "-j" in args_array:
+    if ofile and args.arg_exist("-j"):
         gen_libs.write_file(ofile, mode, outdata)
 
     elif ofile:
         gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
 
     if mail:
-        process_mail(mail, outdata, indent, args_array.get("-u", False))
+        process_mail(mail, outdata, indent, args.get_val("-u", def_val=False))
 
-    if not args_array.get("-z", False):
+    if not args.arg_exist("-z"):
         gen_libs.display_data(outdata)
 
     return err_flag, err_msg
@@ -535,10 +531,10 @@ def process_mail(mail, data, indent=4, use_mailx=False):
     Description:  Add data to mail instance and send mail.
 
     Arguments:
-        (input) mail -> Mail instance.
-        (input) data -> Email message data.
-        (input) indent -> Spacing for JSON document.
-        (input) use_mailx -> True|False - To use the mailx command.
+        (input) mail -> Mail instance
+        (input) data -> Email message data
+        (input) indent -> Spacing for JSON document
+        (input) use_mailx -> True|False - To use the mailx command
 
     """
 
@@ -551,7 +547,7 @@ def process_mail(mail, data, indent=4, use_mailx=False):
     mail.send_mail(use_mailx=use_mailx)
 
 
-def rotate(server, args_array, **kwargs):
+def rotate(server, args, **kwargs):
 
     """Function:  rotate
 
@@ -559,20 +555,19 @@ def rotate(server, args_array, **kwargs):
         directory if requested.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
-        (output) err_flag -> True|False - if an error has occurred.
-        (output) err_msg -> Error message.
+        (input) server -> Database server instance
+        (input) args -> ArgParser class instance
+        (output) err_flag -> True|False - if an error has occurred
+        (output) err_msg -> Error message
 
     """
 
-    args_array = dict(args_array)
     err_flag = False
     err_msg = None
 
-    if "-n" in args_array:
+    if args.arg_exist("-n"):
 
-        status_flag, msg = gen_libs.chk_crt_dir(args_array["-n"], write=True)
+        status_flag, msg = gen_libs.chk_crt_dir(args.get_val("-n"), write=True)
 
         if status_flag:
 
@@ -596,11 +591,11 @@ def rotate(server, args_array, **kwargs):
                 err_msg = ("Error:  Too many files to move: %s" % (diff_list))
 
             else:
-                gen_libs.mv_file(diff_list[0], dir_path, args_array["-n"])
+                gen_libs.mv_file(diff_list[0], dir_path, args.get_val("-n"))
 
-                if "-p" in args_array:
-                    gen_libs.compress(os.path.join(args_array["-n"],
-                                                   diff_list[0]))
+                if args.arg_exist("-p"):
+                    gen_libs.compress(
+                        os.path.join(args.get_val("-n"), diff_list[0]))
 
         else:
             err_flag = True
@@ -612,7 +607,7 @@ def rotate(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def get_log(server, args_array, **kwargs):
+def get_log(server, args, **kwargs):
 
     """Function:  get_log
 
@@ -620,37 +615,30 @@ def get_log(server, args_array, **kwargs):
         and send to output.
 
     Arguments:
-        (input) server -> Database server instance.
-        (input) args_array -> Array of command line options and values.
+        (input) server -> Database server instance
+        (input) args -> ArgParser class instance
         (input) **kwargs:
-            ofile -> file name - Name of output file.
-        (output) err_flag -> True|False - if an error has occurred.
-        (output) err_msg -> Error message.
+            ofile -> file name - Name of output file
+        (output) err_flag -> True|False - if an error has occurred
+        (output) err_msg -> Error message
 
     """
 
     err_flag = False
     err_msg = None
-    mode = "w"
-    indent = 4
-    args_array = dict(args_array)
-
-    if args_array.get("-a", False):
-        mode = "a"
-
-    if args_array.get("-g", False):
-        indent = None
+    mode = "a" if args.arg_exist("-a") else "w"
+    indent = None if args.arg_exist("-g") else 4
 
     # Get log data from mongodb.
-    data = server.adm_cmd("getLog", arg1=args_array["-G"])
+    data = server.adm_cmd("getLog", arg1=args.get_val("-G"))
     data["Server"] = server.name
     data["AsOf"] = gen_libs.get_date() + " " + gen_libs.get_time()
 
-    if "-j" in args_array:
-        gen_libs.print_data(json.dumps(data, indent=indent), mode=mode,
-                            **kwargs)
+    if args.arg_exist("-j"):
+        gen_libs.print_data(
+            json.dumps(data, indent=indent), mode=mode, **kwargs)
 
-    elif "-l" in args_array:
+    elif args.arg_exist("-l"):
         gen_libs.print_data(data["log"], mode=mode, **kwargs)
 
     else:
@@ -669,42 +657,42 @@ def get_log(server, args_array, **kwargs):
     return err_flag, err_msg
 
 
-def run_program(args_array, func_dict, **kwargs):
+def run_program(args, func_dict, **kwargs):
 
     """Function:  run_program
 
     Description:  Creates class instance(s) and controls flow of the program.
 
     Arguments:
-        (input) args_array -> Dict of command line options and values.
-        (input) func_dict -> Dictionary list of functions and options.
+        (input) args -> ArgParser class instance
+        (input) func_dict -> Dictionary list of functions and options
 
     """
 
-    args_array = dict(args_array)
     func_dict = dict(func_dict)
-    server = mongo_libs.create_instance(args_array["-c"], args_array["-d"],
-                                        mongo_class.Server)
+    server = mongo_libs.create_instance(
+        args.get_val("-c"), args.get_val("-d"), mongo_class.Server)
     state = server.connect()
 
     if state[0]:
-        outfile = args_array.get("-o", None)
-        db_tbl = args_array.get("-i", None)
+        outfile = args.get_val("-o")
+        db_tbl = args.get_val("-i")
         repcfg = None
         mail = None
 
-        if args_array.get("-m", None):
-            repcfg = gen_libs.load_module(args_array["-m"], args_array["-d"])
+        if args.arg_exist("-m"):
+            repcfg = gen_libs.load_module(
+                args.get_val("-m"), args.get_val("-d"))
 
-        if args_array.get("-e", None):
-            mail = gen_class.setup_mail(args_array.get("-e"),
-                                        subj=args_array.get("-s", None))
+        if args.arg_exist("-e"):
+            mail = gen_class.setup_mail(
+                args.get_val("-e"), subj=args.get_val("-s"))
 
         # Call function(s) - intersection of command line and function dict.
-        for item in set(args_array.keys()) & set(func_dict.keys()):
+        for item in set(args.get_args_keys()) & set(func_dict.keys()):
             err_flag, err_msg = func_dict[item](
-                server, args_array, ofile=outfile, db_tbl=db_tbl,
-                class_cfg=repcfg, mail=mail, **kwargs)
+                server, args, ofile=outfile, db_tbl=db_tbl, class_cfg=repcfg,
+                mail=mail, **kwargs)
 
             if err_flag:
                 print("Error:  %s" % (err_msg))
@@ -724,29 +712,28 @@ def main():
         line arguments and values.
 
     Variables:
-        dir_chk_list -> contains options which will be directories.
-        file_chk_list -> contains the options which will have files included.
-        file_crt_list -> contains options which require files to be created.
-        func_dict -> dictionary list for the function calls or other options.
-        opt_arg_list -> contains optional arguments for the command line.
-        opt_con_req_dict -> contains options requiring one or more options.
-        opt_con_req_list -> contains the options that require other options.
-        opt_def_dict -> contains options with their default values.
-        opt_multi_list -> contains the options that will have multiple values.
-        opt_req_list -> contains the options that are required for the program.
-        opt_val_list -> contains options which require values.
-        opt_valid_val -> contains a list of valid values for options.
-        opt_xor_dict -> contains dict with key that is xor with it's values.
+        dir_perms_chk -> contains directories and their octal permissions
+        file_perm_chk -> file check options with their perms in octal
+        file_crt -> contains options which require files to be created
+        func_dict -> dictionary list for the function calls or other options
+        opt_arg_list -> contains optional arguments for the command line
+        opt_con_req_dict -> contains options requiring one or more options
+        opt_con_req_list -> contains the options that require other options
+        opt_def_dict -> contains options with their default values
+        opt_multi_list -> contains the options that will have multiple values
+        opt_req_list -> contains the options that are required for the program
+        opt_val_list -> contains options which require values
+        opt_valid_val -> contains a list of valid values for options
+        opt_xor_dict -> contains dict with key that is xor with it's values
 
     Arguments:
-        (input) argv -> Arguments from the command line.
+        (input) argv -> Arguments from the command line
 
     """
 
-    cmdline = gen_libs.get_inst(sys)
-    dir_chk_list = ["-d", "-n"]
-    file_chk_list = ["-o"]
-    file_crt_list = ["-o"]
+    dir_perms_chk = {"-d": 5, "-n": 7}
+    file_perm_chk = {"-o": 6}
+    file_crt = ["-o"]
     func_dict = {
         "-C": defrag, "-D": dbcc, "-M": status, "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-j": ["-M", "-G"]}
@@ -767,28 +754,28 @@ def main():
         "-j": ["-l"], "-l": ["-j"]}
 
     # Process argument list from command line.
-    args_array = arg_parser.arg_parse2(cmdline.argv, opt_val_list,
-                                       opt_def_dict, multi_val=opt_multi_list)
+    args = gen_class.ArgParser(
+        sys.argv, opt_val=opt_val_list, opt_def=opt_def_dict,
+        multi_val=opt_multi_list, do_parse=True)
 
-    if not gen_libs.help_func(args_array, __version__, help_message) \
-       and not arg_parser.arg_require(args_array, opt_req_list) \
-       and arg_parser.arg_valid_val(args_array, opt_valid_val) \
-       and arg_parser.arg_xor_dict(args_array, opt_xor_dict) \
-       and arg_parser.arg_cond_req_or(args_array, opt_con_req_dict) \
-       and arg_parser.arg_cond_req(args_array, opt_con_req_list) \
-       and not arg_parser.arg_dir_chk_crt(args_array, dir_chk_list) \
-       and not arg_parser.arg_file_chk(args_array, file_chk_list,
-                                       file_crt_list):
+    if not gen_libs.help_func(args, __version__, help_message)              \
+       and args.arg_require(opt_req=opt_req_list)                           \
+       and args.arg_valid_val(opt_valid_val=opt_valid_val)                  \
+       and args.arg_xor_dict(opt_xor_val=opt_xor_dict)                      \
+       and args.arg_cond_req_or(opt_con_or=opt_con_req_dict)                \
+       and args.arg_cond_req(opt_con_req=opt_con_req_list)                  \
+       and args.arg_dir_chk(dir_perms_chk=dir_perms_chk)                    \
+       and args.arg_file_chk(file_perm_chk=file_perm_chk, file_crt=file_crt):
 
         try:
-            prog_lock = gen_class.ProgramLock(cmdline.argv,
-                                              args_array.get("-y", ""))
-            run_program(args_array, func_dict)
+            prog_lock = gen_class.ProgramLock(
+                sys.argv, args.get_val("-y", def_val=""))
+            run_program(args, func_dict)
             del prog_lock
 
         except gen_class.SingleInstanceException:
             print("WARNING:  lock in place for mongo_db_admin with id of: %s"
-                  % (args_array.get("-y", "")))
+                  % (args.get_val("-y", def_val="")))
 
 
 if __name__ == "__main__":
