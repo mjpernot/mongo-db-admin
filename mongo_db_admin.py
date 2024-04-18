@@ -403,6 +403,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
     tbl_list = list() if tbl_list is None else list(tbl_list)
 
     if not tbl_list:
+        mongo.chg_db(dbs=db_name)
         tbl_list = mongo.get_tbl_list(False)
 
     if db_name in ["admin", "config", "local"]:
@@ -412,7 +413,6 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
         tbl_list = list()
 
     else:
-        mongo.chg_db(dbs=db_name)
         print("Compacting for %s" % (mongo.db_name))
 
     for item in tbl_list:
