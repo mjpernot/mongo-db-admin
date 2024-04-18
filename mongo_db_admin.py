@@ -226,7 +226,9 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         auth_mech=server.auth_mech, ssl_client_ca=server.ssl_client_ca,
         ssl_client_cert=server.ssl_client_cert,
         ssl_client_key=server.ssl_client_key,
-        ssl_client_phrase=server.ssl_client_phrase)
+        ssl_client_phrase=server.ssl_client_phrase, auth_type=server.auth_type,
+        tls_ca_certs=server.tls_ca_certs, tls_certkey=server.tls_certkey,
+        tls_certkey_phrase=server.tls_certkey_phrase)
     state = mongo.connect()
 
     if not state[0]:
