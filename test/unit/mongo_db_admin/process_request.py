@@ -88,6 +88,10 @@ class Server(object):
         self.ssl_client_cert = None
         self.ssl_client_key = None
         self.ssl_client_phrase = None
+        self.auth_type = None
+        self.tls_ca_certs = None
+        self.tls_certkey = None
+        self.tls_certkey_phrase = None
 
     def fetch_dbs(self):
 
