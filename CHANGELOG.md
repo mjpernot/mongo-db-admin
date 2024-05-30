@@ -11,11 +11,11 @@ Breaking Change
 - Add ability to email, insert into Mongo, save to file and/or display to standard out.
 
 ### Added
-#- data_out: Outputs the data in a variety of formats and media.
-#- create_data_config: Create data_out config parameters.
-#- get_json_template: Return a JSON template format.
-#- get_all_dbs_tbls: Return a dictionary of databases with table lists.
-#- get_db_tbl: Determines which databases and tables will be checked.
+- data_out: Outputs the data in a variety of formats and media.
+- create_data_config: Create data_out config parameters.
+- get_json_template: Return a JSON template format.
+- get_all_dbs_tbls: Return a dictionary of databases with table lists.
+- get_db_tbl: Determines which databases and tables will be checked.
 
 
 ## [2.5.2] - 2024-04-18

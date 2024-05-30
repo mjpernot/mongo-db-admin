@@ -39,6 +39,26 @@
                 -t is used, then all tables in the database are compacted.
             -t table_name(s) => Table names.
 
+# Base template for -C and -D options
+##########################
+            -t table name(s) => Table names to check.
+            -m file => Mongo config file.  Is loaded as a python, do not
+                include the .py extension with the name.
+                -i {database:collection} => Name of database and collection.
+                    Default: sysmon:mysql_db_admin
+            -o path/file => Directory path and file name for output.
+                -w a|w => Append or write to output to output file. Default is
+                    write.
+            -e to_email_address(es) => Enables emailing and sends output to one
+                    or more email addresses.  Email addresses are delimited by
+                    a space.
+                -s subject_line => Subject line of email.
+                -u => Override the default mail command and use mailx.
+            -z => Suppress standard out.
+            -r => Expand the JSON format.
+                -k N => Indentation for expanded JSON format.
+##########################
+
         -D [database name(s)] => Validate tables.
             Note: If no db_name is provided, then all database are processed.
                 Can use the -t option to specify an individual table.  If no
@@ -200,6 +220,134 @@ def help_message():
     """
 
     print(__doc__)
+
+
+def get_all_dbs_tbls(server, db_list, **kwargs):
+
+    """Function:  get_all_dbs_tbls
+
+    Description:  Return a dictionary of databases with table lists.
+
+    Arguments:
+        (input) server -> Server instance
+        (input) db_list -> List of database names
+        (input) kwargs:
+            ign_db_tbl -> Database dictionary with list of tables to ignore
+        (output) db_dict -> Dictionary of databases and lists of tables
+
+    """
+
+    db_dict = dict()
+    db_list = list(db_list)
+    ign_db_tbl = dict(kwargs.get("ign_db_tbl", dict()))
+
+    for dbs in db_list:
+        ign_tbls = ign_db_tbl[dbs] if dbs in ign_db_tbl else list()
+        tbl_list = gen_libs.del_not_and_list(
+            server.get_tbl_list(inc_sys=False), ign_tbls)
+        db_dict[dbs] = tbl_list
+
+    return db_dict
+
+
+def get_db_tbl(server, db_list, **kwargs):
+
+    """Function:  get_db_tbl
+
+    Description:  Determines which databases and tables will be checked.
+
+    Arguments:
+        (input) server -> Server instance
+        (input) db_list -> List of database names
+        (input) **kwargs:
+            ign_dbs -> List of databases to skip
+            tbls -> List of tables to process
+            ign_db_tbl -> Database dictionary with list of tables to ignore
+        (output) db_dict -> Dictionary of databases and lists of tables
+
+    """
+
+    db_dict = dict()
+    db_list = list(db_list)
+    ign_dbs = list(kwargs.get("ign_dbs", list()))
+    tbls = kwargs.get("tbls", list())
+    ign_db_tbl = dict(kwargs.get("ign_db_tbl", dict()))
+
+    if db_list:
+        db_list = gen_libs.del_not_and_list(db_list, ign_dbs)
+
+        if len(db_list) == 1 and tbls:
+            tbl_list = gen_libs.del_not_in_list(
+                tbls, server.get_tbl_list(inc_sys=False))
+            ign_tbls = \
+                ign_db_tbl[db_list[0]] if db_list[0] in ign_db_tbl else list()
+            tbl_list = gen_libs.del_not_and_list(tbl_list, ign_tbls)
+            db_dict[db_list[0]] = tbl_list
+
+        elif db_list:
+            db_dict = get_all_dbs_tbls(server, db_list, ign_db_tbl=ign_db_tbl)
+
+        else:
+            print("get_db_tbl 1: Warning:  No databases to process")
+
+    else:
+        db_list = server.fetch_dbs()
+        db_list = gen_libs.del_not_and_list(db_list, ign_dbs)
+
+        if db_list:
+            db_dict = get_all_dbs_tbls(server, db_list, ign_db_tbl=ign_db_tbl)
+
+        else:
+            print("get_db_tbl 2: Warning:  No databases to process")
+
+    return db_dict
+
+
+def get_json_template(server):
+
+    """Function:  get_json_template
+
+    Description:  Return a JSON template format.
+
+    Arguments:
+        (input) server -> Server instance
+        (output) json_doc -> JSON filled-in template document
+
+    """
+
+    json_doc = dict()
+    json_doc["Platform"] = "Mongo"
+    json_doc["Server"] = server.name
+    json_doc["AsOf"] = gen_libs.get_date() + "T" + gen_libs.get_time()
+
+    return json_doc
+
+
+def create_data_config(args):
+
+    """Function:  create_data_config
+
+    Description:  Create data_out config parameters.
+
+    Arguments:
+        (input) args -> ArgParser class instance
+        (output) data_config -> Dictionary for data_out config parameters
+
+    """
+
+    data_config = dict()
+    data_config["to_addr"] = args.get_val("-e")
+    data_config["subj"] = args.get_val("-s")
+    data_config["mailx"] = args.get_val("-u", def_val=False)
+    data_config["outfile"] = args.get_val("-o")
+    data_config["mode"] = args.get_val("-w", def_val="w")
+    data_config["expand"] = args.get_val("-r", def_val=False)
+    data_config["indent"] = args.get_val("-k")
+    data_config["suppress"] = args.get_val("-z", def_val=False)
+    data_config["mongo"] = args.get_val("-m")
+    data_config["db_tbl"] = args.get_val("-i")
+
+    return data_config
 
 
 def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
