@@ -50,7 +50,7 @@ class ArgParser(object):
 
         """
 
-        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+        self.args_array = {"-c": "mongo", "-d": "config"}
 
     def arg_exist(self, arg):
 

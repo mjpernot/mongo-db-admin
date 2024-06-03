@@ -283,6 +283,7 @@ def get_db_tbl(server, db_list, **kwargs):
                 ign_db_tbl[db_list[0]] if db_list[0] in ign_db_tbl else list()
             tbl_list = gen_libs.del_not_and_list(tbl_list, ign_tbls)
             db_dict[db_list[0]] = tbl_list
+            print(db_dict)
 
         elif db_list:
             db_dict = get_all_dbs_tbls(server, db_list, ign_db_tbl=ign_db_tbl)
@@ -348,6 +349,67 @@ def create_data_config(args):
     data_config["db_tbl"] = args.get_val("-i")
 
     return data_config
+
+
+def data_out(data, **kwargs):
+
+    """Function:  data_out
+
+    Description:  Outputs the data in a variety of formats and media.
+
+    Arguments:
+        (input) data -> JSON data document
+        (input) kwargs:
+            to_addr -> To email address
+            subj -> Email subject line
+            mailx -> True|False - Use mailx command
+            outfile -> Name of output file name
+            mode -> w|a => Write or append mode for file
+            expand -> True|False - Expand the JSON format
+            indent -> Indentation of JSON document if expanded
+            suppress -> True|False - Suppress standard out
+            mongo -> Mongo config file - Insert into Mongo database
+            db_tbl -> database:table - Database name:Table name
+        (output) state -> True|False - Successful operation
+        (output) msg -> None or error message
+
+    """
+
+    global SUBJ_LINE
+
+    state = True
+    msg = None
+
+    if not isinstance(data, dict):
+        return False, "Error: Is not a dictionary: %s" % (data)
+
+    mail = None
+    data = dict(data)
+    cfg = {"indent": kwargs.get("indent", 4)} if kwargs.get("indent", False) \
+        else dict()
+
+    if kwargs.get("to_addr", False):
+        subj = kwargs.get("subj", SUBJ_LINE)
+        mail = gen_class.setup_mail(kwargs.get("to_addr"), subj=subj)
+        mail.add_2_msg(json.dumps(data, **cfg))
+        mail.send_mail(use_mailx=kwargs.get("mailx", False))
+
+    if kwargs.get("outfile", False):
+        outfile = open(kwargs.get("outfile"), kwargs.get("mode", "w"))
+        pprint.pprint(data, stream=outfile, **cfg)
+
+    if not kwargs.get("suppress", False):
+        if kwargs.get("expand", False):
+            pprint.pprint(data, **cfg)
+
+        else:
+            print(data)
+
+    if kwargs.get("mongo", False):
+        dbs, tbl = kwargs.get("db_tbl").split(":")
+        state, msg = mongo_libs.ins_doc(kwargs.get("mongo"), dbs, tbl, data)
+
+    return state, msg
 
 
 def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
