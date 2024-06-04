@@ -5,7 +5,8 @@
     Description:  Unit testing of data_out in mongo_db_admin.py.
 
     Usage:
-        test/unit/mongo_db_admin/data_out.py
+        python test/unit/mongo_db_admin/data_out.py
+        python3 test/unit/mongo_db_admin/data_out.py
 
     Arguments:
 

@@ -5,7 +5,8 @@
     Description:  Unit testing of create_data_config in mongo_db_admin.py.
 
     Usage:
-        test/unit/mongo_db_admin/create_data_config.py
+        python test/unit/mongo_db_admin/create_data_config.py
+        python3 test/unit/mongo_db_admin/create_data_config.py
 
     Arguments:
 
@@ -49,8 +50,8 @@ class ArgParser(object):
         """
 
         self.args_array = {
-            "-c": "mysql_cfg", "-d": "config", "-e": "to_addr",
-            "-o": "outfile", "-n": "indentation", "-m": "mongo",
+            "-c": "mongo", "-d": "config", "-e": "to_addr",
+            "-o": "outfile", "-k": "indentation", "-m": "mongo",
             "-i": "database:table", "-w": "a", "-p": False}
 
     def get_val(self, skey, def_val=None):

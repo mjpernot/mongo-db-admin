@@ -5,7 +5,8 @@
     Description:  Unit testing of get_all_dbs_tbls in mongo_db_admin.py.
 
     Usage:
-        test/unit/mongo_db_admin/get_all_dbs_tbls.py
+        python test/unit/mongo_db_admin/get_all_dbs_tbls.py
+        python3 test/unit/mongo_db_admin/get_all_dbs_tbls.py
 
     Arguments:
 
@@ -35,6 +36,7 @@ class Server(object):
 
     Methods:
         __init__
+        get_tbl_list
 
     """
 
@@ -48,7 +50,22 @@ class Server(object):
 
         """
 
-        pass
+        self.inc_sys = False
+        self.tbl_list = list()
+
+    def get_tbl_list(self, inc_sys):
+
+        """Method:  get_tbl_list
+
+        Description:  Return list of tables.
+
+        Arguments:
+
+        """
+
+        self.inc_sys = inc_sys
+
+        return self.tbl_list
 
 
 class UnitTest(unittest.TestCase):
@@ -59,8 +76,11 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
+        test_ignore_db_tbl2
+        test_ignore_db_tbl
         test_multiple_dbs
         test_one_db
+        test_no_db
 
     """
 
@@ -75,18 +95,53 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.dict_key = "TABLE_NAME"
         self.db_list = ["db1"]
         self.db_list2 = ["db1", "db2"]
-        self.tbl_dict = [{"TABLE_NAME": "t2"}]
-        self.tbl_dict2 = [{"TABLE_NAME": "t1"}, {"TABLE_NAME": "t2"}]
+        self.db_list3 = list()
         self.tbl_list = ["t2"]
         self.tbl_list2 = ["t1", "t2"]
+        self.ign_db_tbl = {"db1": ["t1"]}
+        self.ign_db_tbl2 = {"db1": ["t1"], "db2": ["t2"]}
         self.results = {"db1": ["t2"]}
-        self.results2 = {"db1": ["t2"], "db2": ["t1", "t2"]}
+        self.results2 = {"db1": ["t1", "t2"], "db2": ["t1", "t2"]}
+        self.results3 = dict()
+        self.results4 = {"db1": ["t2"], "db2": ["t1"]}
 
-    @mock.patch("mongo_db_admin.mysql_libs.fetch_tbl_dict")
-    def test_multiple_dbs(self, mock_fetch):
+    def test_ignore_db_tbl2(self):
+
+        """Function:  test_ignore_db_tbl2
+
+        Description:  Test with ignoring databases and tables.
+
+        Arguments:
+
+        """
+
+        self.server.tbl_list = self.tbl_list2
+
+        self.assertEqual(
+            mongo_db_admin.get_all_dbs_tbls(
+                self.server, self.db_list2, ign_db_tbl=self.ign_db_tbl2),
+            self.results4)
+
+    def test_ignore_db_tbl(self):
+
+        """Function:  test_ignore_db_tbl
+
+        Description:  Test with ignoring databases and tables.
+
+        Arguments:
+
+        """
+
+        self.server.tbl_list = self.tbl_list2
+
+        self.assertEqual(
+            mongo_db_admin.get_all_dbs_tbls(
+                self.server, self.db_list, ign_db_tbl=self.ign_db_tbl),
+            self.results)
+
+    def test_multiple_dbs(self):
 
         """Function:  test_multiple_dbs
 
@@ -96,14 +151,13 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_fetch.side_effect = [self.tbl_dict, self.tbl_dict2]
+        self.server.tbl_list = self.tbl_list2
 
         self.assertEqual(
             mongo_db_admin.get_all_dbs_tbls(
-                self.server, self.db_list2, self.dict_key), self.results2)
+                self.server, self.db_list2), self.results2)
 
-    @mock.patch("mongo_db_admin.mysql_libs.fetch_tbl_dict")
-    def test_one_db(self, mock_fetch):
+    def test_one_db(self):
 
         """Function:  test_one_db
 
@@ -113,11 +167,25 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_fetch.return_value = self.tbl_dict
+        self.server.tbl_list = self.tbl_list
 
         self.assertEqual(
             mongo_db_admin.get_all_dbs_tbls(
-                self.server, self.db_list, self.dict_key), self.results)
+                self.server, self.db_list), self.results)
+
+    def test_no_db(self):
+
+        """Function:  test_no_db
+
+        Description:  Test with no database list passed.
+
+        Arguments:
+
+        """
+
+        self.assertEqual(
+            mongo_db_admin.get_all_dbs_tbls(
+                self.server, self.db_list3), self.results3)
 
 
 if __name__ == "__main__":

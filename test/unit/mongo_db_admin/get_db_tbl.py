@@ -5,7 +5,8 @@
     Description:  Unit testing of get_db_tbl in mongo_db_admin.py.
 
     Usage:
-        test/unit/mongo_db_admin/get_db_tbl.py
+        python test/unit/mongo_db_admin/get_db_tbl.py
+        python3 test/unit/mongo_db_admin/get_db_tbl.py
 
     Arguments:
 
@@ -49,8 +50,8 @@ class Server(object):
 
         """
 
-        self.db_list = None
-        self.tbl_list = None
+        self.db_list = list()
+        self.tbl_list = list()
         self.inc_sys = True
 
     def fetch_dbs(self):
@@ -88,6 +89,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
+        test_with_ign_db_tbls
+        test_with_ign_db_tbl
         test_with_db_tbl2
         test_with_db_tbl
         test_with_system_db_only3
@@ -112,25 +115,62 @@ class UnitTest(unittest.TestCase):
         self.server = Server()
 
         self.fetch_dbs = ["db1"]
-#        self.fetch_db2 = [{"Database": "db1"}, {"Database": "db2"}]
         self.fetch_dbs3 = ["systemdb"]
-#        self.db_list = list()
+        self.db_list = list()
         self.db_list2 = ["db1"]
         self.db_list3 = ["systemdb"]
-#        self.db_list4 = ["systemdb", "db1"]
+        self.db_list4 = ["systemdb", "db1"]
         self.db_list5 = ["db1", "db2"]
-#        self.tbl_list = ["t2"]
+        self.tbl_list = ["t2"]
         self.tbl_list2 = ["t1", "t2"]
-#        self.tbl_dict = [{"TABLE_NAME": "t2"}]
-#        self.tbl_dict2 = [{"TABLE_NAME": "t1"}, {"TABLE_NAME": "t2"}]
-#        self.tbl_dict56 = [{"table_name": "t1"}, {"table_name": "t2"}]
+        self.tbl_list3 = ["t1", "t2", "t3"]
+        self.tbl_list4 = ["t1", "t2", "t3", "t4"]
         self.all_tbls = {"db1": ["t2"]}
         self.all_tbls2 = {"db1": ["t2"], "db2": ["t1"]}
+        self.all_tbls3 = {"db1": ["t2", "t1"]}
+        self.all_tbls4 = {"db1": ["t2", "t1", "t3"]}
         self.ign_dbs = ["systemdb"]
+        self.ign_db_tbl = {"db1": ["t1"]}
+        self.ign_db_tbl2 = {"db1": ["t1", "t2"]}
         self.results = {"db1": ["t2"]}
         self.results2 = {"db1": ["t2"], "db2": ["t1"]}
         self.results3 = dict()
         self.results4 = {"db1": ["t1", "t2"]}
+        self.results5 = {"db1": ["t3"]}
+
+    def test_with_ign_db_tbls(self):
+
+        """Function:  test_with_ign_db_tbls
+
+        Description:  Test with ignore multiple tables in a database.
+
+        Arguments:
+
+        """
+
+        self.server.tbl_list = self.tbl_list4
+
+        self.assertEqual(
+            mongo_db_admin.get_db_tbl(
+                self.server, self.db_list2, tbls=self.tbl_list3,
+                ign_db_tbl=self.ign_db_tbl2), self.results5)
+
+    def test_with_ign_db_tbl(self):
+
+        """Function:  test_with_ign_db_tbl
+
+        Description:  Test with ignore single table in a database.
+
+        Arguments:
+
+        """
+
+        self.server.tbl_list = self.tbl_list
+
+        self.assertEqual(
+            mongo_db_admin.get_db_tbl(
+                self.server, self.db_list2, tbls=self.tbl_list2,
+                ign_db_tbl=self.ign_db_tbl), self.results)
 
     def test_with_db_tbl2(self):
 
@@ -159,14 +199,12 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.args.args_array["-t"] = self.tbl_list
-
-        mock_fetch.return_value = self.tbl_dict2
+        self.server.tbl_list = self.tbl_list
 
         self.assertEqual(
             mongo_db_admin.get_db_tbl(
-                self.server, self.args, self.db_list2, sys_dbs=self.sys_dbs),
-            self.results)
+                self.server, self.db_list2, tbls=self.tbl_list,
+                ign_dbs=self.ign_dbs), self.results)
 
     @mock.patch("mongo_db_admin.get_all_dbs_tbls")
     def test_with_system_db_only3(self, mock_all):
@@ -179,12 +217,11 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_fetch.return_value = self.fetch_db3
         mock_all.return_value = self.all_tbls
 
         self.assertEqual(
             mongo_db_admin.get_db_tbl(
-                self.server, self.args, self.db_list4, sys_dbs=self.sys_dbs),
+                self.server, self.db_list4, ign_dbs=self.ign_dbs),
             self.results)
 
     def test_with_system_db_only2(self):
@@ -196,8 +233,6 @@ class UnitTest(unittest.TestCase):
         Arguments:
 
         """
-
-        mock_fetch.return_value = self.fetch_dbs3
 
         with gen_libs.no_std_out():
             self.assertEqual(
@@ -238,7 +273,7 @@ class UnitTest(unittest.TestCase):
 
         self.assertEqual(
             mongo_db_admin.get_db_tbl(
-                self.server, self.args, self.db_list), self.results2)
+                self.server, self.db_list), self.results2)
 
     @mock.patch("mongo_db_admin.get_all_dbs_tbls")
     def test_with_multiple_dbs(self, mock_all):

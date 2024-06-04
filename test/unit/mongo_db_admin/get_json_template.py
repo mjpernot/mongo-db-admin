@@ -5,7 +5,8 @@
     Description:  Unit testing of get_json_template in mongo_db_admin.py.
 
     Usage:
-        test/unit/mongo_db_admin/get_json_template.py
+        python test/unit/mongo_db_admin/get_json_template.py
+        python3 test/unit/mongo_db_admin/get_json_template.py
 
     Arguments:
 

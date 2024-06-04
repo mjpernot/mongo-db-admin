@@ -189,6 +189,7 @@ import sys
 import datetime
 import os
 import json
+import pprint
 
 # Local
 try:
@@ -207,6 +208,8 @@ except (ValueError, ImportError) as err:
 
 __version__ = version.__version__
 
+# Global
+SUBJ_LINE = "Mysql_db_admin_NoSubjectLine"
 
 def help_message():
 
@@ -283,7 +286,6 @@ def get_db_tbl(server, db_list, **kwargs):
                 ign_db_tbl[db_list[0]] if db_list[0] in ign_db_tbl else list()
             tbl_list = gen_libs.del_not_and_list(tbl_list, ign_tbls)
             db_dict[db_list[0]] = tbl_list
-            print(db_dict)
 
         elif db_list:
             db_dict = get_all_dbs_tbls(server, db_list, ign_db_tbl=ign_db_tbl)
