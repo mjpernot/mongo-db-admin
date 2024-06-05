@@ -713,10 +713,15 @@ def defrag(server, args):
                         t_data["Status"] = \
                             "Error encountered:  %s" % (state[1])
 
-            mongo_libs.disconnect([mongo])
+                    t_results["Tables"].append(t_data)
 
-#        status = process_request(
-#            server, run_compact, args.get_val("-C"), args.get_val("-t"))
+                results["Results"].append(t_results)
+
+            mongo_libs.disconnect([mongo])
+            state = data_out(results, **data_config)
+
+            if not state[0]:
+                print("defrag: Error encountered: %s" % (state[1]))
 
     return status
 
