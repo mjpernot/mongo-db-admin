@@ -210,6 +210,7 @@ __version__ = version.__version__
 
 # Global
 SUBJ_LINE = "Mysql_db_admin_NoSubjectLine"
+SYS_DBS = ["admin", "config", "local"]
 
 def help_message():
 
@@ -590,22 +591,25 @@ def compact(mongo, coll, tbl):
         (input) mongo -> Database instance
         (input) coll -> Database collection instance
         (input) tbl -> Table name
+        (output) status -> Status of compact command
 
     """
 
     if coll.coll_options().get("capped", False):
-        print("\tCollection capped: not compacted")
+        status = "Collection capped: not compacted"
 
     else:
 
         if mongo.db_cmd("compact", obj=tbl)["ok"] == 1:
-            print("\tDone")
+            status = "Compact Done"
 
         else:
-            print("\tCommand Failed")
+            status = "Compact Failed"
+
+    return status
 
 
-def run_compact(mongo, db_name, tbl_list=None, **kwargs):
+#def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_compact
 
@@ -620,6 +624,7 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
     """
 
+    """
     tbl_list = list() if tbl_list is None else list(tbl_list)
 
     if not tbl_list:
@@ -646,9 +651,77 @@ def run_compact(mongo, db_name, tbl_list=None, **kwargs):
 
         else:
             print("\tError encountered:  %s" % (state[1]))
+    """
 
 
-def defrag(server, args, **kwargs):
+def defrag(server, args):
+
+    """Function:  defrag
+
+    Description:  Runs the compact command against one or more tables and can
+        also be ran against one or more databases.
+
+    Arguments:
+        (input) server -> Database server instance
+        (input) args -> ArgParser class instance
+        (output) err_flag -> True|False - If an error has occurred
+        (output) err_msg -> Error message
+
+    """
+
+    global SYS_DBS
+
+    status = (True, None)
+    data = mongo_class.fetch_ismaster(server)
+
+    if data["ismaster"] and "setName" in data:
+        status = (True, "Warning: Cannot defrag the Master in a ReplicaSet.")
+
+    else:
+        mongo = mongo_libs.create_instance(
+            args.get_val("-c"), args.get_val("-d"), mongo_class.DB)
+        state = mongo.connect()
+
+        if not state[0]:
+            status = (True, "Connection to Mongo DB:  %s" % state[1])
+
+        else:
+            db_list = args.get_val("-C", def_val=list())
+            tbls = args.get_val("-t", def_val=list())
+            cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
+            ign_dbs = cfg.ign_dbs if hasattr(cfg, "sys_dbs") else SYS_DBS
+            db_dict = get_db_tbl(server, db_list, tbls=tbls, ign_dbs=ign_dbs)
+            results = get_json_template(server)
+            results["Type"] = "defrag"
+            results["Results"] = list()
+            data_config = dict(create_data_config(args))
+
+            for dbn in db_dict:
+                mongo.chg_db(dbs=dbn)
+                t_results = {"Database": dbn, "Tables": list()}
+
+                for tbl in db_dict[dbn]:
+                    coll = mongo_libs.crt_coll_inst(mongo, db_name, tbl)
+                    state = coll.connect()
+                    t_data = {"TableName": tbl}
+
+                    if state[0]:
+                        t_data["Status": compact(mongo, coll, tbl)]
+                        mongo_libs.disconnect([coll])
+
+                    else:
+                        t_data["Status"] = \
+                            "Error encountered:  %s" % (state[1])
+
+            mongo_libs.disconnect([mongo])
+
+#        status = process_request(
+#            server, run_compact, args.get_val("-C"), args.get_val("-t"))
+
+    return status
+
+
+#def defrag(server, args, **kwargs):
 
     """Function:  defrag
 
@@ -664,6 +737,7 @@ def defrag(server, args, **kwargs):
 
     """
 
+    """
     data = mongo_class.fetch_ismaster(server)
 
     if data["ismaster"] and "setName" in data:
@@ -675,6 +749,7 @@ def defrag(server, args, **kwargs):
             server, run_compact, args.get_val("-C"), args.get_val("-t"))
 
     return err_flag, err_msg
+    """
 
 
 def status(server, args, **kwargs):
@@ -879,7 +954,7 @@ def get_log(server, args, **kwargs):
     return err_flag, err_msg
 
 
-def run_program(args, func_dict, **kwargs):
+def run_program(args, func_dict):
 
     """Function:  run_program
 
@@ -897,27 +972,28 @@ def run_program(args, func_dict, **kwargs):
     state = server.connect()
 
     if state[0]:
-        outfile = args.get_val("-o")
-        db_tbl = args.get_val("-i")
-        repcfg = None
-        mail = None
+#        outfile = args.get_val("-o")
+#        db_tbl = args.get_val("-i")
+#        repcfg = None
+#        mail = None
 
-        if args.arg_exist("-m"):
-            repcfg = gen_libs.load_module(
-                args.get_val("-m"), args.get_val("-d"))
+#        if args.arg_exist("-m"):
+#            repcfg = gen_libs.load_module(
+#                args.get_val("-m"), args.get_val("-d"))
 
-        if args.arg_exist("-e"):
-            mail = gen_class.setup_mail(
-                args.get_val("-e"), subj=args.get_val("-s"))
+#        if args.arg_exist("-e"):
+#            mail = gen_class.setup_mail(
+#                args.get_val("-e"), subj=args.get_val("-s"))
 
-        # Call function(s) - intersection of command line and function dict.
+        # Call functions - intersection of command line and function dictionary
         for item in set(args.get_args_keys()) & set(func_dict.keys()):
-            err_flag, err_msg = func_dict[item](
-                server, args, ofile=outfile, db_tbl=db_tbl, class_cfg=repcfg,
-                mail=mail, **kwargs)
+            status = func_dict[item](server, args)
+#            err_flag, err_msg = func_dict[item](
+#                server, args, ofile=outfile, db_tbl=db_tbl, class_cfg=repcfg,
+#                mail=mail, **kwargs)
 
-            if err_flag:
-                print("Error:  %s" % (err_msg))
+            if status[0]:
+                print("Error:  %s" % (status[1]))
                 break
 
         mongo_libs.disconnect([server])
@@ -978,9 +1054,11 @@ def main():
     # Process argument list from command line.
     args = gen_class.ArgParser(
         sys.argv, opt_val=opt_val_list, opt_def=opt_def_dict,
-        multi_val=opt_multi_list, do_parse=True)
+        multi_val=opt_multi_list)
+    
 
-    if not gen_libs.help_func(args, __version__, help_message)              \
+    if args.arg_parse2()                                                    \
+       and not gen_libs.help_func(args, __version__, help_message)          \
        and args.arg_require(opt_req=opt_req_list)                           \
        and args.arg_valid_val(opt_valid_val=opt_valid_val)                  \
        and args.arg_xor_dict(opt_xor_val=opt_xor_dict)                      \

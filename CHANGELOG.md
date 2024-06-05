@@ -17,6 +17,13 @@ Breaking Change
 - get_all_dbs_tbls: Return a dictionary of databases with table lists.
 - get_db_tbl: Determines which databases and tables will be checked.
 
+### Changed
+- compact: Returned status of compact command to calling function.
+- defrag: Refactored function to improve performance and convert output to JSON.
+- config/mongo.py.TEMPLATE: Added ign_dbs entry.
+- run_program:  Loading Mongo module, setting up mail, setting output file, and parsing database and table name.
+- main: Removed parsing from gen_class.ArgParser call and called arg_parse2 as part of "if" statement.
+
 
 ## [2.5.2] - 2024-04-18
 - Updated mongo-lib to v4.3.0

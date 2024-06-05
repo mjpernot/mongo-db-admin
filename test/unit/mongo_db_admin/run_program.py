@@ -28,54 +28,40 @@ import version
 __version__ = version.__version__
 
 
-def dbcc(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
+def dbcc(server, args_array):
 
     """Method:  dbcc
 
     Description:  Stub holder for dbcc function.
 
     Arguments:
-        (input) server -> Mongo instance.
-        (input) args_array -> Dict of command line options and values.
-        (input) db_tbl -> Database and table names.
-        (input) class_cfg -> Class configuration file.
-        (input) kwargs:
-            mail => Mail instance.
 
     """
 
     flag = True
     errmsg = "ErrorMessage"
-    mail = kwargs.get("mail", None)
 
-    if server and args_array and ofile and db_tbl and class_cfg and mail:
+    if server and args_array:
         flag = True
         errmsg = "ErrorMessage"
 
     return flag, errmsg
 
 
-def defrag(server, args_array, ofile, db_tbl, class_cfg, **kwargs):
+def defrag(server, args_array):
 
     """Method:  defrag
 
     Description:  Stub holder for defrag function.
 
     Arguments:
-        (input) server -> Mongo instance.
-        (input) args_array -> Dict of command line options and values.
-        (input) db_tbl -> Database and table names.
-        (input) class_cfg -> Class configuration file.
-        (input) kwargs:
-            mail => Mail instance.
 
     """
 
     flag = False
     errmsg = None
-    mail = kwargs.get("mail", None)
 
-    if server and args_array and ofile and db_tbl and class_cfg and mail:
+    if server and args_array:
         flag = False
         errmsg = None
 
@@ -194,9 +180,6 @@ class UnitTest(unittest.TestCase):
         test_connection_failure
         test_connection_successful
         test_func_failure
-        test_email
-        test_cfg
-        test_no_cfg
 
     """
 
@@ -264,9 +247,8 @@ class UnitTest(unittest.TestCase):
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
-    @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_func_failure(self, mock_mongo, mock_load):
+    def test_func_failure(self, mock_mongo):
 
         """Function:  test_func_failure
 
@@ -277,71 +259,10 @@ class UnitTest(unittest.TestCase):
         """
 
         mock_mongo.return_value = self.server
-        mock_load.return_value = "RepConfig"
 
         with gen_libs.no_std_out():
             self.assertFalse(
                 mongo_db_admin.run_program(self.args2, self.func_names2))
-
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
-                mock.Mock(return_value=True))
-    @mock.patch("mongo_db_admin.gen_class.setup_mail")
-    @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_email(self, mock_mongo, mock_load, mock_mail):
-
-        """Function:  test_email
-
-        Description:  Test with email option.
-
-        Arguments:
-
-        """
-
-        mock_mongo.return_value = self.server
-        mock_load.return_value = "RepConfig"
-        mock_mail.return_value = "EmailInstance"
-
-        self.assertFalse(
-            mongo_db_admin.run_program(self.args3, self.func_names))
-
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
-                mock.Mock(return_value=True))
-    @mock.patch("mongo_db_admin.gen_libs.load_module")
-    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_cfg(self, mock_mongo, mock_load):
-
-        """Function:  test_cfg
-
-        Description:  Test with configuration file.
-
-        Arguments:
-
-        """
-
-        mock_mongo.return_value = self.server
-        mock_load.return_value = "RepConfig"
-
-        self.assertFalse(
-            mongo_db_admin.run_program(self.args2, self.func_names))
-
-    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
-                mock.Mock(return_value=True))
-    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_no_cfg(self, mock_mongo):
-
-        """Function:  test_no_cfg
-
-        Description:  Test with no configuration file.
-
-        Arguments:
-
-        """
-
-        mock_mongo.return_value = self.server
-
-        self.assertFalse(
-            mongo_db_admin.run_program(self.args, self.func_names))
 
 
 if __name__ == "__main__":
