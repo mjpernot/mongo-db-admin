@@ -282,6 +282,7 @@ def get_db_tbl(server, db_list, **kwargs):
         db_list = gen_libs.del_not_and_list(db_list, ign_dbs)
 
         if len(db_list) == 1 and tbls:
+            server.chg_db(dbs=db_list[0])
             tbl_list = gen_libs.del_not_in_list(
                 tbls, server.get_tbl_list(inc_sys=False))
             ign_tbls = \
