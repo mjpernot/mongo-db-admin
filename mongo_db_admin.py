@@ -247,6 +247,7 @@ def get_all_dbs_tbls(server, db_list, **kwargs):
 
     for dbs in db_list:
         ign_tbls = ign_db_tbl[dbs] if dbs in ign_db_tbl else list()
+        server.chg_db(dbs=dbs)
         tbl_list = gen_libs.del_not_and_list(
             server.get_tbl_list(inc_sys=False), ign_tbls)
         db_dict[dbs] = tbl_list
@@ -261,7 +262,7 @@ def get_db_tbl(server, db_list, **kwargs):
     Description:  Determines which databases and tables will be checked.
 
     Arguments:
-        (input) server -> Server instance
+        (input) server -> Mongo DB instance
         (input) db_list -> List of database names
         (input) **kwargs:
             ign_dbs -> List of databases to skip
@@ -689,7 +690,7 @@ def defrag(server, args):
             tbls = args.get_val("-t", def_val=list())
             cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
             ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
-            db_dict = get_db_tbl(server, db_list, tbls=tbls, ign_dbs=ign_dbs)
+            db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
             results = get_json_template(server)
             results["Type"] = "defrag"
             results["Results"] = list()

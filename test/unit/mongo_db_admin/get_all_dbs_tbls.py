@@ -37,6 +37,7 @@ class Server(object):
     Methods:
         __init__
         get_tbl_list
+        chg_db
 
     """
 
@@ -52,6 +53,7 @@ class Server(object):
 
         self.inc_sys = False
         self.tbl_list = list()
+        self.dbs = None
 
     def get_tbl_list(self, inc_sys):
 
@@ -66,6 +68,18 @@ class Server(object):
         self.inc_sys = inc_sys
 
         return self.tbl_list
+
+    def chg_db(self, dbs):
+
+        """Method:  chg_db
+
+        Description:  Stub holder for mongo_class.Server.chg_db method.
+
+        Arguments:
+
+        """
+
+        self.dbs = dbs
 
 
 class UnitTest(unittest.TestCase):
