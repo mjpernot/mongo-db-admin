@@ -664,8 +664,7 @@ def defrag(server, args):
     Arguments:
         (input) server -> Database server instance
         (input) args -> ArgParser class instance
-        (output) err_flag -> True|False - If an error has occurred
-        (output) err_msg -> Error message
+        (output) status -> Success of command: (True|False, Error Message)
 
     """
 
@@ -675,7 +674,7 @@ def defrag(server, args):
     data = mongo_class.fetch_ismaster(server)
 
     if data["ismaster"] and "setName" in data:
-        status = (True, "Warning: Cannot defrag the Master in a ReplicaSet.")
+        status = (False, "Warning: Cannot defrag the Master in a ReplicaSet.")
 
     else:
         mongo = mongo_libs.create_instance(
@@ -683,13 +682,13 @@ def defrag(server, args):
         state = mongo.connect()
 
         if not state[0]:
-            status = (True, "Connection to Mongo DB:  %s" % state[1])
+            status = (False, "Connection to Mongo DB:  %s" % state[1])
 
         else:
             db_list = args.get_val("-C", def_val=list())
             tbls = args.get_val("-t", def_val=list())
             cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-            ign_dbs = cfg.ign_dbs if hasattr(cfg, "sys_dbs") else SYS_DBS
+            ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
             db_dict = get_db_tbl(server, db_list, tbls=tbls, ign_dbs=ign_dbs)
             results = get_json_template(server)
             results["Type"] = "defrag"
@@ -701,12 +700,12 @@ def defrag(server, args):
                 t_results = {"Database": dbn, "Tables": list()}
 
                 for tbl in db_dict[dbn]:
-                    coll = mongo_libs.crt_coll_inst(mongo, db_name, tbl)
+                    coll = mongo_libs.crt_coll_inst(mongo, dbn, tbl)
                     state = coll.connect()
                     t_data = {"TableName": tbl}
 
                     if state[0]:
-                        t_data["Status": compact(mongo, coll, tbl)]
+                        t_data["Status"] = compact(mongo, coll, tbl)
                         mongo_libs.disconnect([coll])
 
                     else:
@@ -721,7 +720,7 @@ def defrag(server, args):
             state = data_out(results, **data_config)
 
             if not state[0]:
-                print("defrag: Error encountered: %s" % (state[1]))
+                status = (False, "defrag: Error encountered: %s" % (state[1]))
 
     return status
 
@@ -997,7 +996,7 @@ def run_program(args, func_dict):
 #                server, args, ofile=outfile, db_tbl=db_tbl, class_cfg=repcfg,
 #                mail=mail, **kwargs)
 
-            if status[0]:
+            if not status[0]:
                 print("Error:  %s" % (status[1]))
                 break
 

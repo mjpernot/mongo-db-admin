@@ -243,7 +243,7 @@ class UnitTest(unittest.TestCase):
         mock_mongo.return_value = self.server
 
         self.assertFalse(
-            mongo_db_admin.run_program(self.args, self.func_names))
+            mongo_db_admin.run_program(self.args, self.func_names2))
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
@@ -262,7 +262,7 @@ class UnitTest(unittest.TestCase):
 
         with gen_libs.no_std_out():
             self.assertFalse(
-                mongo_db_admin.run_program(self.args2, self.func_names2))
+                mongo_db_admin.run_program(self.args2, self.func_names))
 
 
 if __name__ == "__main__":

@@ -62,7 +62,7 @@ class ArgParser(object):
 
         """
 
-        self.args_array = {"-c": "mongo", "-d": "config"}
+        self.args_array = {"-c": "mongo", "-d": "config", "-C": list()}
 
     def get_val(self, skey, def_val=None):
 
@@ -85,6 +85,8 @@ class Server(object):
 
     Methods:
         __init__
+        connect
+        chg_db
 
     """
 
@@ -93,6 +95,81 @@ class Server(object):
         """Method:  __init__
 
         Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        self.name = "ServerName"
+        self.status = True
+        self.errmsg = None
+        self.dbs = None
+
+    def connect(self):
+
+        """Method:  connect
+
+        Description:  Stub holder for mongo_class.Server.connect method.
+
+        Arguments:
+
+        """
+
+        return self.status, self.errmsg
+
+    def chg_db(self, dbs):
+
+        """Method:  chg_db
+
+        Description:  Stub holder for mongo_class.Server.chg_db method.
+
+        Arguments:
+
+        """
+
+        self.dbs = dbs
+
+
+class Cfg(object):
+
+    """Class:  Cfg
+
+    Description:  Class which is a representation of a cfg module.
+
+    Methods:
+        __init__
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Initialization instance of the CfgTest class.
+
+        Arguments:
+
+        """
+
+        self.ign_dbs = ["admin"]
+
+
+class Cfg2(object):
+
+    """Class:  Cfg2
+
+    Description:  Class which is a representation of a cfg module.
+
+    Methods:
+        __init__
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Initialization instance of the CfgTest class.
 
         Arguments:
 
@@ -109,9 +186,13 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
-        test_errors
+        test_data_out_failed
+        test_compact_fail
+        test_compact_successful
+        test_connection_true
+        test_connection_failed
+        test_no_setname
         test_is_master
-        test_no_errors
 
     """
 
@@ -126,27 +207,164 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
+        self.coll = Server()
         self.args = ArgParser()
-        self.args.args_array = {"-C": "Optionsetting", "-t": "option"}
+        self.cfg = Cfg()
+        self.cfg2 = Cfg2()
+        self.ismaster = {"ismaster": False}
+        self.ismaster2 = {"ismaster": True, "setName": True}
+        self.db_dict = dict()
+        self.db_dict2 = {"db": ["tbl"]}
+        self.data_out = (True, None)
+        self.data_out2 = (False, "Data Out Failure")
+        err_msg = "Warning: Cannot defrag the Master in a ReplicaSet."
+        err_msg2 = "Connection to Mongo DB:  Failed Connection"
+        err_msg3 = "defrag: Error encountered: Data Out Failure"
+        self.errmsg = (True, None)
+        self.errmsg2 = (False, err_msg)
+        self.errmsg3 = (False, err_msg2)
+        self.errmsg4 = (False, err_msg3)
 
+    @mock.patch("mongo_db_admin.compact", mock.Mock(return_value="Good"))
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
-    @mock.patch("mongo_db_admin.process_request")
-    def test_errors(self, mock_process, mock_fetch):
+    def test_data_out_failed(self, mock_fetch, mock_mongo, mock_load,
+                             mock_dbtbl, mock_data, mock_coll):
 
-        """Function:  test_errors
+        """Function:  test_data_out_failed
 
-        Description:  Test with errors returned.
+        Description:  Test with data_out failing.
 
         Arguments:
 
         """
 
-        mock_process.return_value = (True, "Error Message")
-        mock_fetch.return_value = {"ismaster": False}
+        mock_fetch.return_value = self.ismaster
+        mock_mongo.return_value = self.server
+        mock_load.reuturn_value = self.cfg
+        mock_dbtbl.return_value = self.db_dict2
+        mock_data.return_value = self.data_out2
+        mock_coll = self.coll
 
         self.assertEqual(
-            mongo_db_admin.defrag(
-                self.server, self.args), (True, "Error Message"))
+            mongo_db_admin.defrag(self.server, self.args), self.errmsg4)
+
+    @mock.patch("mongo_db_admin.compact", mock.Mock(return_value="Good"))
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
+    def test_compact_fail(self, mock_fetch, mock_mongo, mock_load, mock_dbtbl,
+                          mock_data, mock_coll):
+
+        """Function:  test_compact_fail
+
+        Description:  Test with failed compact.
+
+        Arguments:
+
+        """
+
+        self.coll.status = False
+        self.coll.errmsg = "Failed Compact"
+
+        mock_fetch.return_value = self.ismaster
+        mock_mongo.return_value = self.server
+        mock_load.reuturn_value = self.cfg
+        mock_dbtbl.return_value = self.db_dict2
+        mock_data.return_value = self.data_out
+        mock_coll = self.coll
+
+        self.assertEqual(
+            mongo_db_admin.defrag(self.server, self.args), self.errmsg)
+
+    @mock.patch("mongo_db_admin.compact", mock.Mock(return_value="Good"))
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.mongo_libs.crt_coll_inst")
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
+    def test_compact_successful(self, mock_fetch, mock_mongo, mock_load,
+                                mock_dbtbl, mock_data, mock_coll):
+
+        """Function:  test_compact_successful
+
+        Description:  Test with successful compact.
+
+        Arguments:
+
+        """
+
+        mock_fetch.return_value = self.ismaster
+        mock_mongo.return_value = self.server
+        mock_load.reuturn_value = self.cfg
+        mock_dbtbl.return_value = self.db_dict2
+        mock_data.return_value = self.data_out
+        mock_coll = self.coll
+
+        self.assertEqual(
+            mongo_db_admin.defrag(self.server, self.args), self.errmsg)
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
+    def test_connection_true(self, mock_fetch, mock_mongo, mock_load,
+                             mock_dbtbl, mock_data):
+
+        """Function:  test_connection_true
+
+        Description:  Test with mongo connection successful.
+
+        Arguments:
+
+        """
+
+        mock_fetch.return_value = self.ismaster
+        mock_mongo.return_value = self.server
+        mock_load.reuturn_value = self.cfg
+        mock_dbtbl.return_value = self.db_dict
+        mock_data.return_value = self.data_out
+
+        self.assertEqual(
+            mongo_db_admin.defrag(self.server, self.args), self.errmsg)
+
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
+    def test_connection_failed(self, mock_fetch, mock_mongo):
+
+        """Function:  test_connection_failed
+
+        Description:  Test with mongo connection failed.
+
+        Arguments:
+
+        """
+
+        self.server.status = False
+        self.server.errmsg = "Failed Connection"
+
+        mock_fetch.return_value = self.ismaster
+        mock_mongo.return_value = self.server
+
+        self.assertEqual(
+            mongo_db_admin.defrag(self.server, self.args), self.errmsg3)
 
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
     def test_is_master(self, mock_fetch):
@@ -159,29 +377,10 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        mock_fetch.return_value = {"ismaster": True, "setName": True}
-        err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
+        mock_fetch.return_value = self.ismaster2
 
         self.assertEqual(
-            mongo_db_admin.defrag(self.server, self.args), (True, err_msg))
-
-    @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
-    @mock.patch("mongo_db_admin.process_request")
-    def test_no_errors(self, mock_process, mock_fetch):
-
-        """Function:  test_no_errors
-
-        Description:  Test with no errors detected.
-
-        Arguments:
-
-        """
-
-        mock_process.return_value = (False, None)
-        mock_fetch.return_value = {"ismaster": False}
-
-        self.assertEqual(
-            mongo_db_admin.defrag(self.server, self.args), (False, None))
+            mongo_db_admin.defrag(self.server, self.args), self.errmsg2)
 
 
 if __name__ == "__main__":
