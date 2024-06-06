@@ -692,7 +692,7 @@ def defrag(server, args):
             cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
             ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
             db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
-            results = get_json_template(server)
+            results = get_json_template(mongo)
             results["Type"] = "defrag"
             results["Results"] = list()
             data_config = dict(create_data_config(args))
