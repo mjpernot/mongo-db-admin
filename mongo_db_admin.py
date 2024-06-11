@@ -13,6 +13,10 @@
     Usage:
         mongo_db_admin.py -c file -d path
             {-L [-n dir_path [-p]]} |
+            {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
+                [-m config_file -i [db_name:table_name]]
+                [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]]}
             {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-f]} |
@@ -37,9 +41,24 @@
             Note: If no db_name is provided, then all database are processed.
                 Can use the -t option to specify an individual table.  If no
                 -t is used, then all tables in the database are compacted.
-            -t table_name(s) => Table names.
+            -t table name(s) => Table names to defrag.
+            -m file => Mongo config file.  Is loaded as a python, do not
+                include the .py extension with the name.
+                -i {database:collection} => Name of database and collection.
+                    Default: sysmon:mysql_db_admin
+            -o path/file => Directory path and file name for output.
+                -w a|w => Append or write to output to output file. Default is
+                    write.
+            -e to_email_address(es) => Enables emailing and sends output to one
+                    or more email addresses.  Email addresses are delimited by
+                    a space.
+                -s subject_line => Subject line of email.
+                -u => Override the default mail command and use mailx.
+            -z => Suppress standard out.
+            -r => Expand the JSON format.
+                -k N => Indentation for expanded JSON format.
 
-# Base template for -C and -D options
+# Base template for -D option
 ##########################
             -t table name(s) => Table names to check.
             -m file => Mongo config file.  Is loaded as a python, do not
@@ -155,6 +174,11 @@
                 tls_ca_certs = None
                 tls_certkey = None
                 tls_certkey_phrase = None
+
+            Databases to ignore.
+            NOTE: The default list of databases are the system databases
+                (admin, config, local) and should be skipped for some options.
+            ign_dbs = ["admin", "config", "local"]
 
             Note:  FIPS Environment for Mongo.
               If operating in a FIPS 104-2 environment, this package will
@@ -902,25 +926,9 @@ def run_program(args, func_dict):
     state = server.connect()
 
     if state[0]:
-#        outfile = args.get_val("-o")
-#        db_tbl = args.get_val("-i")
-#        repcfg = None
-#        mail = None
-
-#        if args.arg_exist("-m"):
-#            repcfg = gen_libs.load_module(
-#                args.get_val("-m"), args.get_val("-d"))
-
-#        if args.arg_exist("-e"):
-#            mail = gen_class.setup_mail(
-#                args.get_val("-e"), subj=args.get_val("-s"))
-
         # Call functions - intersection of command line and function dictionary
         for item in set(args.get_args_keys()) & set(func_dict.keys()):
             status = func_dict[item](server, args)
-#            err_flag, err_msg = func_dict[item](
-#                server, args, ofile=outfile, db_tbl=db_tbl, class_cfg=repcfg,
-#                mail=mail, **kwargs)
 
             if not status[0]:
                 print("Error:  %s" % (status[1]))

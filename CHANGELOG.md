@@ -23,6 +23,7 @@ Breaking Change
 - config/mongo.py.TEMPLATE: Added ign_dbs entry.
 - run_program:  Loading Mongo module, setting up mail, setting output file, and parsing database and table name.
 - main: Removed parsing from gen_class.ArgParser call and called arg_parse2 as part of "if" statement.
+- Documentation changes.
 
 ### Removed
 - run_compact

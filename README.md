@@ -126,6 +126,10 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
     - In the "\_password_digest" function there is an line that should match: "md5hash = hashlib.md5()".  Change it to "md5hash = hashlib.md5(usedforsecurity=False)".
     - Lastly, it will require the Mongo configuration file entry auth_mech to be set to: SCRAM-SHA-1 or SCRAM-SHA-256.
 
+  * List of databases to ignore.
+    NOTE: The default list of databases are the system databases (admin, config, local) and should be skipped for some options.
+    - ign_dbs = ["admin", "config", "local"]
+
 ```
 cd config
 cp mongo.py.TEMPLATE mongo.py
