@@ -611,7 +611,7 @@ def dbcc(server, args):
         status = (False, "Connection to Mongo DB:  %s" % state[1])
 
     else:
-        db_list = args.get_val("-C", def_val=list())
+        db_list = args.get_val("-D", def_val=list())
         tbls = args.get_val("-t", def_val=list())
         cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
         ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
