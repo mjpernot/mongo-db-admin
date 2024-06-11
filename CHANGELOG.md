@@ -27,6 +27,8 @@ Breaking Change
 
 ### Removed
 - run_compact
+- process_request
+- process_dbs_tbls
 
 
 ## [2.5.2] - 2024-04-18

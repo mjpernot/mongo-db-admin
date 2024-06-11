@@ -441,7 +441,7 @@ def data_out(data, **kwargs):
     return state, msg
 
 
-def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
+#def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     """Function:  process_request
 
@@ -460,6 +460,7 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
 
     """
 
+    """
     err_flag = False
     err_msg = None
     db_name = list() if db_name is None else list(db_name)
@@ -505,9 +506,10 @@ def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
         mongo_libs.disconnect([mongo])
 
     return err_flag, err_msg
+    """
 
 
-def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
+#def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
 
     """Function:  process_dbs_tbls
 
@@ -524,6 +526,7 @@ def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
 
     """
 
+    """
     db_name = list(db_name)
     db_list = list(db_list)
     tbl_name = list(tbl_name)
@@ -539,6 +542,7 @@ def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
 
         else:
             print("Found no tables to process in: %s" % (dbn))
+    """
 
 
 #def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):

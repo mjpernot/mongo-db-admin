@@ -90,14 +90,17 @@ class ArgParser(object):
         return self.args_array.get(skey, def_val)
 
 
-class Server(object):
+class Mongo(object):
 
-    """Class:  Server
+    """Class:  Mongo
 
-    Description:  Class stub holder for mongo_class.Server class.
+    Description:  Class stub holder for mongo_class.DB class.
 
     Methods:
         __init__
+        chg_db
+        get_tbl_list
+        db_cmd
 
     """
 
@@ -111,7 +114,64 @@ class Server(object):
 
         """
 
-        pass
+        self.db_name = "DatabaseName"
+        self.tbl_list = []
+        self.cmd_type = True
+        self.dbn = None
+        self.status = None
+        self.com_type = None
+        self.obj = None
+
+    def chg_db(self, dbs):
+
+        """Method:  chg_db
+
+        Description:  Stub holder for mongo_class.DB.chg_db method.
+
+        Arguments:
+            (input) dbn -> Database name.
+
+        """
+
+        self.dbn = dbs
+
+        return True
+
+    def get_tbl_list(self, status):
+
+        """Method:  get_tbl_list
+
+        Description:  Stub holder for mongo_class.DB.get_tbl_list method.
+
+        Arguments:
+            (input) status -> Status of check.
+
+        """
+
+        self.status = status
+
+        return self.tbl_list
+
+    def db_cmd(self, com_type, obj):
+
+        """Method:  db_cmd
+
+        Description:  Stub holder for mongo_class.DB.db_cmd method.
+
+        Arguments:
+            (input) com_type -> Type of compression.
+            (input) obj -> Object name.
+
+        """
+
+        self.com_type = com_type
+        self.obj = obj
+        data = {"ok": 0}
+
+        if self.cmd_type:
+            data = {"ok": 1}
+
+        return data
 
 
 class UnitTest(unittest.TestCase):
