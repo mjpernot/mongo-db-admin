@@ -541,7 +541,7 @@ def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
             print("Found no tables to process in: %s" % (dbn))
 
 
-def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
+#def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     """Function:  run_dbcc
 
@@ -557,6 +557,7 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
     """
 
+    """
     if tbl_list is None:
         tbl_list = []
 
@@ -582,9 +583,75 @@ def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
 
         else:
             print("\t\tError: %s" % (data))
+    """
 
 
-def dbcc(server, args, **kwargs):
+def dbcc(server, args):
+
+    """Function:  dbcc
+
+    Description:  Runs the validate command against one or more tables and
+        against one or more databases.
+
+    Arguments:
+        (input) server -> Database server instance
+        (input) args -> ArgParser class instance
+        (output) status -> Success of command: (True|False, Error Message)
+
+    """
+    global SYS_DBS
+
+    status = (True, None)
+
+    mongo = mongo_libs.create_instance(
+        args.get_val("-c"), args.get_val("-d"), mongo_class.DB)
+    state = mongo.connect()
+
+    if not state[0]:
+        status = (False, "Connection to Mongo DB:  %s" % state[1])
+
+    else:
+        db_list = args.get_val("-C", def_val=list())
+        tbls = args.get_val("-t", def_val=list())
+        cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
+        ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+        db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+        results = get_json_template(mongo)
+        results["Type"] = "validate"
+        results["Results"] = list()
+        data_config = dict(create_data_config(args))
+
+        for dbn in db_dict:
+            mongo.chg_db(dbs=dbn)
+            t_results = {"Database": dbn, "Tables": list()}
+
+            for tbl in db_dict[dbn]:
+                t_data = {"TableName": tbl}
+                data = mongo.validate_tbl(tbl, scan=args.arg_exist("-f"))
+
+                if data[0]:
+                    t_data["Status"] = data[1]["valid"]
+
+                    if not data[1]["valid"]:
+                        t_data["Message"] = data[1]["errors"]
+
+                else:
+                    t_data["Status"] = "Error encountered:  %s" % (data[1])
+
+                t_results["Tables"].append(t_data)
+
+            results["Results"].append(t_results)
+
+        mongo_libs.disconnect([mongo])
+        state = data_out(results, **data_config)
+
+        if not state[0]:
+            status = (False, "defrag: Error encountered: %s" % (state[1]))
+
+    return status
+
+
+#def dbcc(server, args, **kwargs):
 
     """Function:  dbcc
 
@@ -600,11 +667,13 @@ def dbcc(server, args, **kwargs):
 
     """
 
+    """
     state = process_request(
         server, run_dbcc, args.get_val("-D"), args.get_val("-t"),
         full=args.arg_exist("-f"))
 
     return state[0], state[1]
+    """
 
 
 def compact(mongo, coll, tbl):
@@ -639,8 +708,8 @@ def defrag(server, args):
 
     """Function:  defrag
 
-    Description:  Runs the compact command against one or more tables and can
-        also be ran against one or more databases.
+    Description:  Runs the compact command against one or more tables and
+        against one or more databases.
 
     Arguments:
         (input) server -> Database server instance

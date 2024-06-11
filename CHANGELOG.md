@@ -19,7 +19,7 @@ Breaking Change
 
 ### Changed
 - compact: Returned status of compact command to calling function.
-- defrag: Refactored function to improve performance and convert output to JSON.
+- defrag, dbcc: Refactored function to improve performance and convert output to JSON.
 - config/mongo.py.TEMPLATE: Added ign_dbs entry.
 - run_program:  Loading Mongo module, setting up mail, setting output file, and parsing database and table name.
 - main: Removed parsing from gen_class.ArgParser call and called arg_parse2 as part of "if" statement.
