@@ -24,6 +24,9 @@ Breaking Change
 - run_program:  Loading Mongo module, setting up mail, setting output file, and parsing database and table name.
 - main: Removed parsing from gen_class.ArgParser call and called arg_parse2 as part of "if" statement.
 
+### Removed
+- run_compact
+
 
 ## [2.5.2] - 2024-04-18
 - Updated mongo-lib to v4.3.0

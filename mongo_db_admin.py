@@ -611,51 +611,6 @@ def compact(mongo, coll, tbl):
     return status
 
 
-#def run_compact(mongo, db_name, tbl_list=None, **kwargs):
-
-    """Function:  run_compact
-
-    Description:   Determines whether the database is a system database and
-        changes database instance to new database before calling the compact
-        function.
-
-    Arguments:
-        (input) mongo -> Database instance
-        (input) db_name -> Database name
-        (input) tbl_list -> List of tables
-
-    """
-
-    """
-    tbl_list = list() if tbl_list is None else list(tbl_list)
-
-    if not tbl_list:
-        mongo.chg_db(dbs=db_name)
-        tbl_list = mongo.get_tbl_list(False)
-
-    if db_name in ["admin", "config", "local"]:
-        print("System databases are non-compactable: %s" % (db_name))
-
-        # Sets the table list to empty to skip compacting
-        tbl_list = list()
-
-    else:
-        print("Compacting for %s" % (mongo.db_name))
-
-    for item in tbl_list:
-        print("\tCompacting: {0:50}".format(item + "..."), end="")
-        coll = mongo_libs.crt_coll_inst(mongo, db_name, item)
-        state = coll.connect()
-
-        if state[0]:
-            compact(mongo, coll, item)
-            mongo_libs.disconnect([coll])
-
-        else:
-            print("\tError encountered:  %s" % (state[1]))
-    """
-
-
 def defrag(server, args):
 
     """Function:  defrag
@@ -725,37 +680,6 @@ def defrag(server, args):
                 status = (False, "defrag: Error encountered: %s" % (state[1]))
 
     return status
-
-
-#def defrag(server, args, **kwargs):
-
-    """Function:  defrag
-
-    Description:  Runs the compact command against one or more tables and can
-        also be ran against one or more databases.  The -C and -t options
-        will determine which databases and tables are done.
-
-    Arguments:
-        (input) server -> Database server instance
-        (input) args -> ArgParser class instance
-        (output) err_flag -> True|False - If an error has occurred
-        (output) err_msg -> Error message
-
-    """
-
-    """
-    data = mongo_class.fetch_ismaster(server)
-
-    if data["ismaster"] and "setName" in data:
-        err_flag = True
-        err_msg = "Warning: Cannot defrag - database is Primary in ReplicaSet."
-
-    else:
-        err_flag, err_msg = process_request(
-            server, run_compact, args.get_val("-C"), args.get_val("-t"))
-
-    return err_flag, err_msg
-    """
 
 
 def status(server, args, **kwargs):
@@ -1050,7 +974,7 @@ def main():
     opt_req_list = ["-c", "-d"]
     opt_val_list = [
         "-c", "-d", "-t", "-C", "-D", "-i", "-m", "-o", "-G", "-n", "-e", "-s",
-        "-y"]
+        "-y", "-w"]
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
     opt_xor_dict = {
         "-L": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-L"],
