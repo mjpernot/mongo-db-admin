@@ -72,3 +72,7 @@ tls_certkey = None
 # Example:  tls_certkey_phrase = "Phrase"
 tls_certkey_phrase = None
 
+# List of databases to be skipped under some options.
+# NOTE: Will default to the global SYS_DBS variable if commented out.
+ign_dbs = ["admin", "config", "local"]
+

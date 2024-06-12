@@ -27,19 +27,6 @@ import version
 __version__ = version.__version__
 
 
-def run_dbcc():
-
-    """Method:  run_dbcc
-
-    Description:  Stub holder for run_dbcc function.
-
-    Arguments:
-
-    """
-
-    return True
-
-
 class ArgParser(object):
 
     """Class:  ArgParser
@@ -63,7 +50,7 @@ class ArgParser(object):
 
         """
 
-        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+        self.args_array = {"-c": "mongo", "-d": "config", "-D": list()}
 
     def arg_exist(self, arg):
 
@@ -90,11 +77,88 @@ class ArgParser(object):
         return self.args_array.get(skey, def_val)
 
 
-class Server(object):
+class Mongo(object):
 
-    """Class:  Server
+    """Class:  Mongo
 
-    Description:  Class stub holder for mongo_class.Server class.
+    Description:  Class stub holder for mongo_class.DB class.
+
+    Methods:
+        __init__
+        connect
+        chg_db
+        validate_tbl
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Class initialization.
+
+        Arguments:
+
+        """
+
+        self.db_name = "DatabaseName"
+        self.name = "ServerName"
+        self.dbn = None
+        self.status = True
+        self.errmsg = None
+        self.tbl = None
+        self.scan = False
+        self.status2 = True
+        self.err2 = None
+        self.valid2 = True
+
+    def connect(self):
+
+        """Method:  connect
+
+        Description:  Stub holder for mongo_class.Server.connect method.
+
+        Arguments:
+
+        """
+
+        return self.status, self.errmsg
+
+    def chg_db(self, dbs):
+
+        """Method:  chg_db
+
+        Description:  Stub holder for mongo_class.DB.chg_db method.
+
+        Arguments:
+
+        """
+
+        self.dbn = dbs
+
+        return True
+
+    def validate_tbl(self, tbl, scan):
+
+        """Method:  validate_tbl
+
+        Description:  Stub holder for mongo_class.DB.validate_tbl method.
+
+        Arguments:
+
+        """
+
+        self.tbl = tbl
+        self.scan = scan
+
+        return (self.status2, {"valid": self.valid2, "errors": self.err2})
+
+
+class Cfg(object):
+
+    """Class:  Cfg
+
+    Description:  Class which is a representation of a cfg module.
 
     Methods:
         __init__
@@ -105,7 +169,31 @@ class Server(object):
 
         """Method:  __init__
 
-        Description:  Class initialization.
+        Description:  Initialization instance of the CfgTest class.
+
+        Arguments:
+
+        """
+
+        self.ign_dbs = ["admin"]
+
+
+class Cfg2(object):
+
+    """Class:  Cfg
+
+    Description:  Class which is a representation of a cfg module.
+
+    Methods:
+        __init__
+
+    """
+
+    def __init__(self):
+
+        """Method:  __init__
+
+        Description:  Initialization instance of the CfgTest class.
 
         Arguments:
 
@@ -122,8 +210,13 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
-        test_dbcc2
-        test_dbcc
+        test_data_out_failed
+        test_dbcc_failure2
+        test_dbcc_failure
+        test_dbcc_success
+        test_sys_dbs
+        test_cfg_ign_dbs
+        test_mongo_fail
 
     """
 
@@ -137,42 +230,186 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.server = Server()
+        self.mongo = Mongo()
         self.args = ArgParser()
-        self.args.args_array = {"-D": "Optionsetting", "-t": "option"}
+        self.cfg = Cfg()
+        self.cfg2 = Cfg2()
+        self.db_tbl = {"db": ["tbl"]}
+        self.status = (True, None)
+        self.status2 = (False, "Data Out Failed")
+        self.results = (True, None)
+        self.results2 = (False, "Connection to Mongo DB:  Connection Failed")
+        self.results3 = (False, "dbcc: Error encountered: Data Out Failed")
 
-    @mock.patch("mongo_db_admin.process_request")
-    def test_dbcc2(self, mock_process):
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_data_out_failed(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
 
-        """Function:  test_dbcc2
+        """Function:  test_data_out_failed
 
-        Description:  Test dbcc function.
-
-        Arguments:
-
-        """
-
-        mock_process.return_value = (True, "Error Message")
-
-        self.assertEqual(
-            mongo_db_admin.dbcc(
-                self.server, self.args), (True, "Error Message"))
-
-    @mock.patch("mongo_db_admin.process_request")
-    def test_dbcc(self, mock_process):
-
-        """Function:  test_dbcc
-
-        Description:  Test dbcc function.
+        Description:  Test a failure in data_out call.
 
         Arguments:
 
         """
 
-        mock_process.return_value = (False, None)
+        mock_mongo.return_value = self.mongo
+        mock_module.return_value = self.cfg
+        mock_dbtbl.return_value = self.db_tbl
+        mock_out.return_value = self.status2
 
         self.assertEqual(
-            mongo_db_admin.dbcc(self.server, self.args), (False, None))
+            mongo_db_admin.dbcc(self.mongo, self.args), self.results3)
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_dbcc_failure2(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
+
+        """Function:  test_dbcc_failure2
+
+        Description:  Test with a failed dbcc run.
+
+        Arguments:
+
+        """
+
+        self.mongo.valid2 = False
+        self.mongo.err2 = "Error Message"
+
+        mock_mongo.return_value = self.mongo
+        mock_module.return_value = self.cfg
+        mock_dbtbl.return_value = self.db_tbl
+        mock_out.return_value = self.status
+
+        self.assertEqual(
+            mongo_db_admin.dbcc(self.mongo, self.args), self.results)
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_dbcc_failure(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
+
+        """Function:  test_dbcc_failure
+
+        Description:  Test with a failed dbcc run.
+
+        Arguments:
+
+        """
+
+        self.mongo.status2 = False
+        self.mongo.valid2 = False
+        self.mongo.err2 = "Error Message"
+
+        mock_mongo.return_value = self.mongo
+        mock_module.return_value = self.cfg
+        mock_dbtbl.return_value = self.db_tbl
+        mock_out.return_value = self.status
+
+        self.assertEqual(
+            mongo_db_admin.dbcc(self.mongo, self.args), self.results)
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_dbcc_success(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
+
+        """Function:  test_dbcc_success
+
+        Description:  Test with a successful dbcc run.
+
+        Arguments:
+
+        """
+
+        mock_mongo.return_value = self.mongo
+        mock_module.return_value = self.cfg
+        mock_dbtbl.return_value = self.db_tbl
+        mock_out.return_value = self.status
+
+        self.assertEqual(
+            mongo_db_admin.dbcc(self.mongo, self.args), self.results)
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_sys_dbs(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
+
+        """Function:  test_sys_dbs
+
+        Description:  Test using the default sys_dbs global variable.
+
+        Arguments:
+
+        """
+
+        mock_mongo.return_value = self.mongo
+        mock_module.return_value = self.cfg2
+        mock_dbtbl.return_value = dict()
+        mock_out.return_value = self.status
+
+        self.assertEqual(
+            mongo_db_admin.dbcc(self.mongo, self.args), self.results)
+
+    @mock.patch("mongo_db_admin.mongo_libs.disconnect",
+                mock.Mock(return_value=True))
+    @mock.patch("mongo_db_admin.data_out")
+    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.gen_libs.load_module")
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_cfg_ign_dbs(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
+
+        """Function:  test_mongo_fail
+
+        Description:  Test using config ignore databases entry.
+
+        Arguments:
+
+        """
+
+        mock_mongo.return_value = self.mongo
+        mock_module.return_value = self.cfg
+        mock_dbtbl.return_value = dict()
+        mock_out.return_value = self.status
+
+        self.assertEqual(
+            mongo_db_admin.dbcc(self.mongo, self.args), self.results)
+
+    @mock.patch("mongo_db_admin.mongo_libs.create_instance")
+    def test_mongo_fail(self, mock_mongo):
+
+        """Function:  test_mongo_fail
+
+        Description:  Test mongo connection fails.
+
+        Arguments:
+
+        """
+
+        self.mongo.status = False
+        self.mongo.errmsg = "Connection Failed"
+
+        mock_mongo.return_value = self.mongo
+
+        self.assertEqual(
+            mongo_db_admin.dbcc(self.mongo, self.args), self.results2)
 
 
 if __name__ == "__main__":

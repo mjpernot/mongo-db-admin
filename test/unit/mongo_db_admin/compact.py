@@ -21,7 +21,6 @@ import unittest
 # Local
 sys.path.append(os.getcwd())
 import mongo_db_admin
-import lib.gen_libs as gen_libs
 import version
 
 __version__ = version.__version__
@@ -242,6 +241,9 @@ class UnitTest(unittest.TestCase):
         self.coll = Coll()
         self.coll2 = Coll2()
         self.tbl_name = "TableName"
+        self.result = "Collection capped: not compacted"
+        self.result2 = "Compact Done"
+        self.result3 = "Compact Failed"
 
     def test_compact_failure(self):
 
@@ -255,9 +257,8 @@ class UnitTest(unittest.TestCase):
 
         self.mongo.cmd_type = False
 
-        with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.compact(
-                self.mongo, self.coll2, self.tbl_name))
+        self.assertEqual(mongo_db_admin.compact(
+            self.mongo, self.coll2, self.tbl_name), self.result3)
 
     def test_compact_successful(self):
 
@@ -269,9 +270,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.compact(
-                self.mongo, self.coll2, self.tbl_name))
+        self.assertEqual(mongo_db_admin.compact(
+            self.mongo, self.coll2, self.tbl_name), self.result2)
 
     def test_coll_capped(self):
 
@@ -283,9 +283,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        with gen_libs.no_std_out():
-            self.assertFalse(mongo_db_admin.compact(
-                self.mongo, self.coll, self.tbl_name))
+        self.assertEqual(mongo_db_admin.compact(
+            self.mongo, self.coll, self.tbl_name), self.result)
 
 
 if __name__ == "__main__":

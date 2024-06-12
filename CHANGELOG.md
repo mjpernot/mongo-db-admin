@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [3.0.0] - 2024-05-30
+Breaking Change
+
+- Change output to a JSON format.
+- Add ability to email, insert into Mongo, save to file and/or display to standard out.
+
+### Added
+- data_out: Outputs the data in a variety of formats and media.
+- create_data_config: Create data_out config parameters.
+- get_json_template: Return a JSON template format.
+- get_all_dbs_tbls: Return a dictionary of databases with table lists.
+- get_db_tbl: Determines which databases and tables will be checked.
+
+### Changed
+- get_log: Replaced err_flag and err_msg variables with status and replaced all of the commands for output with a call the data_out.
+- rotate:  Replaced err_flag and err_msg variables with status and reversed the error logic to standardized with the other functions.
+- status:  Replaced all of the commands for output with a call the data_out.
+- compact: Returned status of compact command to calling function.
+- defrag, dbcc: Refactored function to improve performance and convert output to JSON.
+- config/mongo.py.TEMPLATE: Added ign_dbs entry.
+- run_program:  Loading Mongo module, setting up mail, setting output file, and parsing database and table name.
+- main: Removed parsing from gen_class.ArgParser call and called arg_parse2 as part of "if" statement, standardized the options between -M, -C, -G and -D options.
+- Documentation changes.
+
+### Removed
+- process_mail
+- run_compact
+- run_dbcc
+- process_request
+- process_dbs_tbls
+
+
 ## [2.5.2] - 2024-04-18
 - Updated mongo-lib to v4.3.0
 - Added TLS capability
