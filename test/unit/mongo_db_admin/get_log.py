@@ -50,7 +50,7 @@ class ArgParser(object):
 
         """
 
-        self.args_array = {"-c": "mysql_cfg", "-d": "config"}
+        self.args_array = {"-c": "mongo", "-d": "config", "-G": "rs"}
 
     def arg_exist(self, arg):
 
@@ -110,8 +110,6 @@ class Server(object):
         Description:  Stub holder for mongo_class.Server.adm_cmd method.
 
         Arguments:
-            (input) cmd -> Command.
-            (input) arg1 -> Argument one.
 
         """
 
@@ -129,13 +127,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
-        test_to_json_flatten
-        test_to_json
-        test_to_list
-        test_append_to_file
-        test_to_file
-        test_to_standard
-        tearDown
+        test_data_out_fail
+        test_data_out_success
 
     """
 
@@ -151,127 +144,43 @@ class UnitTest(unittest.TestCase):
 
         self.server = Server()
         self.args = ArgParser()
-        self.args2 = ArgParser()
-        self.args3 = ArgParser()
-        self.args4 = ArgParser()
-        self.args5 = ArgParser()
-        self.args.args_array = {"-j": True, "-G": True}
-        self.args2.args_array = {"-l": True, "-G": True}
-        self.args3.args_array = {"-G": True}
-        self.args4.args_array = {"-G": True, "-a": True}
-        self.args5.args_array = {"-j": True, "-G": True, "-g": True}
-        self.ofile = "./test/unit/mongo_db_admin/tmp/get_log.txt"
+        self.status = (True, None)
+        self.status2 = (False, "Connection Failure")
+        self.results = (True, None)
+        self.results2 = (False,
+                         "get_log: Error encountered: Connection Failure")
 
-    @mock.patch("mongo_db_admin.gen_libs.print_data")
-    def test_to_json_flatten(self, mock_print):
+    @mock.patch("mongo_db_admin.data_out")
+    def test_data_out_fail(self, mock_out):
 
-        """Function:  test_to_json_flatten
+        """Function:  test_data_out_fail
 
-        Description:  Test with going to JSON and flattening.
+        Description:  Test with data_out failure.
 
         Arguments:
 
         """
 
-        mock_print.return_value = True
+        mock_out.return_value = self.status2
 
         self.assertEqual(
-            mongo_db_admin.get_log(self.server, self.args5), (False, None))
+            mongo_db_admin.get_log(self.server, self.args), self.results2)
 
-    @mock.patch("mongo_db_admin.gen_libs.print_data")
-    def test_to_json(self, mock_print):
+    @mock.patch("mongo_db_admin.data_out")
+    def test_data_out_success(self, mock_out):
 
-        """Function:  test_to_json
+        """Function:  test_data_out_success
 
-        Description:  Test going to JSON.
+        Description:  Test with data_out successful.
 
         Arguments:
 
         """
 
-        mock_print.return_value = True
+        mock_out.return_value = self.status
 
         self.assertEqual(
-            mongo_db_admin.get_log(self.server, self.args), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.print_data")
-    def test_to_list(self, mock_print):
-
-        """Function:  test_to_list
-
-        Description:  Test going to list.
-
-        Arguments:
-
-        """
-
-        mock_print.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.get_log(self.server, self.args2), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file2")
-    def test_append_to_file(self, mock_print):
-
-        """Function:  test_append_to_file
-
-        Description:  Test with appending to a file.
-
-        Arguments:
-
-        """
-
-        mock_print.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.get_log(
-                self.server, self.args4, ofile=self.ofile), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file2")
-    def test_to_file(self, mock_print):
-
-        """Function:  test_to_file
-
-        Description:  Test going to file.
-
-        Arguments:
-
-        """
-
-        mock_print.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.get_log(
-                self.server, self.args3, ofile=self.ofile), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file2")
-    def test_to_standard(self, mock_print):
-
-        """Function:  test_to_standard
-
-        Description:  Test going to standard out.
-
-        Arguments:
-
-        """
-
-        mock_print.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.get_log(self.server, self.args3), (False, None))
-
-    def tearDown(self):
-
-        """Function:  tearDown
-
-        Description:  Clean up of unit testing.
-
-        Arguments:
-
-        """
-
-        if os.path.isfile(self.ofile):
-            os.remove(self.ofile)
+            mongo_db_admin.get_log(self.server, self.args), self.results)
 
 
 if __name__ == "__main__":

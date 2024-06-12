@@ -14,14 +14,14 @@ coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/defrag.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_log.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/help_message.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/main.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/process_dbs_tbls.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/process_mail.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/process_request.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/rotate.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_compact.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_dbcc.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_program.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/status.py
+coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/create_data_config.py
+coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/data_out.py
+coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_all_dbs_tbls.py
+coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_db_tbl.py
+coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_json_template.py
 
 echo ""
 echo "Producing code coverage report"
