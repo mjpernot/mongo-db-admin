@@ -27,19 +27,6 @@ import version
 __version__ = version.__version__
 
 
-def run_compact():
-
-    """Method:  run_compact
-
-    Description:  Stub holder for run_compact function.
-
-    Arguments:
-
-    """
-
-    return True
-
-
 class ArgParser(object):
 
     """Class:  ArgParser
@@ -48,7 +35,6 @@ class ArgParser(object):
 
     Methods:
         __init__
-        arg_exist
         get_val
 
     """
@@ -65,18 +51,6 @@ class ArgParser(object):
 
         self.args_array = {"-c": "mongo", "-d": "config"}
 
-    def arg_exist(self, arg):
-
-        """Method:  arg_exist
-
-        Description:  Method stub holder for gen_class.ArgParser.arg_exist.
-
-        Arguments:
-
-        """
-
-        return True if arg in self.args_array else False
-
     def get_val(self, skey, def_val=None):
 
         """Method:  get_val
@@ -88,64 +62,6 @@ class ArgParser(object):
         """
 
         return self.args_array.get(skey, def_val)
-
-
-class Mail(object):
-
-    """Class:  Mail
-
-    Description:  Class stub holder for gen_class.Mail class.
-
-    Methods:
-        __init__
-        add_2_msg
-        send_mail
-
-    """
-
-    def __init__(self, lag_time=1):
-
-        """Method:  __init__
-
-        Description:  Class initialization.
-
-        Arguments:
-
-        """
-
-        self.lag_time = lag_time
-        self.data = None
-
-    def add_2_msg(self, data):
-
-        """Method:  add_2_msg
-
-        Description:  Stub method holder for Mail.add_2_msg.
-
-        Arguments:
-
-        """
-
-        self.data = data
-
-        return True
-
-    def send_mail(self, use_mailx=False):
-
-        """Method:  get_name
-
-        Description:  Stub method holder for Mail.send_mail.
-
-        Arguments:
-
-        """
-
-        status = True
-
-        if use_mailx:
-            status = True
-
-        return status
 
 
 class Server(object):
@@ -200,22 +116,8 @@ class UnitTest(unittest.TestCase):
 
     Methods:
         setUp
-        test_ins_doc_failure
-        test_ins_doc_success
-        test_to_dict_all
-        test_to_json_all
-        test_to_dict_email
-        test_to_json_email
-        test_to_dict_both
-        test_to_json_both
-        test_to_json_file_flatten
-        test_to_json_file
-        test_to_dict_db
-        test_to_json_db
-        test_append_to_file
-        test_to_file
-        test_std_suppress
-        test_to_standard
+        test_data_out_fail
+        test_data_out_success
 
     """
 
@@ -230,321 +132,44 @@ class UnitTest(unittest.TestCase):
         """
 
         self.server = Server()
-        self.mail = Mail()
         self.args = ArgParser()
-        self.args2 = ArgParser()
-        self.args3 = ArgParser()
-        self.args4 = ArgParser()
-        self.args5 = ArgParser()
-        self.args.args_array = {}
-        self.args2.args_array = {"-j": True, "-z": True}
-        self.args3.args_array = {"-z": True}
-        self.args4.args_array = {"-z": True, "-a": True}
-        self.args5.args_array = {"-j": True, "-z": True, "-g": True}
-        self.db_tbl = "db:tbl"
-        self.status = (False, "Connection Failure")
-        self.errmsg = "Inserting into Mongo database:  %s" % self.status[1]
+        self.status = (True, None)
+        self.status2 = (False, "Connection Failure")
+        self.results = (True, None)
+        self.results2 = (False,
+                         "defrag: Error encountered: Connection Failure")
 
-    @mock.patch("mongo_db_admin.gen_libs")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_ins_doc_failure(self, mock_db, mock_lib):
+    @mock.patch("mongo_db_admin.data_out")
+    def test_data_out_fail(self, mock_out):
 
-        """Function:  test_ins_doc_failure
+        """Function:  test_data_out_fail
 
-        Description:  Test with failed insert into database.
+        Description:  Test with data_out failure.
 
         Arguments:
 
         """
 
-        mock_db.return_value = self.status
-        mock_lib.display_data.return_value = True
-        mock_lib.openfile.return_value = "FileHandler"
+        mock_out.return_value = self.status2
 
         self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args3, ofile="filename",
-                class_cfg="mongo_cfg", db_tbl=self.db_tbl, mail=self.mail),
-            (True, self.errmsg))
+            mongo_db_admin.status(self.server, self.args), self.results2)
 
-    @mock.patch("mongo_db_admin.gen_libs")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_ins_doc_success(self, mock_db, mock_lib):
+    @mock.patch("mongo_db_admin.data_out")
+    def test_data_out_success(self, mock_out):
 
-        """Function:  test_ins_doc_success
+        """Function:  test_data_out_success
 
-        Description:  Test with successful insert into database.
+        Description:  Test with data_out successful.
 
         Arguments:
 
         """
 
-        mock_db.return_value = (True, None)
-        mock_lib.display_data.return_value = True
-        mock_lib.openfile.return_value = "FileHandler"
+        mock_out.return_value = self.status
 
         self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args3, ofile="filename",
-                class_cfg="mongo_cfg", db_tbl=self.db_tbl, mail=self.mail),
-            (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_dict_all(self, mock_db, mock_lib):
-
-        """Function:  test_to_dict_all
-
-        Description:  Test with dictionary to file, database, and email.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-        mock_lib.display_data.return_value = True
-        mock_lib.openfile.return_value = "FileHandler"
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args3, ofile="filename",
-                class_cfg="mongo_cfg", db_tbl=self.db_tbl, mail=self.mail),
-            (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_json_all(self, mock_db, mock_file):
-
-        """Function:  test_to_json_all
-
-        Description:  Test with JSON to file, database, and email.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-        mock_file.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args2, ofile="filename",
-                class_cfg="mongo_cfg", db_tbl=self.db_tbl, mail=self.mail),
-            (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_dict_email(self, mock_db, mock_file):
-
-        """Function:  test_to_dict_email
-
-        Description:  Test with dictionary to email.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-        mock_file.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args3, mail=self.mail), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_json_email(self, mock_db, mock_file):
-
-        """Function:  test_to_json_email
-
-        Description:  Test with JSON to email.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-        mock_file.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args2, mail=self.mail), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_dict_both(self, mock_db, mock_lib):
-
-        """Function:  test_to_dict_both
-
-        Description:  Test with dictionary to file and database.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-        mock_lib.display_data.return_value = True
-        mock_lib.openfile.return_value = "FileHandler"
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args3, ofile="filename",
-                class_cfg="mongo_cfg", db_tbl=self.db_tbl), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_json_both(self, mock_db, mock_file):
-
-        """Function:  test_to_json_both
-
-        Description:  Test with JSON to file and database.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-        mock_file.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args2, ofile="filename",
-                class_cfg="mongo_cfg", db_tbl=self.db_tbl), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    def test_to_json_file_flatten(self, mock_file):
-
-        """Function:  test_to_json_file_flatten
-
-        Description:  Test with flatten JSON to file.
-
-        Arguments:
-
-        """
-
-        mock_file.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args5, ofile="filename"), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.write_file")
-    def test_to_json_file(self, mock_file):
-
-        """Function:  test_to_json_file
-
-        Description:  Test with JSON to file.
-
-        Arguments:
-
-        """
-
-        mock_file.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args2, ofile="filename"), (False, None))
-
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_dict_db(self, mock_db):
-
-        """Function:  test_to_dict_db
-
-        Description:  Test with dictionary to database.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args3, class_cfg="mongo_cfg",
-                db_tbl=self.db_tbl), (False, None))
-
-    @mock.patch("mongo_db_admin.mongo_libs.ins_doc")
-    def test_to_json_db(self, mock_db):
-
-        """Function:  test_to_json_db
-
-        Description:  Test with JSON to database.
-
-        Arguments:
-
-        """
-
-        mock_db.return_value = (True, None)
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args2, class_cfg="mongo_cfg",
-                db_tbl=self.db_tbl), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs")
-    def test_append_to_file(self, mock_lib):
-
-        """Function:  test_append_to_file
-
-        Description:  Testing with appending data to a file.
-
-        Arguments:
-
-        """
-
-        mock_lib.write_file.return_value = True
-        mock_lib.openfile.return_value = "FileHandler"
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args4, ofile="Outfile"), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs")
-    def test_to_file(self, mock_lib):
-
-        """Function:  test_to_file
-
-        Description:  Test going to file.
-
-        Arguments:
-
-        """
-
-        mock_lib.write_file.return_value = True
-        mock_lib.openfile.return_value = "FileHandler"
-
-        self.assertEqual(
-            mongo_db_admin.status(
-                self.server, self.args3, ofile="Outfile"), (False, None))
-
-    def test_std_suppress(self):
-
-        """Function:  test_std_suppress
-
-        Description:  Test with standard out suprressed.
-
-        Arguments:
-
-        """
-
-        self.assertEqual(
-            mongo_db_admin.status(self.server, self.args3), (False, None))
-
-    @mock.patch("mongo_db_admin.gen_libs.display_data")
-    def test_to_standard(self, mock_print):
-
-        """Function:  test_to_standard
-
-        Description:  Test going to standard out.
-
-        Arguments:
-
-        """
-
-        mock_print.return_value = True
-
-        self.assertEqual(
-            mongo_db_admin.status(self.server, self.args), (False, None))
+            mongo_db_admin.status(self.server, self.args), self.results)
 
 
 if __name__ == "__main__":

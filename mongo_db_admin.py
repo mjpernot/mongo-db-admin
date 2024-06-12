@@ -17,12 +17,13 @@
                 [-m config_file -i [db_name:table_name]]
                 [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
                 [-e to_email [to_email2 ...] [-s subject_line] [-u]]}
-            {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
-                [-f]} |
-            {-M [-j [-g]] | [-i db_name:table_name -m config_file] |
-                [-o dir_path/file [-a]] | [-z]}
-                [-e to_email [to_email2 ...] [-s subject_line] [-u]] |
+                [-f] [-m config_file -i [db_name:table_name]]
+                [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]]} |
+            {-M [-m config_file -i [db_name:table_name]]
+                [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]]}
             {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
                 [-o dir_path/file [-a]]} |
             [-y flavor_id]
@@ -45,7 +46,7 @@
             -m file => Mongo config file.  Is loaded as a python, do not
                 include the .py extension with the name.
                 -i {database:collection} => Name of database and collection.
-                    Default: sysmon:mysql_db_admin
+                    Default: sysmon:mongo_db_admin
             -o path/file => Directory path and file name for output.
                 -w a|w => Append or write to output to output file. Default is
                     write.
@@ -57,65 +58,57 @@
             -z => Suppress standard out.
             -r => Expand the JSON format.
                 -k N => Indentation for expanded JSON format.
-
-# Base template for -D option
-##########################
-            -t table name(s) => Table names to check.
-            -m file => Mongo config file.  Is loaded as a python, do not
-                include the .py extension with the name.
-                -i {database:collection} => Name of database and collection.
-                    Default: sysmon:mysql_db_admin
-            -o path/file => Directory path and file name for output.
-                -w a|w => Append or write to output to output file. Default is
-                    write.
-            -e to_email_address(es) => Enables emailing and sends output to one
-                    or more email addresses.  Email addresses are delimited by
-                    a space.
-                -s subject_line => Subject line of email.
-                -u => Override the default mail command and use mailx.
-            -z => Suppress standard out.
-            -r => Expand the JSON format.
-                -k N => Indentation for expanded JSON format.
-##########################
 
         -D [database name(s)] => Validate tables.
             Note: If no db_name is provided, then all database are processed.
                 Can use the -t option to specify an individual table.  If no
                 -t is used, then all tables in the database are compacted.
-            -t table_name(s) => Table names.
+            -t table name(s) => Table names to validate.
             -f => Run full validate scan on table(s).
+            -m file => Mongo config file.  Is loaded as a python, do not
+                include the .py extension with the name.
+                -i {database:collection} => Name of database and collection.
+                    Default: sysmon:mongo_db_admin
+            -o path/file => Directory path and file name for output.
+                -w a|w => Append or write to output to output file. Default is
+                    write.
+            -e to_email_address(es) => Enables emailing and sends output to one
+                    or more email addresses.  Email addresses are delimited by
+                    a space.
+                -s subject_line => Subject line of email.
+                -u => Override the default mail command and use mailx.
+            -z => Suppress standard out.
+            -r => Expand the JSON format.
+                -k N => Indentation for expanded JSON format.
 
         -M Display the current database status; uptime, memory use, and usage.
-            -j => Return output in JSON format.
-            -g => Flatten the JSON data structure to file and standard out.
-            -i {database:collection} => Name of database and collection to
-                insert the database status data into.
-                Default value:  sysmon:mongo_db_status
-            -m file => Mongo config file used for the insertion into a Mongo
-                database.  Do not include the .py extension.
+            -m file => Mongo config file.  Is loaded as a python, do not
+                include the .py extension with the name.
+                -i {database:collection} => Name of database and collection.
+                    Default: sysmon:mongo_db_admin
             -o path/file => Directory path and file name for output.
-                Use the -a option to append to an existing file.
-                Format compability: JSON and standard out.
-            -a => Append output to output file.
-            -z => Suppress standard out.
-            -e to_email_addresses => Enables emailing capability for an option
-                if the option allows it.  Sends output to one or more email
-                addresses.  Email addresses are delimited by spaces.
-                -s subject_line => Subject line of email.  Optional, will
-                    create own subject line if one is not provided.
+                -w a|w => Append or write to output to output file. Default is
+                    write.
+            -e to_email_address(es) => Enables emailing and sends output to one
+                    or more email addresses.  Email addresses are delimited by
+                    a space.
+                -s subject_line => Subject line of email.
                 -u => Override the default mail command and use mailx.
+            -z => Suppress standard out.
+            -r => Expand the JSON format.
+                -k N => Indentation for expanded JSON format.
 
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.
             Default value is: global.
             Note:  Options -j and -l are Xor.
             -j => Return output in JSON format.
-            -g => Flatten the JSON data structure to file and standard out.
+                -g => Flatten the JSON data structure to file and standard out.
             -l => Return output in "list" format.
             -o path/file => Directory path and file name for output.
                 Use the -a option to append to an existing file.
                 Format compability: JSON, list, and standard out.
-            -a => Append output to output file.
+                -a => Append output to output file.
 
         -y value => A flavor id for the program lock.  To create unique lock.
         -v => Display version of this program.
@@ -233,7 +226,7 @@ except (ValueError, ImportError) as err:
 __version__ = version.__version__
 
 # Global
-SUBJ_LINE = "Mysql_db_admin_NoSubjectLine"
+SUBJ_LINE = "Mongo_db_admin_NoSubjectLine"
 SYS_DBS = ["admin", "config", "local"]
 
 def help_message():
@@ -441,155 +434,6 @@ def data_out(data, **kwargs):
     return state, msg
 
 
-#def process_request(server, func_name, db_name=None, tbl_name=None, **kwargs):
-
-    """Function:  process_request
-
-    Description:  Prepares for the type of check based on the arguments passed
-        to the function and then calls the "func_name" function.
-
-    Arguments:
-        (input) server -> Database server instance
-        (input) func_name -> Name of a function
-        (input) db_name -> List of database names
-        (input) tbl_name -> List of table names
-        (input) **kwargs:
-            full -> Full validation table check option
-        (output) err_flag -> True|False - If an error has occurred
-        (output) err_msg -> Error message
-
-    """
-
-    """
-    err_flag = False
-    err_msg = None
-    db_name = list() if db_name is None else list(db_name)
-    tbl_name = list() if tbl_name is None else list(tbl_name)
-    db_list = server.fetch_dbs()
-
-    mongo = mongo_class.DB(
-        server.name, server.user, server.japd, host=server.host,
-        port=server.port, db="test", auth=server.auth,
-        conf_file=server.conf_file, auth_db=server.auth_db,
-        auth_mech=server.auth_mech, ssl_client_ca=server.ssl_client_ca,
-        ssl_client_cert=server.ssl_client_cert,
-        ssl_client_key=server.ssl_client_key,
-        ssl_client_phrase=server.ssl_client_phrase, auth_type=server.auth_type,
-        tls_ca_certs=server.tls_ca_certs, tls_certkey=server.tls_certkey,
-        tls_certkey_phrase=server.tls_certkey_phrase)
-    state = mongo.connect()
-
-    if not state[0]:
-        err_flag = True
-        err_msg = "Connection to Mongo DB:  %s" % state[1]
-
-    else:
-
-        # Process all databases.
-        if not db_name:
-
-            for item in db_list:
-                func_name(mongo, item, **kwargs)
-
-        # Process all tables in a database.
-        elif not tbl_name:
-
-            # Generator builds list of databases to process.
-            for dbn in (dbn for dbn in db_name if dbn in db_list):
-                func_name(mongo, dbn, **kwargs)
-
-        # Process passed databases and tables.
-        else:
-            process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name,
-                             **kwargs)
-
-        mongo_libs.disconnect([mongo])
-
-    return err_flag, err_msg
-    """
-
-
-#def process_dbs_tbls(mongo, func_name, db_name, db_list, tbl_name, **kwargs):
-
-    """Function:  process_dbs_tbls
-
-    Description:  Process a list of databases and tables.
-
-    Arguments:
-        (input) mongo -> Database instance
-        (input) func_name -> Name of a function
-        (input) db_name -> List of database names to check
-        (input) db_list -> List of all databases in Mongo database
-        (input) tbl_name -> List of tables to check
-        (input) **kwargs:
-            full -> Full validation table check option
-
-    """
-
-    """
-    db_name = list(db_name)
-    db_list = list(db_list)
-    tbl_name = list(tbl_name)
-
-    # Generator builds list of databases to process.
-    for dbn in (dbn for dbn in db_name if dbn in db_list):
-        mongo.chg_db(dbs=dbn)
-        tbl_list = mongo.get_tbl_list()
-        fnd_tbls = list((tbl for tbl in tbl_name if tbl in tbl_list))
-
-        if fnd_tbls:
-            func_name(mongo, dbn, fnd_tbls, **kwargs)
-
-        else:
-            print("Found no tables to process in: %s" % (dbn))
-    """
-
-
-#def run_dbcc(mongo, db_name, tbl_list=None, **kwargs):
-
-    """Function:  run_dbcc
-
-    Description:  Changes database instance to new database and executes
-        validate command against the list of tables.
-
-    Arguments:
-        (input) mongo -> Database instance
-        (input) db_name -> Database name
-        (input) tbl_list -> List of tables
-        (input) **kwargs:
-            full -> Full validation table check option
-
-    """
-
-    """
-    if tbl_list is None:
-        tbl_list = []
-
-    else:
-        tbl_list = list(tbl_list)
-
-    mongo.chg_db(dbs=db_name)
-    print("DBCC check for %s" % (mongo.db_name))
-
-    if not tbl_list:
-        tbl_list = mongo.get_tbl_list()
-
-    for item in tbl_list:
-        print("\tChecking table: {0:50}".format(item + "..."), end="")
-        status_flag, data = mongo.validate_tbl(item, scan=kwargs.get("full",
-                                                                     False))
-
-        if status_flag:
-            print("\t%s" % (data["valid"]))
-
-            if data["valid"] is False:
-                print("\t\tError: %s" % (data["errors"]))
-
-        else:
-            print("\t\tError: %s" % (data))
-    """
-
-
 def dbcc(server, args):
 
     """Function:  dbcc
@@ -650,34 +494,9 @@ def dbcc(server, args):
         state = data_out(results, **data_config)
 
         if not state[0]:
-            status = (False, "defrag: Error encountered: %s" % (state[1]))
+            status = (state[0], "defrag: Error encountered: %s" % (state[1]))
 
     return status
-
-
-#def dbcc(server, args, **kwargs):
-
-    """Function:  dbcc
-
-    Description:  Runs the validate command against one or more tables and can
-        also be ran against one or more databases.  The -D and -t
-        options will determine which databases and tables are done.
-
-    Arguments:
-        (input) server -> Database server instance
-        (input) args -> ArgParser class instance
-        (output) state[0] -> True|False - If an error has occurred
-        (output) state[1] -> Error message
-
-    """
-
-    """
-    state = process_request(
-        server, run_dbcc, args.get_val("-D"), args.get_val("-t"),
-        full=args.arg_exist("-f"))
-
-    return state[0], state[1]
-    """
 
 
 def compact(mongo, coll, tbl):
@@ -779,7 +598,7 @@ def defrag(server, args):
     return status
 
 
-def status(server, args, **kwargs):
+def status(server, args):
 
     """Function:  status
 
@@ -790,38 +609,53 @@ def status(server, args, **kwargs):
     Arguments:
         (input) server -> Database server instance
         (input) args -> ArgParser class instance
-        (input) **kwargs:
-            ofile -> file name - Name of output file
-            db_tbl database:table_name -> Mongo database and table name
-            class_cfg -> Mongo Rep Set server configuration
-            mail -> Mail instance
-        (output) err_flag -> True|False - If an error has occurred
-        (output) err_msg -> Error message
+        (output) status -> Success of command: (True|False, Error Message)
 
     """
 
-    err_flag = False
-    err_msg = None
-    mode = "a" if args.arg_exist("-a") else "w"
-    indent = None if args.arg_exist("-g") else 4
+    status = (True, None)
     server.upd_srv_stat()
-    ofile = kwargs.get("ofile", None)
-    mail = kwargs.get("mail", None)
-    mongo_cfg = kwargs.get("class_cfg", None)
-    db_tbl = kwargs.get("db_tbl", None)
-    outdata = {
-        "Application": "MongoDB", "Server": server.name,
-        "AsOf": datetime.datetime.strftime(
-            datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
-        "Memory": {
-            "CurrentUsage": server.cur_mem, "MaxUsage": server.max_mem,
-            "PercentUsed": server.prct_mem},
-        "UpTime": server.days_up,
-        "Connections": {
-            "CurrentConnected": server.cur_conn,
-            "MaxConnections": server.max_conn,
-            "PercentUsed": server.prct_conn}}
+    results = get_json_template(server)
+    results["Type"] = "status"
+    results["Application"] = "MongoDB"
+    results["AsOf"] = datetime.datetime.strftime(
+        datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
+    results["Memory"] = {
+        "CurrentUsage": server.cur_mem, "MaxUsage": server.max_mem,
+        "PercentUsed": server.prct_mem}
+    results["UpTime"] = server.days_up
+    results["Connections"] = {
+        "CurrentConnected": server.cur_conn, "MaxConnections": server.max_conn,
+        "PercentUsed": server.prct_conn}
+    data_config = dict(create_data_config(args))
+    state = data_out(results, **data_config)
 
+    if not state[0]:
+        status = (False, "defrag: Error encountered: %s" % (state[1]))
+
+#    err_flag = False
+#    err_msg = None
+
+#    mode = "a" if args.arg_exist("-a") else "w"
+#    indent = None if args.arg_exist("-g") else 4
+#    ofile = kwargs.get("ofile", None)
+#    mail = kwargs.get("mail", None)
+#    mongo_cfg = kwargs.get("class_cfg", None)
+#    db_tbl = kwargs.get("db_tbl", None)
+#    outdata = {
+#        "Application": "MongoDB", "Server": server.name,
+#        "AsOf": datetime.datetime.strftime(
+#            datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
+#        "Memory": {
+#            "CurrentUsage": server.cur_mem, "MaxUsage": server.max_mem,
+#            "PercentUsed": server.prct_mem},
+#        "UpTime": server.days_up,
+#        "Connections": {
+#            "CurrentConnected": server.cur_conn,
+#            "MaxConnections": server.max_conn,
+#            "PercentUsed": server.prct_conn}}
+
+    """
     if mongo_cfg and db_tbl:
         dbn, tbl = db_tbl.split(":")
         state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
@@ -844,8 +678,9 @@ def status(server, args, **kwargs):
 
     if not args.arg_exist("-z"):
         gen_libs.display_data(outdata)
+    """
 
-    return err_flag, err_msg
+    return status
 
 
 def process_mail(mail, data, indent=4, use_mailx=False):
@@ -1045,10 +880,10 @@ def main():
     file_crt = ["-o"]
     func_dict = {
         "-C": defrag, "-D": dbcc, "-M": status, "-L": rotate, "-G": get_log}
-    opt_con_req_dict = {"-j": ["-M", "-G"]}
+    opt_con_req_dict = {"-t": ["-C", "-D"]}
     opt_con_req_list = {
         "-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"], "-s": ["-e"],
-        "-u": ["-e"]}
+        "-u": ["-e"], "-w": ["-o"], "-k": ["-r"]}
     opt_def_dict = {
         "-C": [], "-D": [], "-G": "global", "-i": "sysmon:mongo_db_status"}
     opt_multi_list = ["-C", "-D", "-t", "-e", "-s"]

@@ -18,15 +18,17 @@ Breaking Change
 - get_db_tbl: Determines which databases and tables will be checked.
 
 ### Changed
+- status:  Replaced all of the commands for output with a call the data_out.
 - compact: Returned status of compact command to calling function.
 - defrag, dbcc: Refactored function to improve performance and convert output to JSON.
 - config/mongo.py.TEMPLATE: Added ign_dbs entry.
 - run_program:  Loading Mongo module, setting up mail, setting output file, and parsing database and table name.
-- main: Removed parsing from gen_class.ArgParser call and called arg_parse2 as part of "if" statement.
+- main: Removed parsing from gen_class.ArgParser call and called arg_parse2 as part of "if" statement, standardized the options between -M, -C and -D options.
 - Documentation changes.
 
 ### Removed
 - run_compact
+- run_dbcc
 - process_request
 - process_dbs_tbls
 
