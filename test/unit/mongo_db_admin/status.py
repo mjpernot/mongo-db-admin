@@ -137,7 +137,7 @@ class UnitTest(unittest.TestCase):
         self.status2 = (False, "Connection Failure")
         self.results = (True, None)
         self.results2 = (False,
-                         "defrag: Error encountered: Connection Failure")
+                         "status: Error encountered: Connection Failure")
 
     @mock.patch("mongo_db_admin.data_out")
     def test_data_out_fail(self, mock_out):

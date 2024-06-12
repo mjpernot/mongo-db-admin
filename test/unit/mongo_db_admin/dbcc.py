@@ -239,7 +239,7 @@ class UnitTest(unittest.TestCase):
         self.status2 = (False, "Data Out Failed")
         self.results = (True, None)
         self.results2 = (False, "Connection to Mongo DB:  Connection Failed")
-        self.results3 = (False, "defrag: Error encountered: Data Out Failed")
+        self.results3 = (False, "dbcc: Error encountered: Data Out Failed")
 
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))

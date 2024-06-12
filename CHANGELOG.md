@@ -18,6 +18,7 @@ Breaking Change
 - get_db_tbl: Determines which databases and tables will be checked.
 
 ### Changed
+- rotate:  Replaced err_flag and err_msg variables with status and reversed the error logic to standardized with the other functions.
 - status:  Replaced all of the commands for output with a call the data_out.
 - compact: Returned status of compact command to calling function.
 - defrag, dbcc: Refactored function to improve performance and convert output to JSON.
@@ -27,6 +28,7 @@ Breaking Change
 - Documentation changes.
 
 ### Removed
+- process_mail
 - run_compact
 - run_dbcc
 - process_request

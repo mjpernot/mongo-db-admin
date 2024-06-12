@@ -16,16 +16,18 @@
             {-C [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-m config_file -i [db_name:table_name]]
                 [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
-                [-e to_email [to_email2 ...] [-s subject_line] [-u]]}
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]]} |
             {-D [db_name [db_name2 ...]] [-t table_name [table_name2 ...]]
                 [-f] [-m config_file -i [db_name:table_name]]
                 [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
                 [-e to_email [to_email2 ...] [-s subject_line] [-u]]} |
             {-M [-m config_file -i [db_name:table_name]]
                 [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
-                [-e to_email [to_email2 ...] [-s subject_line] [-u]]}
-            {-G {global | rs | startupWarnings} | [-j [-g] | -l] |
-                [-o dir_path/file [-a]]} |
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]]} |
+            {-G {global | rs | startupWarnings}
+                [-m config_file -i [db_name:table_name]]
+                [-o dir_path/file [-w a|w]] [-z] [-r [-k N]]
+                [-e to_email [to_email2 ...] [-s subject_line] [-u]]} |
             [-y flavor_id]
             [-v | -h]
 
@@ -101,14 +103,21 @@
         -G {global | rs | startupWarnings} => Retrieve the mongo error
             log from mongo memory cache.
             Default value is: global.
-            Note:  Options -j and -l are Xor.
-            -j => Return output in JSON format.
-                -g => Flatten the JSON data structure to file and standard out.
-            -l => Return output in "list" format.
+            -m file => Mongo config file.  Is loaded as a python, do not
+                include the .py extension with the name.
+                -i {database:collection} => Name of database and collection.
+                    Default: sysmon:mongo_db_admin
             -o path/file => Directory path and file name for output.
-                Use the -a option to append to an existing file.
-                Format compability: JSON, list, and standard out.
-                -a => Append output to output file.
+                -w a|w => Append or write to output to output file. Default is
+                    write.
+            -e to_email_address(es) => Enables emailing and sends output to one
+                    or more email addresses.  Email addresses are delimited by
+                    a space.
+                -s subject_line => Subject line of email.
+                -u => Override the default mail command and use mailx.
+            -z => Suppress standard out.
+            -r => Expand the JSON format.
+                -k N => Indentation for expanded JSON format.
 
         -y value => A flavor id for the program lock.  To create unique lock.
         -v => Display version of this program.
@@ -494,7 +503,7 @@ def dbcc(server, args):
         state = data_out(results, **data_config)
 
         if not state[0]:
-            status = (state[0], "defrag: Error encountered: %s" % (state[1]))
+            status = (state[0], "dbcc: Error encountered: %s" % (state[1]))
 
     return status
 
@@ -631,79 +640,9 @@ def status(server, args):
     state = data_out(results, **data_config)
 
     if not state[0]:
-        status = (False, "defrag: Error encountered: %s" % (state[1]))
-
-#    err_flag = False
-#    err_msg = None
-
-#    mode = "a" if args.arg_exist("-a") else "w"
-#    indent = None if args.arg_exist("-g") else 4
-#    ofile = kwargs.get("ofile", None)
-#    mail = kwargs.get("mail", None)
-#    mongo_cfg = kwargs.get("class_cfg", None)
-#    db_tbl = kwargs.get("db_tbl", None)
-#    outdata = {
-#        "Application": "MongoDB", "Server": server.name,
-#        "AsOf": datetime.datetime.strftime(
-#            datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
-#        "Memory": {
-#            "CurrentUsage": server.cur_mem, "MaxUsage": server.max_mem,
-#            "PercentUsed": server.prct_mem},
-#        "UpTime": server.days_up,
-#        "Connections": {
-#            "CurrentConnected": server.cur_conn,
-#            "MaxConnections": server.max_conn,
-#            "PercentUsed": server.prct_conn}}
-
-    """
-    if mongo_cfg and db_tbl:
-        dbn, tbl = db_tbl.split(":")
-        state = mongo_libs.ins_doc(mongo_cfg, dbn, tbl, outdata)
-
-        if not state[0]:
-            err_flag = True
-            err_msg = "Inserting into Mongo database:  %s" % state[1]
-
-    if args.arg_exist("-j"):
-        outdata = json.dumps(outdata, indent=indent)
-
-    if ofile and args.arg_exist("-j"):
-        gen_libs.write_file(ofile, mode, outdata)
-
-    elif ofile:
-        gen_libs.display_data(outdata, f_hdlr=gen_libs.openfile(ofile, mode))
-
-    if mail:
-        process_mail(mail, outdata, indent, args.get_val("-u", def_val=False))
-
-    if not args.arg_exist("-z"):
-        gen_libs.display_data(outdata)
-    """
+        status = (False, "status: Error encountered: %s" % (state[1]))
 
     return status
-
-
-def process_mail(mail, data, indent=4, use_mailx=False):
-
-    """Function:  process_mail
-
-    Description:  Add data to mail instance and send mail.
-
-    Arguments:
-        (input) mail -> Mail instance
-        (input) data -> Email message data
-        (input) indent -> Spacing for JSON document
-        (input) use_mailx -> True|False - To use the mailx command
-
-    """
-
-    if isinstance(data, dict):
-        mail.add_2_msg(json.dumps(data, indent=indent))
-
-    else:
-        mail.add_2_msg(data)
-
-    mail.send_mail(use_mailx=use_mailx)
 
 
 def rotate(server, args, **kwargs):
@@ -716,13 +655,11 @@ def rotate(server, args, **kwargs):
     Arguments:
         (input) server -> Database server instance
         (input) args -> ArgParser class instance
-        (output) err_flag -> True|False - if an error has occurred
-        (output) err_msg -> Error message
+        (output) status -> Success of command: (True|False, Error Message)
 
     """
 
-    err_flag = False
-    err_msg = None
+    status = (True, None)
 
     if args.arg_exist("-n"):
 
@@ -746,8 +683,8 @@ def rotate(server, args, **kwargs):
             diff_list = gen_libs.is_missing_lists(post_logs, pre_logs)
 
             if len(diff_list) > 1:
-                err_flag = True
-                err_msg = ("Error:  Too many files to move: %s" % (diff_list))
+                status = (False,
+                          "Error:  Too many files to move: %s" % (diff_list))
 
             else:
                 gen_libs.mv_file(diff_list[0], dir_path, args.get_val("-n"))
@@ -757,13 +694,12 @@ def rotate(server, args, **kwargs):
                         os.path.join(args.get_val("-n"), diff_list[0]))
 
         else:
-            err_flag = True
-            err_msg = msg
+            status = (False, msg)
 
     else:
         server.adm_cmd("logRotate")
 
-    return err_flag, err_msg
+    return status
 
 
 def get_log(server, args, **kwargs):
@@ -776,44 +712,22 @@ def get_log(server, args, **kwargs):
     Arguments:
         (input) server -> Database server instance
         (input) args -> ArgParser class instance
-        (input) **kwargs:
-            ofile -> file name - Name of output file
-        (output) err_flag -> True|False - if an error has occurred
-        (output) err_msg -> Error message
+        (output) status -> Success of command: (True|False, Error Message)
 
     """
 
-    err_flag = False
-    err_msg = None
-    mode = "a" if args.arg_exist("-a") else "w"
-    indent = None if args.arg_exist("-g") else 4
-
-    # Get log data from mongodb.
+    status = (True, None)
+    results = get_json_template(server)
+    results["Type"] = "status"
     data = server.adm_cmd("getLog", arg1=args.get_val("-G"))
-    data["Server"] = server.name
-    data["AsOf"] = gen_libs.get_date() + " " + gen_libs.get_time()
+    results = gen_libs.merge_two_dicts(results, data)
+    data_config = dict(create_data_config(args))
+    state = data_out(results, **data_config)
 
-    if args.arg_exist("-j"):
-        gen_libs.print_data(
-            json.dumps(data, indent=indent), mode=mode, **kwargs)
+    if not state[0]:
+        status = (False, "get_log: Error encountered: %s" % (state[1]))
 
-    elif args.arg_exist("-l"):
-        gen_libs.print_data(data["log"], mode=mode, **kwargs)
-
-    else:
-        if kwargs.get("ofile", None):
-            f_hldr = open(kwargs.get("ofile"), mode)
-
-        else:
-            f_hldr = sys.stdout
-
-        for item in data["log"]:
-            gen_libs.write_file2(f_hldr, item)
-
-        if kwargs.get("ofile", None):
-            f_hldr.close()
-
-    return err_flag, err_msg
+    return status
 
 
 def run_program(args, func_dict):
@@ -882,8 +796,8 @@ def main():
         "-C": defrag, "-D": dbcc, "-M": status, "-L": rotate, "-G": get_log}
     opt_con_req_dict = {"-t": ["-C", "-D"]}
     opt_con_req_list = {
-        "-i": ["-m"], "-n": ["-L"], "-l": ["-G"], "-f": ["-D"], "-s": ["-e"],
-        "-u": ["-e"], "-w": ["-o"], "-k": ["-r"]}
+        "-i": ["-m"], "-n": ["-L"], "-f": ["-D"], "-s": ["-e"], "-u": ["-e"],
+        "-w": ["-o"], "-k": ["-r"]}
     opt_def_dict = {
         "-C": [], "-D": [], "-G": "global", "-i": "sysmon:mongo_db_status"}
     opt_multi_list = ["-C", "-D", "-t", "-e", "-s"]
@@ -894,8 +808,7 @@ def main():
     opt_valid_val = {"-G": ["global", "rs", "startupWarnings"]}
     opt_xor_dict = {
         "-L": ["-C", "-M", "-D"], "-C": ["-D", "-M", "-L"],
-        "-D": ["-C", "-M", "-L"], "-M": ["-C", "-D", "-L", "-G"], "-G": ["-M"],
-        "-j": ["-l"], "-l": ["-j"]}
+        "-D": ["-C", "-M", "-L"], "-M": ["-C", "-D", "-L", "-G"], "-G": ["-M"]}
 
     # Process argument list from command line.
     args = gen_class.ArgParser(
