@@ -250,7 +250,7 @@ class UnitTest(unittest.TestCase):
         mock_load.reuturn_value = self.cfg
         mock_dbtbl.return_value = self.db_dict2
         mock_data.return_value = self.data_out2
-        mock_coll = self.coll
+        mock_coll.return_value = self.coll
 
         self.assertEqual(
             mongo_db_admin.defrag(self.server, self.args), self.errmsg4)
@@ -313,7 +313,7 @@ class UnitTest(unittest.TestCase):
         mock_load.reuturn_value = self.cfg
         mock_dbtbl.return_value = self.db_dict2
         mock_data.return_value = self.data_out
-        mock_coll = self.coll
+        mock_coll.return_value = self.coll
 
         self.assertEqual(
             mongo_db_admin.defrag(self.server, self.args), self.errmsg)
