@@ -720,7 +720,7 @@ def get_log(server, args, **kwargs):
     results = get_json_template(server)
     results["Type"] = "status"
     data = server.adm_cmd("getLog", arg1=args.get_val("-G"))
-    results = gen_libs.merge_two_dicts(results, data)
+    results = gen_libs.merge_two_dicts(results, data)[0]
     data_config = dict(create_data_config(args))
     state = data_out(results, **data_config)
 
