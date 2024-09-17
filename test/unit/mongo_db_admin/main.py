@@ -289,7 +289,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.args.arg_parse2 = False
+        self.args.argparse2 = False
 
         mock_arg.return_value = self.args
 
