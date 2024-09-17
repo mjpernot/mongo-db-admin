@@ -279,9 +279,9 @@ class UnitTest(unittest.TestCase):
         self.proglock = ProgramLock(["cmdline"], "FlavorID")
 
     @mock.patch("mongo_db_admin.gen_class.ArgParser")
-    def test_arg_parse2_true(self, mock_arg):
+    def test_arg_parse2_false(self, mock_arg):
 
-        """Function:  test_arg_parse2_true
+        """Function:  test_arg_parse2_false
 
         Description:  Test arg_parse2 returns false.
 
@@ -289,7 +289,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.args.arg_parse2 = False
+        self.args.argparse2 = False
 
         mock_arg.return_value = self.args
 
