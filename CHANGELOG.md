@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [3.0.2] - 2024-09-19
+
+### Fixed
+- create_data_config:  Only set "mongo" entry if mongo config file is passed.
+
+
 ## [3.0.1] - 2024-09-10
 - Minor changes.
 
