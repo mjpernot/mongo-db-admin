@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [3.0.3] - 2024-09-26
+- Updated pymongo==4.1.1 for Python 3.6
+- Updated simplejson==3.13.2 for Python 3
+- Update python-lib to v3.0.5
+- Updated mongo-lib to v4.3.2
+
+
 ## [3.0.2] - 2024-09-19
 
 ### Fixed
