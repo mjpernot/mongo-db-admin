@@ -247,7 +247,8 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_data_out_failed(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
+    def test_data_out_failed(self, mock_mongo, mock_module, mock_dbtbl,
+                             mock_out):
 
         """Function:  test_data_out_failed
 
@@ -271,7 +272,8 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
-    def test_dbcc_failure2(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
+    def test_dbcc_failure2(self, mock_mongo, mock_module, mock_dbtbl,
+                           mock_out):
 
         """Function:  test_dbcc_failure2
 
