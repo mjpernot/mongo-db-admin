@@ -238,6 +238,7 @@ __version__ = version.__version__
 SUBJ_LINE = "Mongo_db_admin_NoSubjectLine"
 SYS_DBS = ["admin", "config", "local"]
 
+
 def help_message():
 
     """Function:  help_message
@@ -817,7 +818,6 @@ def main():
     args = gen_class.ArgParser(
         sys.argv, opt_val=opt_val_list, opt_def=opt_def_dict,
         multi_val=opt_multi_list)
-    
 
     if args.arg_parse2()                                                    \
        and not gen_libs.help_func(args, __version__, help_message)          \
