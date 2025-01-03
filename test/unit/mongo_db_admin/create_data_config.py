@@ -22,13 +22,13 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class ArgParser(object):
+class ArgParser():                                      # pylint:disable=R0903
 
     """Class:  ArgParser
 
@@ -195,6 +195,8 @@ class UnitTest(unittest.TestCase):
         Arguments:
 
         """
+
+        mock_load.return_value = "Mongo_Config"
 
         self.assertEqual(
             mongo_db_admin.create_data_config(self.args)["to_addr"],

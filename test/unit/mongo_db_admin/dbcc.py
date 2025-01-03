@@ -21,13 +21,13 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class ArgParser(object):
+class ArgParser():
 
     """Class:  ArgParser
 
@@ -50,7 +50,7 @@ class ArgParser(object):
 
         """
 
-        self.args_array = {"-c": "mongo", "-d": "config", "-D": list()}
+        self.args_array = {"-c": "mongo", "-d": "config", "-D": []}
 
     def arg_exist(self, arg):
 
@@ -62,7 +62,7 @@ class ArgParser(object):
 
         """
 
-        return True if arg in self.args_array else False
+        return arg in self.args_array
 
     def get_val(self, skey, def_val=None):
 
@@ -77,7 +77,7 @@ class ArgParser(object):
         return self.args_array.get(skey, def_val)
 
 
-class Mongo(object):
+class Mongo():
 
     """Class:  Mongo
 
@@ -154,7 +154,7 @@ class Mongo(object):
         return (self.status2, {"valid": self.valid2, "errors": self.err2})
 
 
-class Cfg(object):
+class Cfg():                                            # pylint:disable=R0903
 
     """Class:  Cfg
 
@@ -178,7 +178,7 @@ class Cfg(object):
         self.ign_dbs = ["admin"]
 
 
-class Cfg2(object):
+class Cfg2():                                           # pylint:disable=R0903
 
     """Class:  Cfg
 
@@ -198,8 +198,6 @@ class Cfg2(object):
         Arguments:
 
         """
-
-        pass
 
 
 class UnitTest(unittest.TestCase):
@@ -364,7 +362,7 @@ class UnitTest(unittest.TestCase):
 
         mock_mongo.return_value = self.mongo
         mock_module.return_value = self.cfg2
-        mock_dbtbl.return_value = dict()
+        mock_dbtbl.return_value = {}
         mock_out.return_value = self.status
 
         self.assertEqual(
@@ -388,7 +386,7 @@ class UnitTest(unittest.TestCase):
 
         mock_mongo.return_value = self.mongo
         mock_module.return_value = self.cfg
-        mock_dbtbl.return_value = dict()
+        mock_dbtbl.return_value = {}
         mock_out.return_value = self.status
 
         self.assertEqual(

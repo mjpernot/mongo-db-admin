@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [4.0.0] - 2025-01-03
+Breaking Changes
+
+- Removed support for Python 2.7.
+- Added pymongo==4.10.1 for Python 3.9 and Python 3.12.
+- Added dnspython==2.7.0 for Python 3.9 and Python 3.12.
+- Set pymongo==4.1.1 for Python 3.6.
+- Updated python-lib v4.0.0
+- Updated mongo-lib v4.4.0
+
+### Changed
+- data_out: Refactored open file code and added "encoding" argument to open() command.
+- defrag, dbcc: Changed dictionary loop to use ".items()" clause.
+- main: Changed function name from status to get_status.
+- Renamed function from status to get_status.
+- Replaced dict() with {} and list() with [].
+- Converted strings to f-strings.
+- Documentation changes.
+
+### Deprecated
+- Support for Mongo 3.4
+
+
 ## [3.0.4] - 2024-11-20
 - Updated distro==1.9.0 for Python 3
 - Updated psutil==5.9.4 for Python 3

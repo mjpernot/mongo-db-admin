@@ -21,8 +21,8 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
@@ -40,7 +40,7 @@ def run_compact():
     return True
 
 
-class ArgParser(object):
+class ArgParser():                                      # pylint:disable=R0903
 
     """Class:  ArgParser
 
@@ -62,7 +62,7 @@ class ArgParser(object):
 
         """
 
-        self.args_array = {"-c": "mongo", "-d": "config", "-C": list()}
+        self.args_array = {"-c": "mongo", "-d": "config", "-C": []}
 
     def get_val(self, skey, def_val=None):
 
@@ -77,7 +77,7 @@ class ArgParser(object):
         return self.args_array.get(skey, def_val)
 
 
-class Server(object):
+class Server():
 
     """Class:  Server
 
@@ -130,7 +130,7 @@ class Server(object):
         self.dbs = dbs
 
 
-class Cfg(object):
+class Cfg():                                            # pylint:disable=R0903
 
     """Class:  Cfg
 
@@ -154,7 +154,7 @@ class Cfg(object):
         self.ign_dbs = ["admin"]
 
 
-class Cfg2(object):
+class Cfg2():                                           # pylint:disable=R0903
 
     """Class:  Cfg2
 
@@ -174,8 +174,6 @@ class Cfg2(object):
         Arguments:
 
         """
-
-        pass
 
 
 class UnitTest(unittest.TestCase):
@@ -213,7 +211,7 @@ class UnitTest(unittest.TestCase):
         self.cfg2 = Cfg2()
         self.ismaster = {"ismaster": False}
         self.ismaster2 = {"ismaster": True, "setName": True}
-        self.db_dict = dict()
+        self.db_dict = {}
         self.db_dict2 = {"db": ["tbl"]}
         self.data_out = (True, None)
         self.data_out2 = (False, "Data Out Failure")
@@ -234,8 +232,9 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
-    def test_data_out_failed(self, mock_fetch, mock_mongo, mock_load,
-                             mock_dbtbl, mock_data, mock_coll):
+    def test_data_out_failed(                           # pylint:disable=R0913
+            self, mock_fetch, mock_mongo, mock_load, mock_dbtbl, mock_data,
+            mock_coll):
 
         """Function:  test_data_out_failed
 
@@ -264,8 +263,9 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
-    def test_compact_fail(self, mock_fetch, mock_mongo, mock_load, mock_dbtbl,
-                          mock_data, mock_coll):
+    def test_compact_fail(                              # pylint:disable=R0913
+            self, mock_fetch, mock_mongo, mock_load, mock_dbtbl, mock_data,
+            mock_coll):
 
         """Function:  test_compact_fail
 
@@ -297,8 +297,9 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
-    def test_compact_successful(self, mock_fetch, mock_mongo, mock_load,
-                                mock_dbtbl, mock_data, mock_coll):
+    def test_compact_successful(                        # pylint:disable=R0913
+            self, mock_fetch, mock_mongo, mock_load, mock_dbtbl, mock_data,
+            mock_coll):
 
         """Function:  test_compact_successful
 
@@ -325,8 +326,8 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     @mock.patch("mongo_db_admin.mongo_class.fetch_ismaster")
-    def test_connection_true(self, mock_fetch, mock_mongo, mock_load,
-                             mock_dbtbl, mock_data):
+    def test_connection_true(                           # pylint:disable=R0913
+            self, mock_fetch, mock_mongo, mock_load, mock_dbtbl, mock_data):
 
         """Function:  test_connection_true
 

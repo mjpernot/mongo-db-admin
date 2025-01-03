@@ -23,15 +23,14 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import lib.gen_libs as gen_libs
-import mongo_db_admin
-
-import version
+import lib.gen_libs as gen_libs             # pylint:disable=E0401,C0413,R0402
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class MailTest(object):
+class MailTest():
 
     """Class:  MailTest
 
@@ -150,7 +149,7 @@ class UnitTest(unittest.TestCase):
         self.subj = "EmailSubject"
         self.mailx = True
         self.mailx2 = False
-        self.outfile = "/path/file"
+        self.outfile = "test/unit/mongo_db_admin/tmp/test_data_out.out"
         self.mode = "a"
         self.mode2 = "w"
         self.expand = True
@@ -161,8 +160,7 @@ class UnitTest(unittest.TestCase):
         self.mongo = "mongo"
         self.db_tbl = "db1:tbl1"
         self.results = (True, None)
-        self.results2 = (
-            False, "Error: Is not a dictionary: %s" % (self.data2))
+        self.results2 = (False, f"Error: Is not a dictionary: {self.data2}")
         self.results3 = (False, "Error Message")
 
     @mock.patch("mongo_db_admin.mongo_libs.ins_doc",
@@ -200,8 +198,8 @@ class UnitTest(unittest.TestCase):
                 db_tbl=self.db_tbl), self.results)
 
     @mock.patch("mongo_db_admin.pprint.pprint", mock.Mock(return_value=True))
-    @mock.patch("mongo_db_admin.open", mock.Mock(return_value=True))
-    def test_outfile_mode2(self):
+    @mock.patch("builtins.open", new_callable=mock.mock_open, read_data="data")
+    def test_outfile_mode2(self, mock_file):
 
         """Function:  test_outfile_mode2
 
@@ -211,14 +209,17 @@ class UnitTest(unittest.TestCase):
 
         """
 
+        assert open("path/to/open").read() == "data"
+        mock_file.assert_called_with("path/to/open")
+
         self.assertEqual(
             mongo_db_admin.data_out(
                 self.data, suppress=self.suppress, outfile=self.outfile,
                 mode=self.mode2), self.results)
 
     @mock.patch("mongo_db_admin.pprint.pprint", mock.Mock(return_value=True))
-    @mock.patch("mongo_db_admin.open", mock.Mock(return_value=True))
-    def test_outfile_mode(self):
+    @mock.patch("builtins.open", new_callable=mock.mock_open, read_data="data")
+    def test_outfile_mode(self, mock_file):
 
         """Function:  test_outfile_mode
 
@@ -228,14 +229,17 @@ class UnitTest(unittest.TestCase):
 
         """
 
+        assert open("path/to/open").read() == "data"
+        mock_file.assert_called_with("path/to/open")
+
         self.assertEqual(
             mongo_db_admin.data_out(
                 self.data, suppress=self.suppress, outfile=self.outfile,
                 mode=self.mode), self.results)
 
     @mock.patch("mongo_db_admin.pprint.pprint", mock.Mock(return_value=True))
-    @mock.patch("mongo_db_admin.open", mock.Mock(return_value=True))
-    def test_outfile(self):
+    @mock.patch("builtins.open", new_callable=mock.mock_open, read_data="data")
+    def test_outfile(self, mock_file):
 
         """Function:  test_outfile
 
@@ -244,6 +248,9 @@ class UnitTest(unittest.TestCase):
         Arguments:
 
         """
+
+        assert open("path/to/open").read() == "data"
+        mock_file.assert_called_with("path/to/open")
 
         self.assertEqual(
             mongo_db_admin.data_out(
