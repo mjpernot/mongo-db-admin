@@ -566,43 +566,43 @@ def defrag(server, args):                               # pylint:disable=R0914
 
     if not state[0]:
         status = (False, f"Connection to Mongo DB:  {state[1]}")
+        return status
 
-    else:
-        db_list = args.get_val("-C", def_val=[])
-        tbls = args.get_val("-t", def_val=[])
-        cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-        ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
-        db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
-        results = get_json_template(mongo)
-        results["Type"] = "defrag"
-        results["Results"] = []
-        data_config = dict(create_data_config(args))
+    db_list = args.get_val("-C", def_val=[])
+    tbls = args.get_val("-t", def_val=[])
+    cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
+    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+    results = get_json_template(mongo)
+    results["Type"] = "defrag"
+    results["Results"] = []
+    data_config = dict(create_data_config(args))
 
-        for dbn in db_dict.items():
-            mongo.chg_db(dbs=dbn[0])
-            t_results = {"Database": dbn[0], "Tables": []}
+    for dbn in db_dict.items():
+        mongo.chg_db(dbs=dbn[0])
+        t_results = {"Database": dbn[0], "Tables": []}
 
-            for tbl in dbn[1]:
-                coll = mongo_libs.crt_coll_inst(mongo, dbn[0], tbl)
-                state = coll.connect()
-                t_data = {"TableName": tbl}
+        for tbl in dbn[1]:
+            coll = mongo_libs.crt_coll_inst(mongo, dbn[0], tbl)
+            state = coll.connect()
+            t_data = {"TableName": tbl}
 
-                if state[0]:
-                    t_data["Status"] = compact(mongo, coll, tbl)
-                    mongo_libs.disconnect([coll])
+            if state[0]:
+                t_data["Status"] = compact(mongo, coll, tbl)
+                mongo_libs.disconnect([coll])
 
-                else:
-                    t_data["Status"] = f"Error encountered:  {state[1]}"
+            else:
+                t_data["Status"] = f"Error encountered:  {state[1]}"
 
-                t_results["Tables"].append(t_data)
+            t_results["Tables"].append(t_data)
 
-            results["Results"].append(t_results)
+        results["Results"].append(t_results)
 
-        mongo_libs.disconnect([mongo])
-        state = data_out(results, **data_config)
+    mongo_libs.disconnect([mongo])
+    state = data_out(results, **data_config)
 
-        if not state[0]:
-            status = (False, f"defrag: Error encountered: {state[1]}")
+    if not state[0]:
+        status = (False, f"defrag: Error encountered: {state[1]}")
 
     return status
 
