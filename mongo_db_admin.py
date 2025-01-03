@@ -816,8 +816,8 @@ def main():
         sys.argv, opt_val=opt_val_list, opt_def=opt_def_dict,
         multi_val=opt_multi_list)
 
-    if args.arg_parse2(                                 # pylint:disable=R0916
-       ) and not gen_libs.help_func(args, __version__, help_message)        \
+    if args.arg_parse2()                                                    \
+       and not gen_libs.help_func(args, __version__, help_message)          \
        and args.arg_require(opt_req=opt_req_list)                           \
        and args.arg_valid_val(opt_valid_val=opt_valid_val)                  \
        and args.arg_xor_dict(opt_xor_val=opt_xor_dict)                      \
