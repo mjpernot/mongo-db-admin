@@ -15,6 +15,7 @@ Breaking Changes
 - Updated mongo-lib v4.4.0
 
 ### Changed
+- dbcc, defrag: Refactored function to reduce complexity.
 - data_out: Refactored open file code and added "encoding" argument to open() command.
 - defrag, dbcc: Changed dictionary loop to use ".items()" clause.
 - main: Changed function name from status to get_status.

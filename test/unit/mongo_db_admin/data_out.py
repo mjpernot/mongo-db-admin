@@ -149,7 +149,7 @@ class UnitTest(unittest.TestCase):
         self.subj = "EmailSubject"
         self.mailx = True
         self.mailx2 = False
-        self.outfile = "test/unit/mongo_db_admin/tmp/test_data_out.out"
+        self.outfile = "path/to/open"
         self.mode = "a"
         self.mode2 = "w"
         self.expand = True
@@ -209,8 +209,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        assert open("path/to/open").read() == "data"
-        mock_file.assert_called_with("path/to/open")
+        assert open(self.outfile).read() == "data"
+        mock_file.assert_called_with(self.outfile)
 
         self.assertEqual(
             mongo_db_admin.data_out(
@@ -229,8 +229,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        assert open("path/to/open").read() == "data"
-        mock_file.assert_called_with("path/to/open")
+        assert open(self.outfile).read() == "data"
+        mock_file.assert_called_with(self.outfile)
 
         self.assertEqual(
             mongo_db_admin.data_out(
@@ -249,8 +249,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        assert open("path/to/open").read() == "data"
-        mock_file.assert_called_with("path/to/open")
+        assert open(self.outfile).read() == "data"
+        mock_file.assert_called_with(self.outfile)
 
         self.assertEqual(
             mongo_db_admin.data_out(
