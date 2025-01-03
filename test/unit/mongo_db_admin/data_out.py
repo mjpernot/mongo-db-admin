@@ -209,7 +209,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        assert open(self.outfile).read() == "data"  #pylint:disable=R1732,W1514
+        assert open(                            # pylint:disable=R1732,W1514
+            self.outfile).read() == "data"
         mock_file.assert_called_with(self.outfile)
 
         self.assertEqual(
@@ -229,7 +230,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        assert open(self.outfile).read() == "data"  #pylint:disable=R1732,W1514
+        assert open(                            # pylint:disable=R1732,W1514
+            self.outfile).read() == "data"
         mock_file.assert_called_with(self.outfile)
 
         self.assertEqual(
@@ -249,7 +251,8 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        assert open(self.outfile).read() == "data"  #pylint:disable=R1732,W1514
+        assert open(                            # pylint:disable=R1732,W1514
+            self.outfile).read() == "data"
         mock_file.assert_called_with(self.outfile)
 
         self.assertEqual(

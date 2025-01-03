@@ -8,9 +8,9 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 Breaking Changes
 
 - Removed support for Python 2.7.
+- Add pre-header check on allowable Python versions to run.
 - Added pymongo==4.10.1 for Python 3.9 and Python 3.12.
 - Added dnspython==2.7.0 for Python 3.9 and Python 3.12.
-- Set pymongo==4.1.1 for Python 3.6.
 - Updated python-lib v4.0.0
 - Updated mongo-lib v4.4.0
 

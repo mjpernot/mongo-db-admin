@@ -50,13 +50,7 @@ Install/upgrade system modules.
 
 NOTE: Install as the user that will run the program.
 
-Redhat 8 (Running Python 3.6):
-
-```
-python -m pip install --user -r requirements3.txt --upgrade --trusted-host pypi.appdev.proj.coe.ic.gov
-```
-
-Redhat 8 (Running Python 3.9/3.12):
+Redhat 8 (Running Python 3.9 and 3.12):
 
 ```
 python -m pip install --user -r requirements39.txt --upgrade --trusted-host pypi.appdev.proj.coe.ic.gov

@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/bin/sh
 # Classification (U)
+
+# Shell commands follow
+# Next line is bilingual: it starts a comment in Python & is a no-op in shell
+""":"
+
+# Find a suitable python interpreter (can adapt for specific needs)
+for cmd in python3.12 python3.9 ; do
+   command -v > /dev/null $cmd && exec $cmd $0 "$@"
+done
+
+echo "OMG Python not found, exiting...."
+
+exit 2
+
+":"""
+# Previous line is bilingual: it ends a comment in Python & is a no-op in shell
+# Shell commands end here
+# Python program follows:
 
 """Program:  mongo_db_admin.py
 
@@ -209,11 +227,11 @@
 # Libraries and Global Variables
 
 # Standard
-import sys
-import datetime
-import os
-import json
-import pprint
+import sys                                              # pylint:disable=C0413
+import datetime                                         # pylint:disable=C0413
+import os                                               # pylint:disable=C0413
+import json                                             # pylint:disable=C0413
+import pprint                                           # pylint:disable=C0413
 
 # Local
 try:
