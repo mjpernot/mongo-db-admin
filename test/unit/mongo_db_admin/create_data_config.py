@@ -115,7 +115,7 @@ class UnitTest(unittest.TestCase):
 
         data_config = mongo_db_admin.create_data_config(self.args2)
 
-        self.assertTrue("mongo" not in data_config)
+        self.assertNotIn("mongo", data_config)
 
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     def test_with_mongo(self, mock_load):

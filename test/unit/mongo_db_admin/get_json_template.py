@@ -87,8 +87,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertTrue(
-            "AsOf" in mongo_db_admin.get_json_template(self.server))
+        self.assertIn("AsOf", mongo_db_admin.get_json_template(self.server))
 
     def test_for_servername(self):
 
