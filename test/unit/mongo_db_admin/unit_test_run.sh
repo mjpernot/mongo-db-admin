@@ -14,7 +14,7 @@ echo "Unit test:"
 /usr/bin/python test/unit/mongo_db_admin/main.py
 /usr/bin/python test/unit/mongo_db_admin/rotate.py
 /usr/bin/python test/unit/mongo_db_admin/run_program.py
-/usr/bin/python test/unit/mongo_db_admin/status.py
+/usr/bin/python test/unit/mongo_db_admin/get_status.py
 /usr/bin/python test/unit/mongo_db_admin/create_data_config.py
 /usr/bin/python test/unit/mongo_db_admin/data_out.py
 /usr/bin/python test/unit/mongo_db_admin/get_all_dbs_tbls.py

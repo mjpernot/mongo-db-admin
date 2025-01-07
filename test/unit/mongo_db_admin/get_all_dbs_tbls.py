@@ -18,17 +18,16 @@
 import sys
 import os
 import unittest
-import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class Server(object):
+class Server():
 
     """Class:  Server
 
@@ -52,7 +51,7 @@ class Server(object):
         """
 
         self.inc_sys = False
-        self.tbl_list = list()
+        self.tbl_list = []
         self.dbs = None
 
     def get_tbl_list(self, inc_sys):
@@ -111,14 +110,14 @@ class UnitTest(unittest.TestCase):
         self.server = Server()
         self.db_list = ["db1"]
         self.db_list2 = ["db1", "db2"]
-        self.db_list3 = list()
+        self.db_list3 = []
         self.tbl_list = ["t2"]
         self.tbl_list2 = ["t1", "t2"]
         self.ign_db_tbl = {"db1": ["t1"]}
         self.ign_db_tbl2 = {"db1": ["t1"], "db2": ["t2"]}
         self.results = {"db1": ["t2"]}
         self.results2 = {"db1": ["t1", "t2"], "db2": ["t1", "t2"]}
-        self.results3 = dict()
+        self.results3 = {}
         self.results4 = {"db1": ["t2"], "db2": ["t1"]}
 
     def test_ignore_db_tbl2(self):

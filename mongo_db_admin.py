@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/bin/sh
 # Classification (U)
+
+# Shell commands follow
+# Next line is bilingual: it starts a comment in Python & is a no-op in shell
+""":"
+
+# Find a suitable python interpreter (can adapt for specific needs)
+for cmd in python3.12 python3.9 ; do
+   command -v > /dev/null $cmd && exec $cmd $0 "$@"
+done
+
+echo "OMG Python not found, exiting...."
+
+exit 2
+
+":"""
+# Previous line is bilingual: it ends a comment in Python & is a no-op in shell
+# Shell commands end here
+# Python program follows
 
 """Program:  mongo_db_admin.py
 
@@ -207,15 +225,17 @@
 
 
 # Libraries and Global Variables
-from __future__ import print_function
-from __future__ import absolute_import
 
 # Standard
-import sys
-import datetime
-import os
-import json
-import pprint
+import sys                                              # pylint:disable=C0413
+import datetime                                         # pylint:disable=C0413
+import os                                               # pylint:disable=C0413
+import pprint                                           # pylint:disable=C0413
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 # Local
 try:
@@ -226,16 +246,15 @@ try:
     from . import version
 
 except (ValueError, ImportError) as err:
-    import lib.gen_libs as gen_libs
-    import lib.gen_class as gen_class
-    import mongo_lib.mongo_libs as mongo_libs
-    import mongo_lib.mongo_class as mongo_class
+    import lib.gen_libs as gen_libs                     # pylint:disable=R0402
+    import lib.gen_class as gen_class                   # pylint:disable=R0402
+    import mongo_lib.mongo_libs as mongo_libs           # pylint:disable=R0402
+    import mongo_lib.mongo_class as mongo_class         # pylint:disable=R0402
     import version
 
 __version__ = version.__version__
 
 # Global
-SUBJ_LINE = "Mongo_db_admin_NoSubjectLine"
 SYS_DBS = ["admin", "config", "local"]
 
 
@@ -268,12 +287,12 @@ def get_all_dbs_tbls(server, db_list, **kwargs):
 
     """
 
-    db_dict = dict()
+    db_dict = {}
     db_list = list(db_list)
-    ign_db_tbl = dict(kwargs.get("ign_db_tbl", dict()))
+    ign_db_tbl = dict(kwargs.get("ign_db_tbl", {}))
 
     for dbs in db_list:
-        ign_tbls = ign_db_tbl[dbs] if dbs in ign_db_tbl else list()
+        ign_tbls = ign_db_tbl[dbs] if dbs in ign_db_tbl else []
         server.chg_db(dbs=dbs)
         tbl_list = gen_libs.del_not_and_list(
             server.get_tbl_list(inc_sys=False), ign_tbls)
@@ -299,11 +318,11 @@ def get_db_tbl(server, db_list, **kwargs):
 
     """
 
-    db_dict = dict()
+    db_dict = {}
     db_list = list(db_list)
-    ign_dbs = list(kwargs.get("ign_dbs", list()))
-    tbls = kwargs.get("tbls", list())
-    ign_db_tbl = dict(kwargs.get("ign_db_tbl", dict()))
+    ign_dbs = list(kwargs.get("ign_dbs", []))
+    tbls = kwargs.get("tbls", [])
+    ign_db_tbl = dict(kwargs.get("ign_db_tbl", {}))
 
     if db_list:
         db_list = gen_libs.del_not_and_list(db_list, ign_dbs)
@@ -313,7 +332,7 @@ def get_db_tbl(server, db_list, **kwargs):
             tbl_list = gen_libs.del_not_in_list(
                 tbls, server.get_tbl_list(inc_sys=False))
             ign_tbls = \
-                ign_db_tbl[db_list[0]] if db_list[0] in ign_db_tbl else list()
+                ign_db_tbl[db_list[0]] if db_list[0] in ign_db_tbl else []
             tbl_list = gen_libs.del_not_and_list(tbl_list, ign_tbls)
             db_dict[db_list[0]] = tbl_list
 
@@ -348,7 +367,7 @@ def get_json_template(server):
 
     """
 
-    json_doc = dict()
+    json_doc = {}
     json_doc["Platform"] = "Mongo"
     json_doc["Server"] = server.name
     json_doc["AsOf"] = gen_libs.get_date() + "T" + gen_libs.get_time()
@@ -368,7 +387,7 @@ def create_data_config(args):
 
     """
 
-    data_config = dict()
+    data_config = {}
     data_config["to_addr"] = args.get_val("-e")
     data_config["subj"] = args.get_val("-s")
     data_config["mailx"] = args.get_val("-u", def_val=False)
@@ -410,28 +429,27 @@ def data_out(data, **kwargs):
 
     """
 
-    global SUBJ_LINE
-
     state = True
     msg = None
 
     if not isinstance(data, dict):
-        return False, "Error: Is not a dictionary: %s" % (data)
+        return False, f"Error: Is not a dictionary: {data}"
 
     mail = None
     data = dict(data)
     cfg = {"indent": kwargs.get("indent", 4)} if kwargs.get("indent", False) \
-        else dict()
+        else {}
 
     if kwargs.get("to_addr", False):
-        subj = kwargs.get("subj", SUBJ_LINE)
+        subj = kwargs.get("subj", "Mongo_db_admin_NoSubjectLine")
         mail = gen_class.setup_mail(kwargs.get("to_addr"), subj=subj)
         mail.add_2_msg(json.dumps(data, **cfg))
         mail.send_mail(use_mailx=kwargs.get("mailx", False))
 
     if kwargs.get("outfile", False):
-        outfile = open(kwargs.get("outfile"), kwargs.get("mode", "w"))
-        pprint.pprint(data, stream=outfile, **cfg)
+        with open(kwargs.get("outfile"), mode=kwargs.get("mode", "w"),
+                  encoding="UTF-8") as ofile:
+            pprint.pprint(data, stream=ofile, **cfg)
 
     if not kwargs.get("suppress", False):
         if kwargs.get("expand", False):
@@ -447,7 +465,7 @@ def data_out(data, **kwargs):
     return state, msg
 
 
-def dbcc(server, args):
+def dbcc(server, args):                         # pylint:disable=R0914,W0613
 
     """Function:  dbcc
 
@@ -460,7 +478,8 @@ def dbcc(server, args):
         (output) status -> Success of command: (True|False, Error Message)
 
     """
-    global SYS_DBS
+
+    global SYS_DBS                                      # pylint:disable=W0602
 
     status = (True, None)
 
@@ -469,45 +488,45 @@ def dbcc(server, args):
     state = mongo.connect()
 
     if not state[0]:
-        status = (False, "Connection to Mongo DB:  %s" % state[1])
+        status = (False, f"Connection to Mongo DB:  {state[1]}")
+        return status
 
-    else:
-        db_list = args.get_val("-D", def_val=list())
-        tbls = args.get_val("-t", def_val=list())
-        cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-        ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
-        db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
-        results = get_json_template(mongo)
-        results["Type"] = "validate"
-        results["Results"] = list()
-        data_config = dict(create_data_config(args))
+    db_list = args.get_val("-D", def_val=[])
+    tbls = args.get_val("-t", def_val=[])
+    cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
+    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+    results = get_json_template(mongo)
+    results["Type"] = "validate"
+    results["Results"] = []
+    data_config = dict(create_data_config(args))
 
-        for dbn in db_dict:
-            mongo.chg_db(dbs=dbn)
-            t_results = {"Database": dbn, "Tables": list()}
+    for dbn in db_dict.items():
+        mongo.chg_db(dbs=dbn[0])
+        t_results = {"Database": dbn[0], "Tables": []}
 
-            for tbl in db_dict[dbn]:
-                t_data = {"TableName": tbl}
-                data = mongo.validate_tbl(tbl, scan=args.arg_exist("-f"))
+        for tbl in dbn[1]:
+            t_data = {"TableName": tbl}
+            data = mongo.validate_tbl(tbl, scan=args.arg_exist("-f"))
 
-                if data[0]:
-                    t_data["Status"] = data[1]["valid"]
+            if data[0]:
+                t_data["Status"] = data[1]["valid"]
 
-                    if not data[1]["valid"]:
-                        t_data["Message"] = data[1]["errors"]
+                if not data[1]["valid"]:
+                    t_data["Message"] = data[1]["errors"]
 
-                else:
-                    t_data["Status"] = "Error encountered:  %s" % (data[1])
+            else:
+                t_data["Status"] = f"Error encountered:  {data[1]}"
 
-                t_results["Tables"].append(t_data)
+            t_results["Tables"].append(t_data)
 
-            results["Results"].append(t_results)
+        results["Results"].append(t_results)
 
-        mongo_libs.disconnect([mongo])
-        state = data_out(results, **data_config)
+    mongo_libs.disconnect([mongo])
+    state = data_out(results, **data_config)
 
-        if not state[0]:
-            status = (state[0], "dbcc: Error encountered: %s" % (state[1]))
+    if not state[0]:
+        status = (state[0], f"dbcc: Error encountered: {state[1]}")
 
     return status
 
@@ -540,7 +559,7 @@ def compact(mongo, coll, tbl):
     return status
 
 
-def defrag(server, args):
+def defrag(server, args):                               # pylint:disable=R0914
 
     """Function:  defrag
 
@@ -554,66 +573,65 @@ def defrag(server, args):
 
     """
 
-    global SYS_DBS
+    global SYS_DBS                                      # pylint:disable=W0602
 
     status = (True, None)
     data = mongo_class.fetch_ismaster(server)
 
     if data["ismaster"] and "setName" in data:
         status = (False, "Warning: Cannot defrag the Master in a ReplicaSet.")
+        return status
 
-    else:
-        mongo = mongo_libs.create_instance(
-            args.get_val("-c"), args.get_val("-d"), mongo_class.DB)
-        state = mongo.connect()
+    mongo = mongo_libs.create_instance(
+        args.get_val("-c"), args.get_val("-d"), mongo_class.DB)
+    state = mongo.connect()
 
-        if not state[0]:
-            status = (False, "Connection to Mongo DB:  %s" % state[1])
+    if not state[0]:
+        status = (False, f"Connection to Mongo DB:  {state[1]}")
+        return status
 
-        else:
-            db_list = args.get_val("-C", def_val=list())
-            tbls = args.get_val("-t", def_val=list())
-            cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-            ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
-            db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
-            results = get_json_template(mongo)
-            results["Type"] = "defrag"
-            results["Results"] = list()
-            data_config = dict(create_data_config(args))
+    db_list = args.get_val("-C", def_val=[])
+    tbls = args.get_val("-t", def_val=[])
+    cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
+    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+    results = get_json_template(mongo)
+    results["Type"] = "defrag"
+    results["Results"] = []
+    data_config = dict(create_data_config(args))
 
-            for dbn in db_dict:
-                mongo.chg_db(dbs=dbn)
-                t_results = {"Database": dbn, "Tables": list()}
+    for dbn in db_dict.items():
+        mongo.chg_db(dbs=dbn[0])
+        t_results = {"Database": dbn[0], "Tables": []}
 
-                for tbl in db_dict[dbn]:
-                    coll = mongo_libs.crt_coll_inst(mongo, dbn, tbl)
-                    state = coll.connect()
-                    t_data = {"TableName": tbl}
+        for tbl in dbn[1]:
+            coll = mongo_libs.crt_coll_inst(mongo, dbn[0], tbl)
+            state = coll.connect()
+            t_data = {"TableName": tbl}
 
-                    if state[0]:
-                        t_data["Status"] = compact(mongo, coll, tbl)
-                        mongo_libs.disconnect([coll])
+            if state[0]:
+                t_data["Status"] = compact(mongo, coll, tbl)
+                mongo_libs.disconnect([coll])
 
-                    else:
-                        t_data["Status"] = \
-                            "Error encountered:  %s" % (state[1])
+            else:
+                t_data["Status"] = f"Error encountered:  {state[1]}"
 
-                    t_results["Tables"].append(t_data)
+            t_results["Tables"].append(t_data)
 
-                results["Results"].append(t_results)
+        results["Results"].append(t_results)
 
-            mongo_libs.disconnect([mongo])
-            state = data_out(results, **data_config)
+    mongo_libs.disconnect([mongo])
+    state = data_out(results, **data_config)
 
-            if not state[0]:
-                status = (False, "defrag: Error encountered: %s" % (state[1]))
+    if not state[0]:
+        status = (False, f"defrag: Error encountered: {state[1]}")
 
     return status
 
 
-def status(server, args):
+def get_status(server, args):
 
-    """Function:  status
+    """Function:  get_status
 
     Description:  Retrieves a number of database status variables and sends
         them out either in standard out (print) or to a JSON format which
@@ -644,12 +662,12 @@ def status(server, args):
     state = data_out(results, **data_config)
 
     if not state[0]:
-        status = (False, "status: Error encountered: %s" % (state[1]))
+        status = (False, f"status: Error encountered: {state[1]}")
 
     return status
 
 
-def rotate(server, args, **kwargs):
+def rotate(server, args):
 
     """Function:  rotate
 
@@ -687,8 +705,8 @@ def rotate(server, args, **kwargs):
             diff_list = gen_libs.is_missing_lists(post_logs, pre_logs)
 
             if len(diff_list) > 1:
-                status = (False,
-                          "Error:  Too many files to move: %s" % (diff_list))
+                status = (
+                    False, f"Error:  Too many files to move: {diff_list}")
 
             else:
                 gen_libs.mv_file(diff_list[0], dir_path, args.get_val("-n"))
@@ -706,7 +724,7 @@ def rotate(server, args, **kwargs):
     return status
 
 
-def get_log(server, args, **kwargs):
+def get_log(server, args):
 
     """Function:  get_log
 
@@ -729,7 +747,7 @@ def get_log(server, args, **kwargs):
     state = data_out(results, **data_config)
 
     if not state[0]:
-        status = (False, "get_log: Error encountered: %s" % (state[1]))
+        status = (False, f"get_log: Error encountered: {state[1]}")
 
     return status
 
@@ -757,13 +775,13 @@ def run_program(args, func_dict):
             status = func_dict[item](server, args)
 
             if not status[0]:
-                print("Error:  %s" % (status[1]))
+                print(f"Error:  {status[1]}")
                 break
 
         mongo_libs.disconnect([server])
 
     else:
-        print("Connection failure:  %s" % (state[1]))
+        print(f"Connection failure:  {state[1]}")
 
 
 def main():
@@ -797,7 +815,8 @@ def main():
     file_perm_chk = {"-o": 6}
     file_crt = ["-o"]
     func_dict = {
-        "-C": defrag, "-D": dbcc, "-M": status, "-L": rotate, "-G": get_log}
+        "-C": defrag, "-D": dbcc, "-M": get_status, "-L": rotate,
+        "-G": get_log}
     opt_con_req_dict = {"-t": ["-C", "-D"]}
     opt_con_req_list = {
         "-i": ["-m"], "-n": ["-L"], "-f": ["-D"], "-s": ["-e"], "-u": ["-e"],
@@ -836,8 +855,8 @@ def main():
             del prog_lock
 
         except gen_class.SingleInstanceException:
-            print("WARNING:  lock in place for mongo_db_admin with id of: %s"
-                  % (args.get_val("-y", def_val="")))
+            print(f'WARNING:  lock in place for mongo_db_admin with id of:'
+                  f' {args.get_val("-y", def_val="")}')
 
 
 if __name__ == "__main__":

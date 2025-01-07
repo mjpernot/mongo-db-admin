@@ -21,13 +21,13 @@ import unittest
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class Server(object):
+class Server():                                         # pylint:disable=R0903
 
     """Class:  Server
 
@@ -87,8 +87,7 @@ class UnitTest(unittest.TestCase):
 
         """
 
-        self.assertTrue(
-            "AsOf" in mongo_db_admin.get_json_template(self.server))
+        self.assertIn("AsOf", mongo_db_admin.get_json_template(self.server))
 
     def test_for_servername(self):
 

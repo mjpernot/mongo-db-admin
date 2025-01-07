@@ -22,14 +22,14 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import lib.gen_libs as gen_libs
-import version
+import lib.gen_libs as gen_libs             # pylint:disable=E0401,C0413,R0402
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class Server(object):
+class Server():
 
     """Class:  Server
 
@@ -53,8 +53,8 @@ class Server(object):
 
         """
 
-        self.db_list = list()
-        self.tbl_list = list()
+        self.db_list = []
+        self.tbl_list = []
         self.inc_sys = True
         self.dbs = None
 
@@ -132,7 +132,7 @@ class UnitTest(unittest.TestCase):
 
         self.fetch_dbs = ["db1"]
         self.fetch_dbs3 = ["systemdb"]
-        self.db_list = list()
+        self.db_list = []
         self.db_list2 = ["db1"]
         self.db_list3 = ["systemdb"]
         self.db_list4 = ["systemdb", "db1"]
@@ -150,7 +150,7 @@ class UnitTest(unittest.TestCase):
         self.ign_db_tbl2 = {"db1": ["t1", "t2"]}
         self.results = {"db1": ["t2"]}
         self.results2 = {"db1": ["t2"], "db2": ["t1"]}
-        self.results3 = dict()
+        self.results3 = {}
         self.results4 = {"db1": ["t1", "t2"]}
         self.results5 = {"db1": ["t3"]}
 
