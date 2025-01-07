@@ -20,13 +20,13 @@ import unittest
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class Coll2(object):
+class Coll2():
 
     """Class:  Coll
 
@@ -77,7 +77,7 @@ class Coll2(object):
         return {"capped": False}
 
 
-class Coll(object):
+class Coll():
 
     """Class:  Coll
 
@@ -128,7 +128,7 @@ class Coll(object):
         return {"capped": True}
 
 
-class Mongo(object):
+class Mongo():
 
     """Class:  Mongo
 

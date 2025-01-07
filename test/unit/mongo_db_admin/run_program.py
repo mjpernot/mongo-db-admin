@@ -21,9 +21,9 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import lib.gen_libs as gen_libs
-import version
+import lib.gen_libs as gen_libs             # pylint:disable=E0401,C0413,R0402
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
@@ -68,7 +68,7 @@ def defrag(server, args_array):
     return flag, errmsg
 
 
-class ArgParser(object):
+class ArgParser():
 
     """Class:  ArgParser
 
@@ -104,7 +104,7 @@ class ArgParser(object):
 
         """
 
-        return True if arg in self.args_array else False
+        return arg in self.args_array
 
     def get_val(self, skey, def_val=None):
 
@@ -131,7 +131,7 @@ class ArgParser(object):
         return list(self.args_array.keys())
 
 
-class Server(object):
+class Server():                                         # pylint:disable=R0903
 
     """Class:  Server
 

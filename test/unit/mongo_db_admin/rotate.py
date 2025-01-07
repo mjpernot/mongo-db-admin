@@ -21,13 +21,13 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class ArgParser(object):
+class ArgParser():
 
     """Class:  ArgParser
 
@@ -62,7 +62,7 @@ class ArgParser(object):
 
         """
 
-        return True if arg in self.args_array else False
+        return arg in self.args_array
 
     def get_val(self, skey, def_val=None):
 
@@ -77,7 +77,7 @@ class ArgParser(object):
         return self.args_array.get(skey, def_val)
 
 
-class Server(object):
+class Server():                                         # pylint:disable=R0903
 
     """Class:  Server
 
@@ -209,8 +209,8 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.gen_libs.dir_file_match")
     @mock.patch("mongo_db_admin.mongo_class.fetch_cmd_line")
     @mock.patch("mongo_db_admin.gen_libs.chk_crt_dir")
-    def test_rotate(self, mock_check, mock_fetch, mock_match, mock_mv,
-                    mock_diff):
+    def test_rotate(                                    # pylint:disable=R0913
+            self, mock_check, mock_fetch, mock_match, mock_mv, mock_diff):
 
         """Function:  test_rotate
 

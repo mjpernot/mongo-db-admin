@@ -1,11 +1,11 @@
 # Classification (U)
 
-"""Program:  status.py
+"""Program:  get_status.py
 
-    Description:  Unit testing of status in mongo_db_admin.py.
+    Description:  Unit testing of get_status in mongo_db_admin.py.
 
     Usage:
-        test/unit/mongo_db_admin/status.py
+        test/unit/mongo_db_admin/get_status.py
 
     Arguments:
 
@@ -21,13 +21,13 @@ import mock
 
 # Local
 sys.path.append(os.getcwd())
-import mongo_db_admin
-import version
+import mongo_db_admin                           # pylint:disable=E0401,C0413
+import version                                  # pylint:disable=E0401,C0413
 
 __version__ = version.__version__
 
 
-class ArgParser(object):
+class ArgParser():                                      # pylint:disable=R0903
 
     """Class:  ArgParser
 
@@ -64,7 +64,7 @@ class ArgParser(object):
         return self.args_array.get(skey, def_val)
 
 
-class Server(object):
+class Server():                                         # pylint:disable=R0903
 
     """Class:  Server
 
@@ -153,7 +153,7 @@ class UnitTest(unittest.TestCase):
         mock_out.return_value = self.status2
 
         self.assertEqual(
-            mongo_db_admin.status(self.server, self.args), self.results2)
+            mongo_db_admin.get_status(self.server, self.args), self.results2)
 
     @mock.patch("mongo_db_admin.data_out")
     def test_data_out_success(self, mock_out):
@@ -169,7 +169,7 @@ class UnitTest(unittest.TestCase):
         mock_out.return_value = self.status
 
         self.assertEqual(
-            mongo_db_admin.status(self.server, self.args), self.results)
+            mongo_db_admin.get_status(self.server, self.args), self.results)
 
 
 if __name__ == "__main__":
