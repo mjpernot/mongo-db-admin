@@ -17,7 +17,7 @@ exit 2
 ":"""
 # Previous line is bilingual: it ends a comment in Python & is a no-op in shell
 # Shell commands end here
-# Python program follows:
+# Python program follows
 
 """Program:  mongo_db_admin.py
 
@@ -230,8 +230,12 @@ exit 2
 import sys                                              # pylint:disable=C0413
 import datetime                                         # pylint:disable=C0413
 import os                                               # pylint:disable=C0413
-import json                                             # pylint:disable=C0413
 import pprint                                           # pylint:disable=C0413
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 # Local
 try:
