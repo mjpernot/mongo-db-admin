@@ -113,8 +113,14 @@ class UnitTest(unittest.TestCase):
         setUp
         test_mongo_error
         test_mongo
+        test_outfile_mode2_flat2
+        test_outfile_mode2_flat
         test_outfile_mode2
+        test_outfile_mode_flat2
+        test_outfile_mode_flat
         test_outfile_mode
+        test_outfile_flat2
+        test_outfile_flat
         test_outfile
         test_email_subj
         test_email_no_subj
@@ -197,6 +203,40 @@ class UnitTest(unittest.TestCase):
                 self.data, suppress=self.suppress, mongo=self.mongo,
                 db_tbl=self.db_tbl), self.results)
 
+    @mock.patch("mongo_db_admin.gen_libs.write_file",
+                mock.Mock(return_value=True))
+    def test_outfile_mode2_flat2(self):
+
+        """Function:  test_outfile_mode2_flat2
+
+        Description:  Test with outfile and mode option and flat mode.
+
+        Arguments:
+
+        """
+
+        self.assertEqual(
+            mongo_db_admin.data_out(
+                self.data, suppress=self.suppress, outfile=self.outfile,
+                mode=self.mode2, expand=False), self.results)
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file",
+                mock.Mock(return_value=True))
+    def test_outfile_mode2_flat(self):
+
+        """Function:  test_outfile_mode2_flat
+
+        Description:  Test with outfile and mode option and flat mode.
+
+        Arguments:
+
+        """
+
+        self.assertEqual(
+            mongo_db_admin.data_out(
+                self.data, suppress=self.suppress, outfile=self.outfile,
+                mode=self.mode2), self.results)
+
     @mock.patch("mongo_db_admin.pprint.pprint", mock.Mock(return_value=True))
     @mock.patch("builtins.open", new_callable=mock.mock_open, read_data="data")
     def test_outfile_mode2(self, mock_file):
@@ -216,7 +256,41 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(
             mongo_db_admin.data_out(
                 self.data, suppress=self.suppress, outfile=self.outfile,
-                mode=self.mode2), self.results)
+                mode=self.mode2, expand=True), self.results)
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file",
+                mock.Mock(return_value=True))
+    def test_outfile_mode_flat2(self):
+
+        """Function:  test_outfile_mode_flat2
+
+        Description:  Test with outfile and mode option and flatten mode.
+
+        Arguments:
+
+        """
+
+        self.assertEqual(
+            mongo_db_admin.data_out(
+                self.data, suppress=self.suppress, outfile=self.outfile,
+                mode=self.mode, expand=False), self.results)
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file",
+                mock.Mock(return_value=True))
+    def test_outfile_mode_flat(self):
+
+        """Function:  test_outfile_mode_flat
+
+        Description:  Test with outfile and mode option and flatten mode.
+
+        Arguments:
+
+        """
+
+        self.assertEqual(
+            mongo_db_admin.data_out(
+                self.data, suppress=self.suppress, outfile=self.outfile,
+                mode=self.mode), self.results)
 
     @mock.patch("mongo_db_admin.pprint.pprint", mock.Mock(return_value=True))
     @mock.patch("builtins.open", new_callable=mock.mock_open, read_data="data")
@@ -237,7 +311,42 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(
             mongo_db_admin.data_out(
                 self.data, suppress=self.suppress, outfile=self.outfile,
-                mode=self.mode), self.results)
+                mode=self.mode, expand=True), self.results)
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file",
+                mock.Mock(return_value=True))
+    def test_outfile_flat2(self):
+
+        """Function:  test_outfile_flat2
+
+        Description:  Test with outfile option in flatten mode.
+
+        Arguments:
+
+        """
+
+        self.assertEqual(
+            mongo_db_admin.data_out(
+                self.data, suppress=self.suppress, outfile=self.outfile,
+                expand=False),
+            self.results)
+
+    @mock.patch("mongo_db_admin.gen_libs.write_file",
+                mock.Mock(return_value=True))
+    def test_outfile_flat(self):
+
+        """Function:  test_outfile_flat
+
+        Description:  Test with outfile option in flatten mode.
+
+        Arguments:
+
+        """
+
+        self.assertEqual(
+            mongo_db_admin.data_out(
+                self.data, suppress=self.suppress, outfile=self.outfile),
+            self.results)
 
     @mock.patch("mongo_db_admin.pprint.pprint", mock.Mock(return_value=True))
     @mock.patch("builtins.open", new_callable=mock.mock_open, read_data="data")
@@ -245,7 +354,7 @@ class UnitTest(unittest.TestCase):
 
         """Function:  test_outfile
 
-        Description:  Test with outfile option.
+        Description:  Test with outfile option in expand mode.
 
         Arguments:
 
@@ -257,7 +366,8 @@ class UnitTest(unittest.TestCase):
 
         self.assertEqual(
             mongo_db_admin.data_out(
-                self.data, suppress=self.suppress, outfile=self.outfile),
+                self.data, suppress=self.suppress, outfile=self.outfile,
+                expand=True),
             self.results)
 
     @mock.patch("mongo_db_admin.gen_class.setup_mail")
