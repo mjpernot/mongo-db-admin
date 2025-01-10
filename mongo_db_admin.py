@@ -448,9 +448,14 @@ def data_out(data, **kwargs):
         mail.send_mail(use_mailx=kwargs.get("mailx", False))
 
     if kwargs.get("outfile", False):
-        with open(kwargs.get("outfile"), mode=kwargs.get("mode", "w"),
-                  encoding="UTF-8") as ofile:
-            pprint.pprint(data, stream=ofile, **cfg)
+        if kwargs.get("expand", False):
+            with open(kwargs.get("outfile"), mode=kwargs.get("mode", "w"),
+                      encoding="UTF-8") as ofile:
+                pprint.pprint(data, stream=ofile, **cfg)
+
+        else:
+            gen_libs.write_file(
+                kwargs.get("outfile"), kwargs.get("mode", "w"), data)
 
     if not kwargs.get("suppress", False):
         if kwargs.get("expand", False):

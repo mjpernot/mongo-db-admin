@@ -14,6 +14,9 @@ Breaking Changes
 - Updated python-lib v4.0.0
 - Updated mongo-lib v4.4.0
 
+### Fixed
+- data_out:  Allow JSON object to be flatten before writing out to file.
+
 ### Changed
 - dbcc, defrag: Refactored function to reduce complexity.
 - data_out: Refactored open file code and added "encoding" argument to open() command.
