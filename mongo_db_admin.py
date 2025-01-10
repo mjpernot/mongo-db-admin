@@ -16,6 +16,9 @@ echo "OMG Python not found, exiting...."
 
 exit 2
 
+# Previous line is bilingual: it ends a comment in Python & is a no-op in shell
+# Shell commands end here
+
    Program:  mongo_db_admin.py
 
     Description:  A Mongo Database Administration program that can run a number
@@ -219,8 +222,6 @@ exit 2
         mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
 
 ":"""
-# Previous line is bilingual: it ends a comment in Python & is a no-op in shell
-# Shell commands end here
 # Python program follows
 
 
