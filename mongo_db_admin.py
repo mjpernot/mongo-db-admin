@@ -6,6 +6,8 @@
 """:"
 
 # Find a suitable python interpreter (can adapt for specific needs)
+# NOTE: Ignore this section if passing the -h option to the program.
+#   This code must be included in the program's initial docstring.
 for cmd in python3.12 python3.9 ; do
    command -v > /dev/null $cmd && exec $cmd $0 "$@"
 done
@@ -14,12 +16,10 @@ echo "OMG Python not found, exiting...."
 
 exit 2
 
-":"""
 # Previous line is bilingual: it ends a comment in Python & is a no-op in shell
 # Shell commands end here
-# Python program follows
 
-"""Program:  mongo_db_admin.py
+   Program:  mongo_db_admin.py
 
     Description:  A Mongo Database Administration program that can run a number
         of different administration functions such as compacting/defraging
@@ -221,7 +221,8 @@ exit 2
     Example:
         mongo_db_admin.py -c mongo -d config -D sysmon -t mongo_db_status
 
-"""
+":"""
+# Python program follows
 
 
 # Libraries and Global Variables
@@ -447,9 +448,14 @@ def data_out(data, **kwargs):
         mail.send_mail(use_mailx=kwargs.get("mailx", False))
 
     if kwargs.get("outfile", False):
-        with open(kwargs.get("outfile"), mode=kwargs.get("mode", "w"),
-                  encoding="UTF-8") as ofile:
-            pprint.pprint(data, stream=ofile, **cfg)
+        if kwargs.get("expand", False):
+            with open(kwargs.get("outfile"), mode=kwargs.get("mode", "w"),
+                      encoding="UTF-8") as ofile:
+                pprint.pprint(data, stream=ofile, **cfg)
+
+        else:
+            gen_libs.write_file(
+                kwargs.get("outfile"), kwargs.get("mode", "w"), data)
 
     if not kwargs.get("suppress", False):
         if kwargs.get("expand", False):
