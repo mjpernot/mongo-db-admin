@@ -75,6 +75,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
     - name = "HOSTNAME"
 
   * Change these entries only if required:
+    - direct_connect = True
     - port = 27017
     - conf_file = None
     - auth = True
