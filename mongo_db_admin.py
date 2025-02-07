@@ -163,6 +163,7 @@ exit 2
             host = "HOST_IP"
             name = "HOSTNAME"
             port = 27017
+            direct_connect = True
             conf_file = None
             auth = True
             auth_db = "admin"

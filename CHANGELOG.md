@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [4.1.0] - 2025-02-07
+- Added capability to connect directly to single server in replica set.
+- Updated mongo-lib v4.5.0
+
+### Changed
+- Added direct_connect to config/mongo.py configuration file.
+- Documentation changes.
+
+### Removed
+- Mongo 3.4 support.
+
+
 ## [4.0.0] - 2025-01-03
 Breaking Changes
 
