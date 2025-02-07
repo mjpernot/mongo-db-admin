@@ -105,11 +105,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
         -> tls_certkey = None
         -> tls_certkey_phrase = None
 
-  * FIPS Environment for Mongo:  If operating in a FIPS 104-2 environment, this package will require at least a minimum of pymongo==3.8.0 or better.  It will also require a manual change to the auth.py module in the pymongo package.  See below for changes to auth.py.
-    - Locate the auth.py file python installed packages on the system in the pymongo package directory.
-    - Edit the file and locate the "_password_digest" function.
-    - In the "\_password_digest" function there is an line that should match: "md5hash = hashlib.md5()".  Change it to "md5hash = hashlib.md5(usedforsecurity=False)".
-    - Lastly, it will require the Mongo configuration file entry auth_mech to be set to: SCRAM-SHA-1 or SCRAM-SHA-256.
+  * FIPS Environment for Mongo:  See Prerequisites -> FIPS Environment section for details.
 
   * List of databases to ignore.
     NOTE: The default list of databases are the system databases (admin, config, local) and should be skipped for some options.
@@ -122,6 +118,7 @@ chmod 600 config/mongo.py
 ```
 
 If inserting the results into a different Mongo database then create another mongo configuration file and use this file with the -m option.
+  * NOTE: Ensure direct_connect is set to False to ensure the insert connection connects to the replica set.
 
 Create Mongodb configuration file.  Make the appropriate change to the environment.
   * Make the appropriate changes to connect to a Mongo database.
@@ -129,6 +126,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
     - japd = "PSWORD"
     - host = "HOST_IP"
     - name = "HOSTNAME"
+    - direct_connect = False
 
   * Change these entries only if required:
     - port = 27017
@@ -153,11 +151,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
     - ssl_client_cert = None
     - ssl_client_phrase = None
 
-  * FIPS Environment for Mongo:  If operating in a FIPS 104-2 environment, this package will require at least a minimum of pymongo==3.8.0 or better.  It will also require a manual change to the auth.py module in the pymongo package.  See below for changes to auth.py.
-    - Locate the auth.py file python installed packages on the system in the pymongo package directory.
-    - Edit the file and locate the "_password_digest" function.
-    - In the "\_password_digest" function there is an line that should match: "md5hash = hashlib.md5()".  Change it to "md5hash = hashlib.md5(usedforsecurity=False)".
-    - Lastly, it will require the Mongo configuration file entry auth_mech to be set to: SCRAM-SHA-1 or SCRAM-SHA-256.
+  * FIPS Environment for Mongo:  See Prerequisites -> FIPS Environment section for details.
 
 ```
 cp config/mongo.py.TEMPLATE config/mongo_insert.py
@@ -187,11 +181,6 @@ Install the project using the procedures in the Installation section.
 
 ```
 test/unit/mongo_db_admin/unit_test_run.sh
-```
-
-### Code Coverage:
-
-```
 test/unit/mongo_db_admin/code_coverage.sh
 ```
 
