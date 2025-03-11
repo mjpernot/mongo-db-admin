@@ -85,7 +85,6 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
   * Notes for auth_mech configuration entry:
     - NOTE 1:  SCRAM-SHA-256 only works for Mongodb 4.0 and better.
     - NOTE 2:  FIPS 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
-    - NOTE 3:  MONGODB-CR is not supported in Mongodb 4.0 and better.
 
   * If connecting to a Mongo replica set.  By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
@@ -138,7 +137,6 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
   * Notes for auth_mech configuration entry:
     - NOTE 1:  SCRAM-SHA-256 only works for Mongodb 4.0 and better.
     - NOTE 2:  FIPS 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
-    - NOTE 3:  MONGODB-CR is not supported in Mongodb 4.0 and better.
 
   * If connecting to a Mongo replica set.  By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
