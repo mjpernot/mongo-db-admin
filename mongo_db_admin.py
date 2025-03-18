@@ -201,8 +201,8 @@ exit 2
                 (admin, config, local) and should be skipped for some options.
             ign_dbs = ["admin", "config", "local"]
 
-            Note:  FIPS Environment for Mongo.
-              If operating in a FIPS 104-2 environment, this package will
+            Note:  Secure Environment for Mongo.
+              If operating in a secure environment, this package will
               require at least a minimum of pymongo==3.8.0 or better.  It will
               also require a manual change to the auth.py module in the pymongo
               package.  See below for changes to auth.py.
@@ -689,6 +689,10 @@ def rotate(server, args):
     """
 
     status = (True, None)
+    cmd_arg = {}
+
+    if server.adm_cmd("serverStatus")["version"] >= "5.0.0":
+        cmd_arg["arg1"] = "server"
 
     if args.arg_exist("-n"):
 
@@ -705,7 +709,7 @@ def rotate(server, args):
 
             # Pre-list of log files before logRotate.
             pre_logs = gen_libs.dir_file_match(dir_path, mdb_log)
-            server.adm_cmd("logRotate")
+            server.adm_cmd("logRotate", **cmd_arg)
 
             # Post-list of log files after logRotate.
             post_logs = gen_libs.dir_file_match(dir_path, mdb_log)
@@ -726,7 +730,7 @@ def rotate(server, args):
             status = (False, msg)
 
     else:
-        server.adm_cmd("logRotate")
+        server.adm_cmd("logRotate", **cmd_arg)
 
     return status
 
