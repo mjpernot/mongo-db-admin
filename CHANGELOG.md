@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [4.1.2] - 2025-03-18
+
+### Fixed
+- rotate: Added "server" to logRotate command for Mongo version 5.0.0 or higher.
+
+### Changed
+- Documentation changes.
+
+
 ## [4.1.1] - 2025-03-11
 - Added support for Mongo 7.0
 - Updated mongo-lib v4.5.1

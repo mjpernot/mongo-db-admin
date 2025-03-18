@@ -8,7 +8,7 @@
 ###  This README file is broken down into the following sections:
   * Features
   * Prerequisites
-    - FIPS Environment
+    - Secure Environment
   * Installation
   * Configuration
   * Program Help Function
@@ -30,7 +30,7 @@
     - python3-devel
     - gcc
 
-  * FIPS Environment:  If operating in a FIPS 104-2 environment, this package will require at least a minimum of pymongo==3.8.0 or better.  It will also require a manual change to the auth.py module in the pymongo package.  See below for changes to auth.py.
+  * Secure Environment:  If operating in a Secure environment, this package will require at least a minimum of pymongo==3.8.0 or better.  It will also require a manual change to the auth.py module in the pymongo package.  See below for changes to auth.py.
     - Locate the auth.py file python installed packages on the system in the pymongo package directory.
     - Edit the file and locate the \_password_digest function.
     - In the \_password_digest function there is an line that should match: "md5hash = hashlib.md5()".  Change it to "md5hash = hashlib.md5(usedforsecurity=False)".
@@ -43,15 +43,11 @@ Install this project using git.
 
 ```
 git clone git@sc.appdev.proj.coe.ic.gov:JAC-DSXD/mongo-db-admin.git
-cd mongo-db-admin
 ```
 
 Install/upgrade system modules.
 
 NOTE: Install as the user that will run the program.
-
-Redhat 8 (Running Python 3.9 and 3.12):
-
 ```
 python -m pip install --user -r requirements39.txt --upgrade --trusted-host pypi.appdev.proj.coe.ic.gov
 ```
@@ -84,7 +80,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
 
   * Notes for auth_mech configuration entry:
     - NOTE 1:  SCRAM-SHA-256 only works for Mongodb 4.0 and better.
-    - NOTE 2:  FIPS 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
+    - NOTE 2:  Secure environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
 
   * If connecting to a Mongo replica set.  By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
@@ -104,7 +100,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
         -> tls_certkey = None
         -> tls_certkey_phrase = None
 
-  * FIPS Environment for Mongo:  See Prerequisites -> FIPS Environment section for details.
+  * Secure Environment for Mongo:  See Prerequisites -> Secure Environment section for details.
 
   * List of databases to ignore.
     NOTE: The default list of databases are the system databases (admin, config, local) and should be skipped for some options.
@@ -136,7 +132,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
 
   * Notes for auth_mech configuration entry:
     - NOTE 1:  SCRAM-SHA-256 only works for Mongodb 4.0 and better.
-    - NOTE 2:  FIPS 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
+    - NOTE 2:  Secure 140-2 environment requires SCRAM-SHA-1 or SCRAM-SHA-256.
 
   * If connecting to a Mongo replica set.  By default set to None to represent not connecting to replica set.
     - repset = "REPLICA_SET_NAME"
@@ -149,7 +145,7 @@ Create Mongodb configuration file.  Make the appropriate change to the environme
     - ssl_client_cert = None
     - ssl_client_phrase = None
 
-  * FIPS Environment for Mongo:  See Prerequisites -> FIPS Environment section for details.
+  * Secure Environment for Mongo:  See Prerequisites -> Secure Environment section for details.
 
 ```
 cp config/mongo.py.TEMPLATE config/mongo_insert.py
