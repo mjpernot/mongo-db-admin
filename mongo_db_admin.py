@@ -231,8 +231,8 @@ exit 2
 # Standard
 import sys
 import datetime
-import os                                               # pylint:disable=C0413
-import pprint                                           # pylint:disable=C0413
+import os
+import pprint
 
 try:
     import simplejson as json
