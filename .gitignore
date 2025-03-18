@@ -2,6 +2,7 @@
 .scannerwork
 .coverage
 *.swp
+*.HOLD
 lib
 mongo_lib
 coverage.xml

@@ -201,8 +201,8 @@ exit 2
                 (admin, config, local) and should be skipped for some options.
             ign_dbs = ["admin", "config", "local"]
 
-            Note:  FIPS Environment for Mongo.
-              If operating in a FIPS 104-2 environment, this package will
+            Note:  Secure Environment for Mongo.
+              If operating in a secure environment, this package will
               require at least a minimum of pymongo==3.8.0 or better.  It will
               also require a manual change to the auth.py module in the pymongo
               package.  See below for changes to auth.py.
@@ -229,10 +229,10 @@ exit 2
 # Libraries and Global Variables
 
 # Standard
-import sys                                              # pylint:disable=C0413
-import datetime                                         # pylint:disable=C0413
-import os                                               # pylint:disable=C0413
-import pprint                                           # pylint:disable=C0413
+import sys
+import datetime
+import os
+import pprint
 
 try:
     import simplejson as json
@@ -257,7 +257,6 @@ except (ValueError, ImportError) as err:
 __version__ = version.__version__
 
 # Global
-SYS_DBS = ["admin", "config", "local"]
 
 
 def help_message():
@@ -486,8 +485,7 @@ def dbcc(server, args):                         # pylint:disable=R0914,W0613
 
     """
 
-    global SYS_DBS                                      # pylint:disable=W0602
-
+    sys_dbs = ["admin", "config", "local"]
     status = (True, None)
 
     mongo = mongo_libs.create_instance(
@@ -501,7 +499,7 @@ def dbcc(server, args):                         # pylint:disable=R0914,W0613
     db_list = args.get_val("-D", def_val=[])
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
     db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "validate"
@@ -580,8 +578,7 @@ def defrag(server, args):                               # pylint:disable=R0914
 
     """
 
-    global SYS_DBS                                      # pylint:disable=W0602
-
+    sys_dbs = ["admin", "config", "local"]
     status = (True, None)
     data = mongo_class.fetch_ismaster(server)
 
@@ -600,7 +597,7 @@ def defrag(server, args):                               # pylint:disable=R0914
     db_list = args.get_val("-C", def_val=[])
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
     db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "defrag"
@@ -689,6 +686,10 @@ def rotate(server, args):
     """
 
     status = (True, None)
+    cmd_arg = {}
+
+    if server.adm_cmd("serverStatus")["version"] >= "5.0.0":
+        cmd_arg["arg1"] = "server"
 
     if args.arg_exist("-n"):
 
@@ -705,7 +706,7 @@ def rotate(server, args):
 
             # Pre-list of log files before logRotate.
             pre_logs = gen_libs.dir_file_match(dir_path, mdb_log)
-            server.adm_cmd("logRotate")
+            server.adm_cmd("logRotate", **cmd_arg)
 
             # Post-list of log files after logRotate.
             post_logs = gen_libs.dir_file_match(dir_path, mdb_log)
@@ -726,7 +727,7 @@ def rotate(server, args):
             status = (False, msg)
 
     else:
-        server.adm_cmd("logRotate")
+        server.adm_cmd("logRotate", **cmd_arg)
 
     return status
 
