@@ -120,8 +120,7 @@ class Server():                                         # pylint:disable=R0903
         if cmd == "serverStatus":
             return self.server_status
 
-        else:
-            return status
+        return status
 
 
 class UnitTest(unittest.TestCase):

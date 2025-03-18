@@ -229,8 +229,8 @@ exit 2
 # Libraries and Global Variables
 
 # Standard
-import sys                                              # pylint:disable=C0413
-import datetime                                         # pylint:disable=C0413
+import sys
+import datetime
 import os                                               # pylint:disable=C0413
 import pprint                                           # pylint:disable=C0413
 
@@ -257,7 +257,6 @@ except (ValueError, ImportError) as err:
 __version__ = version.__version__
 
 # Global
-SYS_DBS = ["admin", "config", "local"]
 
 
 def help_message():
@@ -486,8 +485,7 @@ def dbcc(server, args):                         # pylint:disable=R0914,W0613
 
     """
 
-    global SYS_DBS                                      # pylint:disable=W0602
-
+    sys_dbs = ["admin", "config", "local"]
     status = (True, None)
 
     mongo = mongo_libs.create_instance(
@@ -501,7 +499,7 @@ def dbcc(server, args):                         # pylint:disable=R0914,W0613
     db_list = args.get_val("-D", def_val=[])
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
     db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "validate"
@@ -580,8 +578,7 @@ def defrag(server, args):                               # pylint:disable=R0914
 
     """
 
-    global SYS_DBS                                      # pylint:disable=W0602
-
+    sys_dbs = ["admin", "config", "local"]
     status = (True, None)
     data = mongo_class.fetch_ismaster(server)
 
@@ -600,7 +597,7 @@ def defrag(server, args):                               # pylint:disable=R0914
     db_list = args.get_val("-C", def_val=[])
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
-    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else SYS_DBS
+    ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
     db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "defrag"
