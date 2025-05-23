@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on "Keep a Changelog".  This project adheres to Semantic Versioning.
 
 
+## [4.1.3] - 2025-05-23
+- Updated to work with pymongo v4.X
+- Updated python-lib to v4.0.1
+- Updated mongo-lib to v4.5.2
+
+### Changes
+- Documentation changes.
+
+
 ## [4.1.2] - 2025-03-18
 
 ### Fixed
