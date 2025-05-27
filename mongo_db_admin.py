@@ -273,89 +273,6 @@ def help_message():
     print(__doc__)
 
 
-def get_all_dbs_tbls(server, db_list, **kwargs):
-
-    """Function:  get_all_dbs_tbls
-
-    Description:  Return a dictionary of databases with table lists.
-
-    Arguments:
-        (input) server -> Server instance
-        (input) db_list -> List of database names
-        (input) kwargs:
-            ign_db_tbl -> Database dictionary with list of tables to ignore
-        (output) db_dict -> Dictionary of databases and lists of tables
-
-    """
-
-    db_dict = {}
-    db_list = list(db_list)
-    ign_db_tbl = dict(kwargs.get("ign_db_tbl", {}))
-
-    for dbs in db_list:
-        ign_tbls = ign_db_tbl[dbs] if dbs in ign_db_tbl else []
-        server.chg_db(dbs=dbs)
-        tbl_list = gen_libs.del_not_and_list(
-            server.get_tbl_list(inc_sys=False), ign_tbls)
-        db_dict[dbs] = tbl_list
-
-    return db_dict
-
-
-def get_db_tbl(server, db_list, **kwargs):
-
-    """Function:  get_db_tbl
-
-    Description:  Determines which databases and tables will be checked.
-
-    Arguments:
-        (input) server -> Mongo DB instance
-        (input) db_list -> List of database names
-        (input) **kwargs:
-            ign_dbs -> List of databases to skip
-            tbls -> List of tables to process
-            ign_db_tbl -> Database dictionary with list of tables to ignore
-        (output) db_dict -> Dictionary of databases and lists of tables
-
-    """
-
-    db_dict = {}
-    db_list = list(db_list)
-    ign_dbs = list(kwargs.get("ign_dbs", []))
-    tbls = kwargs.get("tbls", [])
-    ign_db_tbl = dict(kwargs.get("ign_db_tbl", {}))
-
-    if db_list:
-        db_list = gen_libs.del_not_and_list(db_list, ign_dbs)
-
-        if len(db_list) == 1 and tbls:
-            server.chg_db(dbs=db_list[0])
-            tbl_list = gen_libs.del_not_in_list(
-                tbls, server.get_tbl_list(inc_sys=False))
-            ign_tbls = \
-                ign_db_tbl[db_list[0]] if db_list[0] in ign_db_tbl else []
-            tbl_list = gen_libs.del_not_and_list(tbl_list, ign_tbls)
-            db_dict[db_list[0]] = tbl_list
-
-        elif db_list:
-            db_dict = get_all_dbs_tbls(server, db_list, ign_db_tbl=ign_db_tbl)
-
-        else:
-            print("get_db_tbl 1: Warning:  No databases to process")
-
-    else:
-        db_list = server.fetch_dbs()
-        db_list = gen_libs.del_not_and_list(db_list, ign_dbs)
-
-        if db_list:
-            db_dict = get_all_dbs_tbls(server, db_list, ign_db_tbl=ign_db_tbl)
-
-        else:
-            print("get_db_tbl 2: Warning:  No databases to process")
-
-    return db_dict
-
-
 def get_json_template(server):
 
     """Function:  get_json_template
@@ -500,7 +417,7 @@ def dbcc(server, args):                         # pylint:disable=R0914,W0613
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
     ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
-    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+    db_dict = mongo_libs.get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "validate"
     results["Results"] = []
@@ -598,7 +515,7 @@ def defrag(server, args):                               # pylint:disable=R0914
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
     ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
-    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+    db_dict = mongo_libs.get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "defrag"
     results["Results"] = []
