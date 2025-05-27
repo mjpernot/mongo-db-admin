@@ -273,35 +273,6 @@ def help_message():
     print(__doc__)
 
 
-def get_all_dbs_tbls(server, db_list, **kwargs):
-
-    """Function:  get_all_dbs_tbls
-
-    Description:  Return a dictionary of databases with table lists.
-
-    Arguments:
-        (input) server -> Server instance
-        (input) db_list -> List of database names
-        (input) kwargs:
-            ign_db_tbl -> Database dictionary with list of tables to ignore
-        (output) db_dict -> Dictionary of databases and lists of tables
-
-    """
-
-    db_dict = {}
-    db_list = list(db_list)
-    ign_db_tbl = dict(kwargs.get("ign_db_tbl", {}))
-
-    for dbs in db_list:
-        ign_tbls = ign_db_tbl[dbs] if dbs in ign_db_tbl else []
-        server.chg_db(dbs=dbs)
-        tbl_list = gen_libs.del_not_and_list(
-            server.get_tbl_list(inc_sys=False), ign_tbls)
-        db_dict[dbs] = tbl_list
-
-    return db_dict
-
-
 def get_json_template(server):
 
     """Function:  get_json_template

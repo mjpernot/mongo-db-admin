@@ -14,6 +14,7 @@ The format is based on "Keep a Changelog".  This project adheres to Semantic Ver
 - Documentation changes.
 
 ### Removed
+- get_all_dbs_tbls function
 - get_db_tbl function
 
 

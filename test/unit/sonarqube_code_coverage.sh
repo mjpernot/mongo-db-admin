@@ -19,7 +19,6 @@ coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/run_program.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_status.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/create_data_config.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/data_out.py
-coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_all_dbs_tbls.py
 coverage run -a --source=mongo_db_admin test/unit/mongo_db_admin/get_json_template.py
 
 echo ""
