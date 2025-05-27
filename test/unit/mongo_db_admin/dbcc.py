@@ -242,7 +242,7 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.data_out")
-    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.mongo_libs.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_data_out_failed(self, mock_mongo, mock_module, mock_dbtbl,
@@ -267,7 +267,7 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.data_out")
-    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.mongo_libs.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_dbcc_failure2(self, mock_mongo, mock_module, mock_dbtbl,
@@ -295,7 +295,7 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.data_out")
-    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.mongo_libs.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_dbcc_failure(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
@@ -323,7 +323,7 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.data_out")
-    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.mongo_libs.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_dbcc_success(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
@@ -347,7 +347,7 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.data_out")
-    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.mongo_libs.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_sys_dbs(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
@@ -371,7 +371,7 @@ class UnitTest(unittest.TestCase):
     @mock.patch("mongo_db_admin.mongo_libs.disconnect",
                 mock.Mock(return_value=True))
     @mock.patch("mongo_db_admin.data_out")
-    @mock.patch("mongo_db_admin.get_db_tbl")
+    @mock.patch("mongo_db_admin.mongo_libs.get_db_tbl")
     @mock.patch("mongo_db_admin.gen_libs.load_module")
     @mock.patch("mongo_db_admin.mongo_libs.create_instance")
     def test_cfg_ign_dbs(self, mock_mongo, mock_module, mock_dbtbl, mock_out):
