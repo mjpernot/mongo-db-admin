@@ -302,7 +302,7 @@ def get_all_dbs_tbls(server, db_list, **kwargs):
     return db_dict
 
 
-def get_db_tbl(server, db_list, **kwargs):
+def get_db_tbl_hold(server, db_list, **kwargs):
 
     """Function:  get_db_tbl
 
@@ -500,7 +500,8 @@ def dbcc(server, args):                         # pylint:disable=R0914,W0613
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
     ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
-    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+    db_dict = mongo_libs.get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+#    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "validate"
     results["Results"] = []
@@ -598,7 +599,8 @@ def defrag(server, args):                               # pylint:disable=R0914
     tbls = args.get_val("-t", def_val=[])
     cfg = gen_libs.load_module(args.get_val("-c"), args.get_val("-d"))
     ign_dbs = cfg.ign_dbs if hasattr(cfg, "ign_dbs") else sys_dbs
-    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+    db_dict = mongo_libs.get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
+#    db_dict = get_db_tbl(mongo, db_list, tbls=tbls, ign_dbs=ign_dbs)
     results = get_json_template(mongo)
     results["Type"] = "defrag"
     results["Results"] = []
